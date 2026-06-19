@@ -7,59 +7,54 @@ use Illuminate\Http\Request;
 
 class DirectorateController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $directorates = Directorate::withCount('schools')->get();
+        return view('directorates.index', compact('directorates'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('directorates.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'Directorate_id'   => 'required|integer|unique:directorates',
+            'Directorate_Name' => 'required|string|max:255',
+        ]);
+        Directorate::create($validated);
+        return redirect()->route('directorates.index')
+            ->with('success', 'تم إضافة المديرية بنجاح');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Directorate $directorate)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Directorate $directorate)
     {
-        //
+        return view('directorates.edit', compact('directorate'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Directorate $directorate)
     {
-        //
+        $validated = $request->validate([
+            'Directorate_Name' => 'required|string|max:255',
+        ]);
+        $directorate->update($validated);
+        return redirect()->route('directorates.index')
+            ->with('success', 'تم تعديل المديرية بنجاح');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Directorate $directorate)
-    {
-        //
+   public function destroy(Directorate $directorate)
+{
+    // Check if directorate has schools before deleting
+    if ($directorate->schools()->count() > 0) {
+        return redirect()->route('directorates.index')
+            ->with('error', 'لا يمكن حذف هذه المديرية لأنها تحتوي على مدارس');
     }
+
+    $directorate->delete();
+
+    return redirect()->route('directorates.index')
+        ->with('success', 'تم حذف المديرية بنجاح');
+}
 }
