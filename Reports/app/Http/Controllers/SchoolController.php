@@ -3,63 +3,60 @@
 namespace App\Http\Controllers;
 
 use App\Models\School;
+use App\Models\Directorate;
 use Illuminate\Http\Request;
 
 class SchoolController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $schools = School::with('directorate')->get();
+        return view('schools.index', compact('schools'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $directorates = Directorate::all();
+        return view('schools.create', compact('directorates'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'School_ID'        => 'required|integer|unique:schools',
+            'SchoolName'       => 'required|string|max:255',
+            'directorate_id'   => 'required|integer|exists:directorates,Directorate_id',
+        ]);
+        School::create($validated);
+        return redirect()->route('schools.index')
+            ->with('success', 'تم إضافة المدرسة بنجاح');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(School $school)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(School $school)
     {
-        //
+        $directorates = Directorate::all();
+        return view('schools.edit', compact('school', 'directorates'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, School $school)
     {
-        //
+        $validated = $request->validate([
+            'SchoolName'     => 'required|string|max:255',
+            'directorate_id' => 'required|integer|exists:directorates,Directorate_id',
+        ]);
+        $school->update($validated);
+        return redirect()->route('schools.index')
+            ->with('success', 'تم تعديل المدرسة بنجاح');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(School $school)
     {
-        //
+        if ($school->teachers()->count() > 0) {
+            return redirect()->route('schools.index')
+                ->with('error', 'لا يمكن حذف هذه المدرسة لأنها تحتوي على معلمين');
+        }
+        $school->delete();
+        return redirect()->route('schools.index')
+            ->with('success', 'تم حذف المدرسة بنجاح');
     }
 }
