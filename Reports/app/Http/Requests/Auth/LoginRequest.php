@@ -42,15 +42,14 @@ class LoginRequest extends FormRequest
 {
     $this->ensureIsNotRateLimited();
 
-    // 👇 Use SuperVisor_id instead of email
     if (! Auth::attempt([
-        'SuperVisor_id' => $this->SuperVisor_id,
-        'password'      => $this->password,
+        'SuperVisor_Name' => $this->SuperVisor_Name,
+        'password'        => $this->password,
     ], $this->boolean('remember'))) {
         RateLimiter::hit($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'SuperVisor_id' => trans('auth.failed'),
+            'SuperVisor_Name' => trans('auth.failed'),
         ]);
     }
 
@@ -85,6 +84,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
 {
-    return Str::transliterate(Str::lower($this->string('SuperVisor_id')).'|'.$this->ip());
+    return Str::transliterate(Str::lower($this->string('SuperVisor_Name')).'|'.$this->ip());
 }
 }
