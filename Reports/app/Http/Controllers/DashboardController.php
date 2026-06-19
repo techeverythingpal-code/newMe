@@ -2,14 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-class DashboardController extends Controller
-{
-    <?php
-
-namespace App\Http\Controllers;
-
 use App\Models\TeacherInfo;
 use App\Models\School;
 use App\Models\SuperVisor;
@@ -63,5 +55,4 @@ class DashboardController extends Controller
             'teachersPerSupervisor'
         ));
     }
-}
 }
