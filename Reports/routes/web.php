@@ -13,18 +13,19 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Admin only routes
+// Admin only
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('directorates', DirectorateController::class);
     Route::resource('schools', SchoolController::class);
     Route::resource('supervisors', SuperVisorController::class);
 });
 
-// Auth routes (admin + user)
+// Admin + Supervisor
 Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('teachers', TeacherInfoController::class);
-    Route::resource('teacher-grades', TeacherGradeController::class);
+    Route::get('teachers/{teacher}/grades/edit', [TeacherGradeController::class, 'edit'])->name('teacher-grades.edit');
+    Route::patch('teachers/{teacher}/grades', [TeacherGradeController::class, 'update'])->name('teacher-grades.update');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
