@@ -15,6 +15,8 @@ return new class extends Migration
         $table->id('SuperVisor_id');
         $table->string('SuperVisor_Name')->nullable();
         $table->string('SuperVisor_Major')->nullable();
+        $table->string('password');           // 👈 add this
+        $table->rememberToken();              // 👈 add this
         $table->timestamps();
     });
     }

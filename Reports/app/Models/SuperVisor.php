@@ -2,14 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class SuperVisor extends Model
+class SuperVisor extends Authenticatable
 {
-    protected $fillable = ['SuperVisor_Name', 'SuperVisor_Major'];
+    use Notifiable;
 
-public function teachers()
-{
-    return $this->hasMany(TeacherInfo::class, 'supervisor_id', 'SuperVisor_id');
-}
+    protected $table = 'super_visors';
+    protected $primaryKey = 'SuperVisor_id';
+
+    protected $fillable = [
+        'SuperVisor_Name',
+        'SuperVisor_Major',
+        'password',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    // Tell Laravel there's no 'email' field — we use SuperVisor_id
+    public function getEmailForPasswordReset() 
+    { 
+        return $this->SuperVisor_id; 
+    }
 }
