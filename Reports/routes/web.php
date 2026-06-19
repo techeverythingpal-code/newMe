@@ -7,6 +7,7 @@ use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\SuperVisorController;
 use App\Http\Controllers\TeacherInfoController;
 use App\Http\Controllers\TeacherGradeController;
+use App\Http\Controllers\ExcelController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,6 +16,11 @@ Route::get('/', function () {
 
 // Admin only
 Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('schools/export', [ExcelController::class, 'exportSchools'])->name('schools.export');
+    Route::post('schools/import', [ExcelController::class, 'importSchools'])->name('schools.import');
+    Route::get('supervisors/export', [ExcelController::class, 'exportSupervisors'])->name('supervisors.export');
+    Route::post('supervisors/import', [ExcelController::class, 'importSupervisors'])->name('supervisors.import');
+
     Route::resource('directorates', DirectorateController::class);
     Route::resource('schools', SchoolController::class);
     Route::resource('supervisors', SuperVisorController::class);
@@ -23,6 +29,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 // Admin + Supervisor
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('teachers/export', [ExcelController::class, 'exportTeachers'])->name('teachers.export');
+    Route::post('teachers/import', [ExcelController::class, 'importTeachers'])->name('teachers.import');
+
     Route::resource('teachers', TeacherInfoController::class);
     Route::get('teachers/{teacher}/grades/edit', [TeacherGradeController::class, 'edit'])->name('teacher-grades.edit');
     Route::patch('teachers/{teacher}/grades', [TeacherGradeController::class, 'update'])->name('teacher-grades.update');
