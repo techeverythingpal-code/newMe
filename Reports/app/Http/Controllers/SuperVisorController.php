@@ -4,62 +4,81 @@ namespace App\Http\Controllers;
 
 use App\Models\SuperVisor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class SuperVisorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $supervisors = SuperVisor::withCount('teachers')->get();
+        return view('supervisors.index', compact('supervisors'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('supervisors.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'SuperVisor_Name'  => 'required|string|max:255|unique:super_visors',
+            'SuperVisor_Major' => 'required|string|max:255',
+            'role'             => 'required|in:admin,user',
+            'password'         => 'required|string|min:6|confirmed',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+
+        SuperVisor::create($validated);
+
+        return redirect()->route('supervisors.index')
+            ->with('success', 'تم إضافة المشرف بنجاح');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(SuperVisor $superVisor)
+    public function edit(SuperVisor $supervisor)
     {
-        //
+        return view('supervisors.edit', compact('supervisor'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(SuperVisor $superVisor)
+    public function update(Request $request, SuperVisor $supervisor)
     {
-        //
+        $validated = $request->validate([
+            'SuperVisor_Name'  => 'required|string|max:255|unique:super_visors,SuperVisor_Name,' . $supervisor->SuperVisor_id . ',SuperVisor_id',
+            'SuperVisor_Major' => 'required|string|max:255',
+            'role'             => 'required|in:admin,user',
+        ]);
+
+        // Only update password if provided
+        if ($request->filled('password')) {
+            $request->validate([
+                'password' => 'min:6|confirmed',
+            ]);
+            $validated['password'] = Hash::make($request->password);
+        }
+
+        $supervisor->update($validated);
+
+        return redirect()->route('supervisors.index')
+            ->with('success', 'تم تعديل المشرف بنجاح');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, SuperVisor $superVisor)
+    public function destroy(SuperVisor $supervisor)
     {
-        //
-    }
+        // Prevent deleting yourself
+        if ($supervisor->SuperVisor_id === auth()->id()) {
+            return redirect()->route('supervisors.index')
+                ->with('error', 'لا يمكنك حذف حسابك الخاص');
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(SuperVisor $superVisor)
-    {
-        //
+        if ($supervisor->teachers()->count() > 0) {
+            return redirect()->route('supervisors.index')
+                ->with('error', 'لا يمكن حذف هذا المشرف لأنه مرتبط بمعلمين');
+        }
+
+        $supervisor->delete();
+
+        return redirect()->route('supervisors.index')
+            ->with('success', 'تم حذف المشرف بنجاح');
     }
 }
