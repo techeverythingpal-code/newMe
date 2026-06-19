@@ -15,6 +15,7 @@ class SuperVisor extends Authenticatable
     protected $fillable = [
         'SuperVisor_Name',
         'SuperVisor_Major',
+        'role',
         'password',
     ];
 
