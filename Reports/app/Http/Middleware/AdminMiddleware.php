@@ -13,6 +13,12 @@ class AdminMiddleware
             return $next($request);
         }
 
-        abort(403, 'غير مصرح لك بالدخول');
+        // If logged in but not admin → redirect to dashboard
+        if (auth()->check()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'ليس لديك صلاحية للوصول لهذه الصفحة');
+        }
+
+        return redirect()->route('login');
     }
 }
