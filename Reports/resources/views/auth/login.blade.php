@@ -6,11 +6,19 @@
         @csrf
 
         <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <!-- SuperVisor ID -->
+<div>
+    <x-input-label for="SuperVisor_id" :value="__('Supervisor ID')" />
+    <x-text-input id="SuperVisor_id"
+        class="block mt-1 w-full"
+        type="text"
+        name="SuperVisor_id"
+        :value="old('SuperVisor_id')"
+        required
+        autofocus
+        autocomplete="username" />
+    <x-input-error :messages="$errors->get('SuperVisor_id')" class="mt-2" />
+</div>
 
         <!-- Password -->
         <div class="mt-4">
