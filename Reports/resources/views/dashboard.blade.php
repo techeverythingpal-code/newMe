@@ -9,33 +9,33 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Count Cards --}}
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 
-                <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg">
-                    <div class="text-4xl mb-2">👨‍🏫</div>
-                    <div class="text-3xl font-bold">{{ $totalTeachers }}</div>
-                    <div class="text-sm opacity-80 mt-1">إجمالي المعلمين</div>
-                </div>
+    <a href="{{ route('teachers.index') }}" class="block bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
+        <div class="text-4xl mb-2">👨‍🏫</div>
+        <div class="text-3xl font-bold">{{ $totalTeachers }}</div>
+        <div class="text-sm opacity-80 mt-1">إجمالي المعلمين</div>
+    </a>
 
-                <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-5 text-white shadow-lg">
-                    <div class="text-4xl mb-2">🏫</div>
-                    <div class="text-3xl font-bold">{{ $totalSchools }}</div>
-                    <div class="text-sm opacity-80 mt-1">المدارس</div>
-                </div>
+    <a href="{{ route('schools.index') }}" class="block bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
+        <div class="text-4xl mb-2">🏫</div>
+        <div class="text-3xl font-bold">{{ $totalSchools }}</div>
+        <div class="text-sm opacity-80 mt-1">المدارس</div>
+    </a>
 
-                <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-5 text-white shadow-lg">
-                    <div class="text-4xl mb-2">👤</div>
-                    <div class="text-3xl font-bold">{{ $totalSupervisors }}</div>
-                    <div class="text-sm opacity-80 mt-1">المشرفون</div>
-                </div>
+    <a href="{{ route('supervisors.index') }}" class="block bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
+        <div class="text-4xl mb-2">👤</div>
+        <div class="text-3xl font-bold">{{ $totalSupervisors }}</div>
+        <div class="text-sm opacity-80 mt-1">المشرفون</div>
+    </a>
 
-                <div class="bg-gradient-to-br from-orange-500 to-orange-700 rounded-2xl p-5 text-white shadow-lg">
-                    <div class="text-4xl mb-2">🏢</div>
-                    <div class="text-3xl font-bold">{{ $totalDirectorates }}</div>
-                    <div class="text-sm opacity-80 mt-1">المديريات</div>
-                </div>
+    <a href="{{ route('directorates.index') }}" class="block bg-gradient-to-br from-orange-500 to-orange-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
+        <div class="text-4xl mb-2">🏢</div>
+        <div class="text-3xl font-bold">{{ $totalDirectorates }}</div>
+        <div class="text-sm opacity-80 mt-1">المديريات</div>
+    </a>
 
-            </div>
+</div>
 
             {{-- Grades Summary --}}
             <div class="grid grid-cols-3 gap-4 mb-8">
