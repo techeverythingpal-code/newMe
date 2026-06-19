@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SuperVisor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class SuperVisorController extends Controller
 {
@@ -66,7 +67,7 @@ class SuperVisorController extends Controller
     public function destroy(SuperVisor $supervisor)
     {
         // Prevent deleting yourself
-        if ($supervisor->SuperVisor_id === auth()->id()) {
+        if ($supervisor->SuperVisor_id === Auth::id()) {
             return redirect()->route('supervisors.index')
                 ->with('error', 'لا يمكنك حذف حسابك الخاص');
         }

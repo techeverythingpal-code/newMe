@@ -7,12 +7,13 @@ use App\Models\TeacherGrade;
 use App\Models\School;
 use App\Models\SuperVisor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherInfoController extends Controller
 {
     public function index()
 {
-    $user = auth()->user();
+    $user = Auth::user();
 
     if ($user->role === 'user') {
         // Supervisor sees only their teachers
@@ -47,8 +48,8 @@ class TeacherInfoController extends Controller
     ]);
 
     // If regular supervisor, force assign to themselves
-    if (auth()->user()->role === 'user') {
-        $validated['supervisor_id'] = auth()->user()->SuperVisor_id;
+    if (Auth::user()->role === 'user') {
+        $validated['supervisor_id'] = Auth::user()->SuperVisor_id;
     }
 
     TeacherGrade::create([

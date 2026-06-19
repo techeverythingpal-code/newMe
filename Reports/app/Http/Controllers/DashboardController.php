@@ -8,12 +8,13 @@ use App\Models\SuperVisor;
 use App\Models\Directorate;
 use App\Models\TeacherGrade;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         // If regular supervisor → show their own dashboard
         if ($user->role === 'user') {
