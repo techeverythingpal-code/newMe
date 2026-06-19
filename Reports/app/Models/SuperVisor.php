@@ -29,4 +29,9 @@ class SuperVisor extends Authenticatable
     { 
         return $this->SuperVisor_id; 
     }
+
+    public function teachers()
+{
+    return $this->hasMany(TeacherInfo::class, 'supervisor_id', 'SuperVisor_id');
+}
 }
