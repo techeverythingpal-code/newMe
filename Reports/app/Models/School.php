@@ -6,15 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class School extends Model
 {
-   protected $fillable = ['School_ID', 'SchoolName', 'directorate_id'];
+    protected $table = 'schools';
+    protected $primaryKey = 'School_ID';
+    public $incrementing = false;
+    protected $keyType = 'int';
 
-public function directorate()
-{
-    return $this->belongsTo(Directorate::class, 'directorate_id', 'Directorate_id');
-}
+    protected $fillable = [
+        'School_ID',
+        'SchoolName',
+        'directorate_id',
+    ];
 
-public function teachers()
-{
-    return $this->hasMany(TeacherInfo::class, 'school_id', 'School_ID');
-}
+    public function directorate()
+    {
+        return $this->belongsTo(Directorate::class, 'directorate_id', 'Directorate_id');
+    }
+
+    public function teachers()
+    {
+        return $this->hasMany(TeacherInfo::class, 'school_id', 'School_ID');
+    }
 }
