@@ -11,10 +11,21 @@ use Illuminate\Http\Request;
 class TeacherInfoController extends Controller
 {
     public function index()
-    {
+{
+    $user = auth()->user();
+
+    if ($user->role === 'user') {
+        // Supervisor sees only their teachers
+        $teachers = TeacherInfo::with(['school', 'supervisor', 'grades'])
+            ->where('supervisor_id', $user->SuperVisor_id)
+            ->get();
+    } else {
+        // Admin sees all teachers
         $teachers = TeacherInfo::with(['school', 'supervisor', 'grades'])->get();
-        return view('teachers.index', compact('teachers'));
     }
+
+    return view('teachers.index', compact('teachers'));
+}
 
     public function create()
     {
@@ -24,34 +35,37 @@ class TeacherInfoController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'Teacher_id'      => 'required|integer|unique:teacher_infos,Teacher_id',
-            'Teacher_Name'    => 'required|string|max:255',
-            'supervisor_id'   => 'required|integer|exists:super_visors,SuperVisor_id',
-            'school_id'       => 'required|integer|exists:schools,School_ID',
-            'date'            => 'required|date',
-            'teacher_qualify' => 'required|string|max:255',
-            'teacher_major'   => 'required|string|max:255',
-        ]);
+{
+    $validated = $request->validate([
+        'Teacher_id'      => 'required|integer|unique:teacher_infos,Teacher_id',
+        'Teacher_Name'    => 'required|string|max:255',
+        'supervisor_id'   => 'required|integer|exists:super_visors,SuperVisor_id',
+        'school_id'       => 'required|integer|exists:schools,School_ID',
+        'date'            => 'required|date',
+        'teacher_qualify' => 'required|string|max:255',
+        'teacher_major'   => 'required|string|max:255',
+    ]);
 
-        // Create teacher grades record first (required by foreign key)
-        TeacherGrade::create([
-            'teacher_id' => $validated['Teacher_id'],
-            'score1' => 0, 'score2' => 0, 'score3' => 0, 'score4' => 0,
-            'score5' => 0, 'score6' => 0, 'score7' => 0, 'score8' => 0,
-            'score9' => 0, 'score10' => 0, 'score11' => 0, 'score12' => 0,
-            'score13' => 0, 'score14' => 0, 'score15' => 0, 'score16' => 0,
-            'score17' => 0, 'score18' => 0, 'score19' => 0, 'score20' => 0,
-            'score21' => 0, 'score22' => 0, 'total' => 0,
-        ]);
-
-        // Then create teacher info
-        TeacherInfo::create($validated);
-
-        return redirect()->route('teachers.index')
-            ->with('success', 'تم إضافة المعلم بنجاح');
+    // If regular supervisor, force assign to themselves
+    if (auth()->user()->role === 'user') {
+        $validated['supervisor_id'] = auth()->user()->SuperVisor_id;
     }
+
+    TeacherGrade::create([
+        'teacher_id' => $validated['Teacher_id'],
+        'score1' => 0, 'score2' => 0, 'score3' => 0, 'score4' => 0,
+        'score5' => 0, 'score6' => 0, 'score7' => 0, 'score8' => 0,
+        'score9' => 0, 'score10' => 0, 'score11' => 0, 'score12' => 0,
+        'score13' => 0, 'score14' => 0, 'score15' => 0, 'score16' => 0,
+        'score17' => 0, 'score18' => 0, 'score19' => 0, 'score20' => 0,
+        'score21' => 0, 'score22' => 0, 'total' => 0,
+    ]);
+
+    TeacherInfo::create($validated);
+
+    return redirect()->route('teachers.index')
+        ->with('success', 'تم إضافة المعلم بنجاح');
+}
 
     public function show(TeacherInfo $teacher)
     {
