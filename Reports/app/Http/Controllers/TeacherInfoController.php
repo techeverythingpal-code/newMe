@@ -52,6 +52,8 @@ class TeacherInfoController extends Controller
         $validated['supervisor_id'] = Auth::user()->SuperVisor_id;
     }
 
+    TeacherInfo::create($validated);
+
     TeacherGrade::create([
         'teacher_id' => $validated['Teacher_id'],
         'score1' => 0, 'score2' => 0, 'score3' => 0, 'score4' => 0,
@@ -61,8 +63,6 @@ class TeacherInfoController extends Controller
         'score17' => 0, 'score18' => 0, 'score19' => 0, 'score20' => 0,
         'score21' => 0, 'score22' => 0, 'total' => 0,
     ]);
-
-    TeacherInfo::create($validated);
 
     return redirect()->route('teachers.index')
         ->with('success', 'تم إضافة المعلم بنجاح');
