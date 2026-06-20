@@ -108,6 +108,7 @@ class ExcelController extends Controller
 
     public function importSchools(Request $request)
     {
+        dd($request->file('file')?->getError(), $request->file('file')?->getErrorMessage());
         $rows = $this->readSpreadsheet($request);
 
         if (empty($rows)) {
