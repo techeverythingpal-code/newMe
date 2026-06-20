@@ -60,6 +60,16 @@
                     ❌ {{ session('error') }}
                 </div>
             @endif
+            @if ($errors->any())
+    <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+        <ul class="list-disc list-inside">
+            @foreach ($errors->all() as $err)
+                <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl">
                 <table class="w-full text-right text-sm">
