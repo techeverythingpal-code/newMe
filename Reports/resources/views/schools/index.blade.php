@@ -4,12 +4,47 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 🏫 إدارة المدارس
             </h2>
-            <a href="{{ route('schools.create') }}"
-                class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-5 rounded-lg transition">
-                + إضافة مدرسة
-            </a>
+            <div class="flex gap-2">
+                <a href="{{ route('schools.export') }}"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-5 rounded-lg transition">
+                    ⬇️ تصدير Excel
+                </a>
+                <button type="button" onclick="document.getElementById('schools-import-modal').classList.remove('hidden')"
+                    class="bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold py-2 px-5 rounded-lg transition">
+                    ⬆️ استيراد Excel
+                </button>
+                <a href="{{ route('schools.create') }}"
+                    class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-5 rounded-lg transition">
+                    + إضافة مدرسة
+                </a>
+            </div>
         </div>
     </x-slot>
+
+    <!-- Import Modal -->
+    <div id="schools-import-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50" dir="rtl">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <h3 class="font-bold text-lg mb-3">⬆️ استيراد المدارس من Excel</h3>
+            <p class="text-sm text-gray-500 mb-4">
+                الأعمدة المطلوبة: <span class="font-mono">School_ID, SchoolName, directorate_id</span>
+            </p>
+            <form action="{{ route('schools.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="file" accept=".xlsx,.xls,.csv" required
+                    class="w-full border border-gray-300 rounded-lg p-2 mb-4 text-sm">
+                <div class="flex gap-2 justify-end">
+                    <button type="button" onclick="document.getElementById('schools-import-modal').classList.add('hidden')"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg transition">
+                        إلغاء
+                    </button>
+                    <button type="submit"
+                        class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg transition">
+                        استيراد
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div class="py-8" dir="rtl">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
