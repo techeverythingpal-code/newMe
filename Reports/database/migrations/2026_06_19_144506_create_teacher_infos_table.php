@@ -23,7 +23,7 @@ return new class extends Migration
 
         $table->foreign('supervisor_id')->references('SuperVisor_id')->on('super_visors');
         $table->foreign('school_id')->references('School_ID')->on('schools');
-        $table->foreign('Teacher_id')->references('teacher_id')->on('teacher_grades');
+        
         $table->timestamps();
     });
     }
