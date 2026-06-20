@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('teacher_grades', function (Blueprint $table) {
         $table->increments('id');
         $table->integer('teacher_id')->unique();
+        $table->foreign('teacher_id')->references('Teacher_id')->on('teacher_infos');
         $table->integer('score1');
         $table->integer('score2');
         $table->integer('score3');
