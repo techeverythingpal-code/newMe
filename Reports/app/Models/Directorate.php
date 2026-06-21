@@ -20,4 +20,9 @@ class Directorate extends Model
     {
         return $this->hasMany(School::class, 'directorate_id', 'Directorate_id');
     }
+
+    public function supervisors()
+    {
+        return $this->hasMany(SuperVisor::class, 'directorate_id', 'Directorate_id');
+    }
 }

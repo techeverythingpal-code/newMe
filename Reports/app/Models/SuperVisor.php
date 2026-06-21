@@ -18,6 +18,7 @@ class SuperVisor extends Authenticatable
     protected $fillable = [
         'SuperVisor_Name',
         'SuperVisor_Major',
+        'directorate_id',
         'role',
         'password',
     ];
@@ -30,5 +31,10 @@ class SuperVisor extends Authenticatable
     public function teachers()
     {
         return $this->hasMany(TeacherInfo::class, 'supervisor_id', 'SuperVisor_id');
+    }
+
+    public function directorate()
+    {
+        return $this->belongsTo(Directorate::class, 'directorate_id', 'Directorate_id');
     }
 }
