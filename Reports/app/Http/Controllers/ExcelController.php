@@ -141,8 +141,8 @@ class ExcelController extends Controller
                 continue;
             }
 
-            if ($id && isset($existingIds[$id])) {
-            $errors[] = "السطر {$excelRow}: المدرسة برقم {$id} موجودة بالفعل.";
+            if ($schoolId && isset($existingIds[$schoolId])) {
+            $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} موجودة بالفعل.";
             continue;
         }
 
@@ -340,8 +340,8 @@ set_time_limit(120);
                 continue;
             }
 
-            if ($id && isset($existingIds[$id])) {
-            $errors[] = "السطر {$excelRow}: المعلم برقم {$id} موجود بالفعل.";
+            if ($teacherId && isset($existingIds[$teacherId])) {
+            $errors[] = "السطر {$excelRow}: المعلم برقم {$teacherId} موجود بالفعل.";
             continue;
         }
 
