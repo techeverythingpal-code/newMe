@@ -17,17 +17,19 @@ class SuperVisorController extends Controller
 
     public function create()
     {
-        return view('supervisors.create');
+        $directorates = \App\Models\Directorate::all();
+    return view('supervisors.create', compact('directorates'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'SuperVisor_Name'  => 'required|string|max:255|unique:super_visors',
-            'SuperVisor_Major' => 'required|string|max:255',
-            'role'             => 'required|in:admin,user',
-            'password'         => 'required|string|min:6|confirmed',
-        ]);
+    'SuperVisor_Name'  => 'required|string|max:255|unique:super_visors',
+    'SuperVisor_Major' => 'required|string|max:255',
+    'directorate_id'   => 'nullable|exists:directorates,Directorate_id',
+    'role'             => 'required|in:admin,user',
+    'password'         => 'required|string|min:6|confirmed',
+]);
 
         $validated['password'] = Hash::make($validated['password']);
 
@@ -39,16 +41,18 @@ class SuperVisorController extends Controller
 
     public function edit(SuperVisor $supervisor)
     {
-        return view('supervisors.edit', compact('supervisor'));
+         $directorates = \App\Models\Directorate::all();
+    return view('supervisors.edit', compact('supervisor', 'directorates'));
     }
 
     public function update(Request $request, SuperVisor $supervisor)
     {
         $validated = $request->validate([
-            'SuperVisor_Name'  => 'required|string|max:255|unique:super_visors,SuperVisor_Name,' . $supervisor->SuperVisor_id . ',SuperVisor_id',
-            'SuperVisor_Major' => 'required|string|max:255',
-            'role'             => 'required|in:admin,user',
-        ]);
+    'SuperVisor_Name'  => 'required|string|max:255|unique:super_visors,SuperVisor_Name,' . $supervisor->SuperVisor_id . ',SuperVisor_id',
+    'SuperVisor_Major' => 'required|string|max:255',
+    'directorate_id'   => 'nullable|exists:directorates,Directorate_id',
+    'role'             => 'required|in:admin,user',
+]);
 
         // Only update password if provided
         if ($request->filled('password')) {
