@@ -183,6 +183,7 @@ class ExcelController extends Controller
 
     public function importSupervisors(Request $request)
     {
+        set_time_limit(120);
         $rows = $this->readSpreadsheet($request);
 
         if (empty($rows)) {
