@@ -192,82 +192,81 @@ class ExcelController extends Controller
         return $this->downloadSpreadsheet($headers, $rows, 'supervisors_export_' . now()->format('Y_m_d_His') . '.xlsx');
     }
 
+
+
     public function importSupervisors(Request $request)
-    {
-      
-        $rows = $this->readSpreadsheet($request);
+{
+    $rows = $this->readSpreadsheet($request);
 
-        if (empty($rows)) {
-            return back()->with('error', 'الملف فارغ أو لا يحتوي على بيانات صالحة.');
-        }
+    if (empty($rows)) {
+        return back()->with('error', 'الملف فارغ أو لا يحتوي على بيانات صالحة.');
+    }
 
-         // Collect all non-empty IDs from the file in one pass
     $idsInFile = array_filter(array_map(fn ($r) => $r['SuperVisor_id'] ?? null, $rows));
 
-    // ONE query to find which of those IDs already exist, instead of one query per row
     $existingIds = SuperVisor::whereIn('SuperVisor_id', $idsInFile)
         ->pluck('SuperVisor_id')
-        ->flip(); // flip for fast isset() lookups
+        ->flip();
 
-        
+    $errors = [];
+    $toInsert = [];
+    $tempPassword = Hash::make('ChangeMe123');
 
+    foreach ($rows as $row) {
+        $excelRow = $row['_excel_row'];
+        $id = $row['SuperVisor_id'] ?? null;
+        $name = $row['SuperVisor_Name'] ?? null;
+        $major = $row['SuperVisor_Major'] ?? null;
+        $role = $row['role'] ?? null;
 
+        if (!$name || !$role) {
+            $errors[] = "السطر {$excelRow}: يجب توفر SuperVisor_Name و role.";
+            continue;
+        }
 
-        $errors = [];
-        $toInsert = [];
-        $tempPassword = Hash::make('ChangeMe123');
+        if (!in_array($role, ['admin', 'user'])) {
+            $errors[] = "السطر {$excelRow}: قيمة role غير صحيحة (admin أو user فقط).";
+            continue;
+        }
 
-        foreach ($rows as $row) {
-            $excelRow = $row['_excel_row'];
-            $id = $row['SuperVisor_id'] ?? null;
-            $name = $row['SuperVisor_Name'] ?? null;
-            $major = $row['SuperVisor_Major'] ?? null;
-            $role = $row['role'] ?? null;
-
-            if (!$name || !$role) {
-                $errors[] = "السطر {$excelRow}: يجب توفر SuperVisor_Name و role.";
-                continue;
-            }
-
-            if (!in_array($role, ['admin', 'user'])) {
-                $errors[] = "السطر {$excelRow}: قيمة role غير صحيحة (admin أو user فقط).";
-                continue;
-            }
-
-             if ($id && isset($existingIds[$id])) {
+        if ($id && isset($existingIds[$id])) {
             $errors[] = "السطر {$excelRow}: المشرف برقم {$id} موجود بالفعل.";
             continue;
         }
 
-            $data = [
-                'SuperVisor_Name' => $name,
-                'SuperVisor_Major' => $major,
-                'role' => $role,
-                'password' => $tempPassword,
-            ];
+        $data = [
+            'SuperVisor_Name' => $name,
+            'SuperVisor_Major' => $major,
+            'role' => $role,
+            'password' => $tempPassword,
+        ];
 
-            if ($id) {
-                $data['SuperVisor_id'] = $id;
-            }
-
-            $toInsert[] = $data;
+        if ($id) {
+            $data['SuperVisor_id'] = $id;
         }
 
-        if (!empty($errors)) {
-            return back()->withErrors($errors)->with('error', 'تم إيقاف الاستيراد بالكامل بسبب وجود أخطاء.');
-        }
-
-        DB::transaction(function () use ($toInsert) {
-            foreach ($toInsert as $data) {
-                SuperVisor::create($data);
-            }
-        });
-
-        return redirect()->route('supervisors.index')->with(
-            'success',
-            count($toInsert) . ' مشرف تم استيراده بنجاح. ⚠️ تم تعيين كلمة مرور مؤقتة، يرجى تحديثها لكل مشرف جديد.'
-        );
+        $toInsert[] = $data;
     }
+
+    if (!empty($errors)) {
+        return back()->withErrors($errors)->with('error', 'تم إيقاف الاستيراد بالكامل بسبب وجود أخطاء.');
+    }
+
+    DB::transaction(function () use ($toInsert) {
+        foreach ($toInsert as $data) {
+            SuperVisor::create($data);
+        }
+    });
+
+    return redirect()->route('supervisors.index')->with(
+        'success',
+        count($toInsert) . ' مشرف تم استيراده بنجاح. ⚠️ تم تعيين كلمة مرور مؤقتة، يرجى تحديثها لكل مشرف جديد.'
+    );
+}
+
+   
+      
+       
 
     /* =========================================================
      |  TEACHERS
