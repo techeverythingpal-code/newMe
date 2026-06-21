@@ -108,24 +108,12 @@ class ExcelController extends Controller
 
     public function importSchools(Request $request)
     {
-        set_time_limit(240);
         
         $rows = $this->readSpreadsheet($request);
 
         if (empty($rows)) {
             return back()->with('error', 'الملف فارغ أو لا يحتوي على بيانات صالحة.');
         }
-
-        // Collect all non-empty IDs from the file in one pass
-    $idsInFile = array_filter(array_map(fn ($r) => $r['School_ID'] ?? null, $rows));
-
-    // ONE query to find which of those IDs already exist, instead of one query per row
-    $existingIds = School::whereIn('School_ID', $idsInFile)
-        ->pluck('School_ID')
-        ->flip(); // flip for fast isset() lookups
-
-
-
 
         $errors = [];
         $toInsert = [];
@@ -141,10 +129,10 @@ class ExcelController extends Controller
                 continue;
             }
 
-            if ($schoolId && isset($existingIds[$schoolId])) {
-            $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} موجودة بالفعل.";
-            continue;
-        }
+            if (School::where('School_ID', $schoolId)->exists()) {
+                $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} موجودة بالفعل.";
+                continue;
+            }
 
             if (!$this->directorateExists($directorateId)) {
                 $errors[] = "السطر {$excelRow}: المديرية برقم {$directorateId} غير موجودة.";
@@ -193,83 +181,69 @@ class ExcelController extends Controller
         return $this->downloadSpreadsheet($headers, $rows, 'supervisors_export_' . now()->format('Y_m_d_His') . '.xlsx');
     }
 
-
-
     public function importSupervisors(Request $request)
-{
+    {
+        $rows = $this->readSpreadsheet($request);
 
-set_time_limit(240);
-    $rows = $this->readSpreadsheet($request);
+        if (empty($rows)) {
+            return back()->with('error', 'الملف فارغ أو لا يحتوي على بيانات صالحة.');
+        }
 
-    if (empty($rows)) {
-        return back()->with('error', 'الملف فارغ أو لا يحتوي على بيانات صالحة.');
+        $errors = [];
+        $toInsert = [];
+        $tempPassword = Hash::make('ChangeMe123');
+
+        foreach ($rows as $row) {
+            $excelRow = $row['_excel_row'];
+            $id = $row['SuperVisor_id'] ?? null;
+            $name = $row['SuperVisor_Name'] ?? null;
+            $major = $row['SuperVisor_Major'] ?? null;
+            $role = $row['role'] ?? null;
+
+            if (!$name || !$role) {
+                $errors[] = "السطر {$excelRow}: يجب توفر SuperVisor_Name و role.";
+                continue;
+            }
+
+            if (!in_array($role, ['admin', 'user'])) {
+                $errors[] = "السطر {$excelRow}: قيمة role غير صحيحة (admin أو user فقط).";
+                continue;
+            }
+
+            if ($id && SuperVisor::where('SuperVisor_id', $id)->exists()) {
+                $errors[] = "السطر {$excelRow}: المشرف برقم {$id} موجود بالفعل.";
+                continue;
+            }
+
+            $data = [
+                'SuperVisor_Name' => $name,
+                'SuperVisor_Major' => $major,
+                'role' => $role,
+                'password' => $tempPassword,
+            ];
+
+            if ($id) {
+                $data['SuperVisor_id'] = $id;
+            }
+
+            $toInsert[] = $data;
+        }
+
+        if (!empty($errors)) {
+            return back()->withErrors($errors)->with('error', 'تم إيقاف الاستيراد بالكامل بسبب وجود أخطاء.');
+        }
+
+        DB::transaction(function () use ($toInsert) {
+            foreach ($toInsert as $data) {
+                SuperVisor::create($data);
+            }
+        });
+
+        return redirect()->route('supervisors.index')->with(
+            'success',
+            count($toInsert) . ' مشرف تم استيراده بنجاح. ⚠️ تم تعيين كلمة مرور مؤقتة، يرجى تحديثها لكل مشرف جديد.'
+        );
     }
-
-    $idsInFile = array_filter(array_map(fn ($r) => $r['SuperVisor_id'] ?? null, $rows));
-
-    $existingIds = SuperVisor::whereIn('SuperVisor_id', $idsInFile)
-        ->pluck('SuperVisor_id')
-        ->flip();
-
-    $errors = [];
-    $toInsert = [];
-    $tempPassword = Hash::make('ChangeMe123');
-
-    foreach ($rows as $row) {
-        $excelRow = $row['_excel_row'];
-        $id = $row['SuperVisor_id'] ?? null;
-        $name = $row['SuperVisor_Name'] ?? null;
-        $major = $row['SuperVisor_Major'] ?? null;
-        $role = $row['role'] ?? null;
-
-        if (!$name || !$role) {
-            $errors[] = "السطر {$excelRow}: يجب توفر SuperVisor_Name و role.";
-            continue;
-        }
-
-        if (!in_array($role, ['admin', 'user'])) {
-            $errors[] = "السطر {$excelRow}: قيمة role غير صحيحة (admin أو user فقط).";
-            continue;
-        }
-
-        if ($id && isset($existingIds[$id])) {
-            $errors[] = "السطر {$excelRow}: المشرف برقم {$id} موجود بالفعل.";
-            continue;
-        }
-
-        $data = [
-            'SuperVisor_Name' => $name,
-            'SuperVisor_Major' => $major,
-            'role' => $role,
-            'password' => $tempPassword,
-        ];
-
-        if ($id) {
-            $data['SuperVisor_id'] = $id;
-        }
-
-        $toInsert[] = $data;
-    }
-
-    if (!empty($errors)) {
-        return back()->withErrors($errors)->with('error', 'تم إيقاف الاستيراد بالكامل بسبب وجود أخطاء.');
-    }
-
-    DB::transaction(function () use ($toInsert) {
-        foreach ($toInsert as $data) {
-            SuperVisor::create($data);
-        }
-    });
-
-    return redirect()->route('supervisors.index')->with(
-        'success',
-        count($toInsert) . ' مشرف تم استيراده بنجاح. ⚠️ تم تعيين كلمة مرور مؤقتة، يرجى تحديثها لكل مشرف جديد.'
-    );
-}
-
-   
-      
-       
 
     /* =========================================================
      |  TEACHERS
@@ -303,24 +277,11 @@ set_time_limit(240);
 
     public function importTeachers(Request $request)
     {
-        set_time_limit(240);
         $rows = $this->readSpreadsheet($request);
 
         if (empty($rows)) {
             return back()->with('error', 'الملف فارغ أو لا يحتوي على بيانات صالحة.');
         }
-
-        // Collect all non-empty IDs from the file in one pass
-    $idsInFile = array_filter(array_map(fn ($r) => $r['Teacher_id'] ?? null, $rows));
-
-    // ONE query to find which of those IDs already exist, instead of one query per row
-    $existingIds = TeacherInfo::whereIn('Teacher_id', $idsInFile)
-        ->pluck('Teacher_id')
-        ->flip(); // flip for fast isset() lookups
-
-        
-
-
 
         $errors = [];
         $toInsert = [];
@@ -340,10 +301,10 @@ set_time_limit(240);
                 continue;
             }
 
-            if ($teacherId && isset($existingIds[$teacherId])) {
-            $errors[] = "السطر {$excelRow}: المعلم برقم {$teacherId} موجود بالفعل.";
-            continue;
-        }
+            if (TeacherInfo::where('Teacher_id', $teacherId)->exists()) {
+                $errors[] = "السطر {$excelRow}: المعلم برقم {$teacherId} موجود بالفعل.";
+                continue;
+            }
 
             if (!School::where('School_ID', $schoolId)->exists()) {
                 $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} غير موجودة.";
