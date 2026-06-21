@@ -108,7 +108,7 @@ class ExcelController extends Controller
 
     public function importSchools(Request $request)
     {
-        set_time_limit(120);
+        set_time_limit(240);
         
         $rows = $this->readSpreadsheet($request);
 
@@ -198,7 +198,7 @@ class ExcelController extends Controller
     public function importSupervisors(Request $request)
 {
 
-set_time_limit(120);
+set_time_limit(240);
     $rows = $this->readSpreadsheet($request);
 
     if (empty($rows)) {
@@ -303,7 +303,7 @@ set_time_limit(120);
 
     public function importTeachers(Request $request)
     {
-        set_time_limit(120);
+        set_time_limit(240);
         $rows = $this->readSpreadsheet($request);
 
         if (empty($rows)) {
