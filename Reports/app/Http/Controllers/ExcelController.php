@@ -116,6 +116,12 @@ class ExcelController extends Controller
             return back()->with('error', 'الملف فارغ أو لا يحتوي على بيانات صالحة.');
         }
 
+         $idsInFile = array_filter(array_map(fn ($r) => $r['School_ID'] ?? null, $rows));
+
+    $existingIds = School::whereIn('School_ID', $idsInFile)
+        ->pluck('School_ID')
+        ->flip();
+
         $errors = [];
         $toInsert = [];
 
@@ -130,10 +136,10 @@ class ExcelController extends Controller
                 continue;
             }
 
-            if (School::where('School_ID', $schoolId)->exists()) {
-                $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} موجودة بالفعل.";
-                continue;
-            }
+             if ($schoolId && isset($existingIds[$schoolId])) {
+            $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} موجودة بالفعل.";
+            continue;
+        }
 
             if (!$this->directorateExists($directorateId)) {
                 $errors[] = "السطر {$excelRow}: المديرية برقم {$directorateId} غير موجودة.";
@@ -191,6 +197,12 @@ class ExcelController extends Controller
             return back()->with('error', 'الملف فارغ أو لا يحتوي على بيانات صالحة.');
         }
 
+        $idsInFile = array_filter(array_map(fn ($r) => $r['SuperVisor_id'] ?? null, $rows));
+
+    $existingIds = SuperVisor::whereIn('SuperVisor_id', $idsInFile)
+        ->pluck('SuperVisor_id')
+        ->flip();
+
         $errors = [];
         $toInsert = [];
         $tempPassword = Hash::make('ChangeMe123');
@@ -212,10 +224,10 @@ class ExcelController extends Controller
                 continue;
             }
 
-            if ($id && SuperVisor::where('SuperVisor_id', $id)->exists()) {
-                $errors[] = "السطر {$excelRow}: المشرف برقم {$id} موجود بالفعل.";
-                continue;
-            }
+            if ($id && isset($existingIds[$id])) {
+            $errors[] = "السطر {$excelRow}: المشرف برقم {$id} موجود بالفعل.";
+            continue;
+        }
 
             $data = [
                 'SuperVisor_Name' => $name,
@@ -286,6 +298,12 @@ class ExcelController extends Controller
             return back()->with('error', 'الملف فارغ أو لا يحتوي على بيانات صالحة.');
         }
 
+        $idsInFile = array_filter(array_map(fn ($r) => $r['Teacher_id'] ?? null, $rows));
+
+    $existingIds = TeacherInfo::whereIn('Teacher_id', $idsInFile)
+        ->pluck('Teacher_id')
+        ->flip();
+
         $errors = [];
         $toInsert = [];
 
@@ -304,10 +322,10 @@ class ExcelController extends Controller
                 continue;
             }
 
-            if (TeacherInfo::where('Teacher_id', $teacherId)->exists()) {
-                $errors[] = "السطر {$excelRow}: المعلم برقم {$teacherId} موجود بالفعل.";
-                continue;
-            }
+            if ($teacherId && isset($existingIds[$teacherId])) {
+            $errors[] = "السطر {$excelRow}: المعلم برقم {$teacherId} موجود بالفعل.";
+            continue;
+        }
 
             if (!School::where('School_ID', $schoolId)->exists()) {
                 $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} غير موجودة.";
