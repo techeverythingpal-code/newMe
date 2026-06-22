@@ -54,6 +54,24 @@
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">
+                            المديرية
+                        </label>
+                        <select name="directorate_id"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500">
+                            <option value="">-- اختر المديرية --</option>
+                            @foreach ($directorates as $directorate)
+                                <option value="{{ $directorate->Directorate_id }}"
+                                    {{ old('directorate_id') == $directorate->Directorate_id ? 'selected' : '' }}>
+                                    {{ $directorate->Directorate_Name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('directorate_id')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">
