@@ -1,0 +1,10 @@
+php artisan tinker
+
+\App\Models\SuperVisor::create([
+    'SuperVisor_id' => 906941885,
+    'SuperVisor_Name' => 'Maha',
+    'SuperVisor_Major' => null,
+    'directorate_id' => 1411,
+    'password' => bcrypt('10022647'),
+    'role' => 'admin',
+]);
