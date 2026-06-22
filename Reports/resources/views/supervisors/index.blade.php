@@ -78,6 +78,7 @@
                             <th class="px-6 py-4">#</th>
                             <th class="px-6 py-4">اسم المشرف</th>
                             <th class="px-6 py-4">التخصص</th>
+                            <th class="px-6 py-4">المديرية</th>
                             <th class="px-6 py-4">الصلاحية</th>
                             <th class="px-6 py-4">عدد المعلمين</th>
                             <th class="px-6 py-4">الإجراءات</th>
@@ -94,6 +95,9 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-gray-600">{{ $supervisor->SuperVisor_Major }}</td>
+                                <td class="px-6 py-4 text-gray-600">
+                                    {{ $supervisor->directorate->Directorate_Name ?? '—' }}
+                                </td>
                                 <td class="px-6 py-4">
                                     @if($supervisor->role === 'admin')
                                         <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">

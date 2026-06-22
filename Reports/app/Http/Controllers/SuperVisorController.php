@@ -11,8 +11,9 @@ class SuperVisorController extends Controller
 {
     public function index()
     {
-        $supervisors = SuperVisor::withCount('teachers')->get();
-        return view('supervisors.index', compact('supervisors'));
+        $supervisors = SuperVisor::withCount('teachers')->with('directorate')->get();
+    return view('supervisors.index', compact('supervisors'));
+}
     }
 
     public function create()
