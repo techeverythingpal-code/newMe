@@ -8,11 +8,13 @@ use App\Models\TeacherInfo;
 
 class SuperVisor extends Authenticatable
 {
-    use Notifiable;
+    
+
+use Notifiable;
 
     protected $table = 'super_visors';
     protected $primaryKey = 'SuperVisor_id';   // 👈 here
-    public $incrementing = true;                // 👈 here
+    public $incrementing = false;                // 👈 here
     protected $keyType = 'int';                  // 👈 here
 
     protected $fillable = [
