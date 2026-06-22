@@ -42,6 +42,13 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+
+        // 1. ADD THE ADMIN GUARD HERE
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
     ],
 
     /*
@@ -65,6 +72,12 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\SuperVisor::class,
+        ],
+
+        // 2. ADD THE ADMIN PROVIDER HERE
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class, // Make sure this matches your Admin model namespace
         ],
 
         // 'users' => [
@@ -96,6 +109,14 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        // OPTIONAL: Add password reset configurations for admins if needed
+        'admins' => [
+            'provider' => 'admins',
+            'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
         ],
