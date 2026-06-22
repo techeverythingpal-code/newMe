@@ -56,7 +56,7 @@
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">
-                            المديرية
+                            المديرية<span class="text-red-500">*</span>
                         </label>
                         <select name="directorate_id"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500">

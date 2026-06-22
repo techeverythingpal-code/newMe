@@ -174,13 +174,14 @@ class ExcelController extends Controller
     {
         $supervisors = SuperVisor::orderBy('SuperVisor_id')->get();
 
-        $headers = ['SuperVisor_id', 'SuperVisor_Name', 'SuperVisor_Major', 'role'];
+        $headers = ['SuperVisor_id', 'SuperVisor_Name', 'SuperVisor_Major', 'directorate_id', 'role'];
 
         $rows = $supervisors->map(function ($s) {
             return [
                 $s->SuperVisor_id,
                 $s->SuperVisor_Name,
                 $s->SuperVisor_Major,
+                $s->directorate_id,
                 $s->role,
             ];
         })->toArray();
@@ -207,12 +208,15 @@ class ExcelController extends Controller
         $toInsert = [];
         $tempPassword = Hash::make('ChangeMe123');
 
+        $directorateIds = \App\Models\Directorate::pluck('Directorate_id')->flip();
+
         foreach ($rows as $row) {
             $excelRow = $row['_excel_row'];
             $id = $row['SuperVisor_id'] ?? null;
             $name = $row['SuperVisor_Name'] ?? null;
             $major = $row['SuperVisor_Major'] ?? null;
             $role = $row['role'] ?? null;
+            $directorateId = $row['directorate_id'] ?? null;
 
             if (!$name || !$role) {
                 $errors[] = "السطر {$excelRow}: يجب توفر SuperVisor_Name و role.";
@@ -224,6 +228,16 @@ class ExcelController extends Controller
                 continue;
             }
 
+            if (!$directorateId) {
+                $errors[] = "السطر {$excelRow}: يجب توفر directorate_id.";
+                continue;
+            }
+
+            if (!isset($directorateIds[$directorateId])) {
+                $errors[] = "السطر {$excelRow}: المديرية برقم {$directorateId} غير موجودة.";
+                continue;
+            }
+
             if ($id && isset($existingIds[$id])) {
             $errors[] = "السطر {$excelRow}: المشرف برقم {$id} موجود بالفعل.";
             continue;
@@ -232,6 +246,7 @@ class ExcelController extends Controller
             $data = [
                 'SuperVisor_Name' => $name,
                 'SuperVisor_Major' => $major,
+                'directorate_id' => $directorateId,
                 'role' => $role,
                 'password' => $tempPassword,
             ];
