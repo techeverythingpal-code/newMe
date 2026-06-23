@@ -32,12 +32,26 @@
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">
+                            رقم المشرف (ID) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" name="SuperVisor_id"
+                            value="{{ old('SuperVisor_id', $supervisor->SuperVisor_id) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                            required>
+                        @error('SuperVisor_id')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">
                             اسم المشرف <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="SuperVisor_Name"
                             value="{{ old('SuperVisor_Name', $supervisor->SuperVisor_Name) }}"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
                             required>
+                            
                         @error('SuperVisor_Name')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror

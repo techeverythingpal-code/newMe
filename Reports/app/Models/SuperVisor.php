@@ -18,6 +18,7 @@ use Notifiable;
     protected $keyType = 'int';                  // 👈 here
 
     protected $fillable = [
+        'SuperVisor_id',
         'SuperVisor_Name',
         'SuperVisor_Major',
         'directorate_id',

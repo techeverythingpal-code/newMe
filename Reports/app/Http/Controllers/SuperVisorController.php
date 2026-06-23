@@ -25,10 +25,11 @@ class SuperVisorController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+    'SuperVisor_id'    => 'required|integer|unique:super_visors,SuperVisor_id',
     'SuperVisor_Name'  => 'required|string|max:255|unique:super_visors',
     'SuperVisor_Major' => 'required|string|max:255',
     'directorate_id'   => 'required|exists:directorates,Directorate_id',
-    'role'             => 'required|in:user',
+    'role'             => 'required|in:admin,user',
     'password'         => 'required|string|min:6|confirmed',
 ]);
 
@@ -49,10 +50,11 @@ class SuperVisorController extends Controller
     public function update(Request $request, SuperVisor $supervisor)
     {
         $validated = $request->validate([
+    'SuperVisor_id'    => 'required|integer|unique:super_visors,SuperVisor_id,' . $supervisor->SuperVisor_id . ',SuperVisor_id',
     'SuperVisor_Name'  => 'required|string|max:255|unique:super_visors,SuperVisor_Name,' . $supervisor->SuperVisor_id . ',SuperVisor_id',
     'SuperVisor_Major' => 'required|string|max:255',
     'directorate_id'   => 'required|exists:directorates,Directorate_id',
-    'role'             => 'required|in:user',
+    'role'             => 'required|in:admin,user',
 ]);
 
         // Only update password if provided
