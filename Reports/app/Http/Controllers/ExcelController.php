@@ -352,8 +352,8 @@ class ExcelController extends Controller
                 continue;
             }
 
-            if (Auth::user()->role === 'user') {
-                $supervisorId = Auth::user()->SuperVisor_id;
+            if (! Auth::guard('admin')->check()) {
+                $supervisorId = Auth::guard('web')->user()->SuperVisor_id;
             }
 
             $toInsert[] = [

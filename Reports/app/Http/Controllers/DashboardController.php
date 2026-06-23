@@ -14,10 +14,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        // Regular supervisor → show their own dashboard
+        if (! Auth::guard('admin')->check()) {
+            $user = Auth::guard('web')->user();
 
-        // If regular supervisor → show their own dashboard
-        if ($user->role === 'user') {
             $teachers = TeacherInfo::with(['school', 'grades'])
                 ->where('supervisor_id', $user->SuperVisor_id)
                 ->get();

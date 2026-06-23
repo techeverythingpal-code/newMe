@@ -13,10 +13,9 @@ class TeacherInfoController extends Controller
 {
     public function index()
 {
-    $user = Auth::user();
-
-    if ($user->role === 'user') {
+   if (! Auth::guard('admin')->check()) {
         // Supervisor sees only their teachers
+        $user = Auth::guard('web')->user();
         $teachers = TeacherInfo::with(['school', 'supervisor', 'grades'])
             ->where('supervisor_id', $user->SuperVisor_id)
             ->get();
@@ -48,8 +47,8 @@ class TeacherInfoController extends Controller
     ]);
 
     // If regular supervisor, force assign to themselves
-    if (Auth::user()->role === 'user') {
-        $validated['supervisor_id'] = Auth::user()->SuperVisor_id;
+    if (! Auth::guard('admin')->check()) {
+        $validated['supervisor_id'] = Auth::guard('web')->user()->SuperVisor_id;
     }
 
     TeacherInfo::create($validated);
