@@ -5,18 +5,18 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- Username -->
+       <!-- Username -->
 <div>
-    <x-input-label for="SuperVisor_Name" :value="__('اسم المستخدم')" />
-    <x-text-input id="SuperVisor_Name"
+    <x-input-label for="login" :value="__('اسم المستخدم أو البريد الإلكتروني')" />
+    <x-text-input id="login"
         class="block mt-1 w-full"
         type="text"
-        name="SuperVisor_Name"
-        :value="old('SuperVisor_Name')"
+        name="login"
+        :value="old('login')"
         required
         autofocus
         autocomplete="username" />
-    <x-input-error :messages="$errors->get('SuperVisor_Name')" class="mt-2" />
+    <x-input-error :messages="$errors->get('login')" class="mt-2" />
 </div>
 
         <!-- Password -->
