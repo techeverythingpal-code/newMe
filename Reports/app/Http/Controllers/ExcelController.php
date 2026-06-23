@@ -322,6 +322,15 @@ class ExcelController extends Controller
         $errors = [];
         $toInsert = [];
 
+        $schoolIdsInFile = array_filter(array_map(fn ($r) => $r['school_id'] ?? null, $rows));
+        $supervisorIdsInFile = array_filter(array_map(fn ($r) => $r['supervisor_id'] ?? null, $rows));
+
+        $validSchoolIds = School::whereIn('School_ID', $schoolIdsInFile)
+            ->pluck('School_ID')->flip();
+
+        $validSupervisorIds = SuperVisor::whereIn('SuperVisor_id', $supervisorIdsInFile)
+            ->pluck('SuperVisor_id')->flip();
+
         foreach ($rows as $row) {
             $excelRow = $row['_excel_row'];
             $teacherId = $row['Teacher_id'] ?? null;
@@ -342,12 +351,12 @@ class ExcelController extends Controller
             continue;
         }
 
-            if (!School::where('School_ID', $schoolId)->exists()) {
+            if (!isset($validSchoolIds[$schoolId])) {
                 $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} غير موجودة.";
                 continue;
             }
 
-            if (!SuperVisor::where('SuperVisor_id', $supervisorId)->exists()) {
+            if (!isset($validSupervisorIds[$supervisorId])) {
                 $errors[] = "السطر {$excelRow}: المشرف برقم {$supervisorId} غير موجود.";
                 continue;
             }
