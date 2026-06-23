@@ -14,7 +14,7 @@
                 <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg">
                     <div class="text-4xl mb-2">👨‍🏫</div>
                     <div class="text-3xl font-bold">{{ $totalTeachers }}</div>
-                    <div class="text-sm opacity-80 mt-1">معلموي</div>
+                    <div class="text-sm opacity-80 mt-1">إجمالي المعلمين</div>
                 </div>
 
                 <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-5 text-white shadow-lg">
@@ -38,7 +38,7 @@
                         class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
                         + إضافة معلم
                     </a>
-                    <h3 class="font-semibold text-gray-700">معلموي</h3>
+                    <h3 class="font-semibold text-gray-700">معلمون</h3>
                 </div>
                 <table class="w-full text-right text-sm">
                     <thead>
