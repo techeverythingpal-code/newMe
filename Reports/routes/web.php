@@ -15,7 +15,7 @@ Route::get('/', function () {
 });
 
 // Admin only
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth:admin,web', 'admin'])->group(function () {
     Route::get('schools/export', [ExcelController::class, 'exportSchools'])->name('schools.export');
     Route::post('schools/import', [ExcelController::class, 'importSchools'])->name('schools.import');
     Route::get('supervisors/export', [ExcelController::class, 'exportSupervisors'])->name('supervisors.export');
@@ -27,7 +27,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 // Admin + Supervisor
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:admin,web'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('teachers/export', [ExcelController::class, 'exportTeachers'])->name('teachers.export');
