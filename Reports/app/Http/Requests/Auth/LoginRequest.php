@@ -19,27 +19,44 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'SuperVisor_Name' => ['required', 'string'],
-            'password'        => ['required', 'string'],
+            'login'    => ['required', 'string'],
+            'password' => ['required', 'string'],
         ];
     }
 
+    /**
+     * Try the admin (users table) guard first, then fall back to the
+     * supervisor (super_visors table) guard.
+     */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt([
-            'SuperVisor_Name' => $this->SuperVisor_Name,
-            'password'        => $this->password,
-        ], $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        $remember = $this->boolean('remember');
 
-            throw ValidationException::withMessages([
-                'SuperVisor_Name' => trans('auth.failed'),
-            ]);
+        if (Auth::guard('admin')->attempt([
+            'email'    => $this->input('login'),
+            'password' => $this->input('password'),
+        ], $remember)) {
+            RateLimiter::clear($this->throttleKey());
+
+            return;
         }
 
-        RateLimiter::clear($this->throttleKey());
+        if (Auth::guard('web')->attempt([
+            'SuperVisor_Name' => $this->input('login'),
+            'password'        => $this->input('password'),
+        ], $remember)) {
+            RateLimiter::clear($this->throttleKey());
+
+            return;
+        }
+
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'login' => trans('auth.failed'),
+        ]);
     }
 
     public function ensureIsNotRateLimited(): void
@@ -53,7 +70,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'SuperVisor_Name' => trans('auth.throttle', [
+            'login' => trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -62,6 +79,6 @@ class LoginRequest extends FormRequest
 
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('SuperVisor_Name')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('login')).'|'.$this->ip());
     }
 }
