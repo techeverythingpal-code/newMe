@@ -346,6 +346,26 @@ class ExcelController extends Controller
                 continue;
             }
 
+            if ($date) {
+                $parsedDate = null;
+
+                foreach (['d/m/Y', 'Y-m-d', 'd-m-Y', 'm/d/Y'] as $format) {
+                    try {
+                        $parsedDate = \Carbon\Carbon::createFromFormat($format, trim($date));
+                        break;
+                    } catch (\Exception $e) {
+                        continue;
+                    }
+                }
+
+                if (!$parsedDate) {
+                    $errors[] = "السطر {$excelRow}: تاريخ غير صالح ({$date}).";
+                    continue;
+                }
+
+                $date = $parsedDate->format('Y-m-d');
+            }
+
             if ($teacherId && isset($existingIds[$teacherId])) {
             $errors[] = "السطر {$excelRow}: المعلم برقم {$teacherId} موجود بالفعل.";
             continue;
