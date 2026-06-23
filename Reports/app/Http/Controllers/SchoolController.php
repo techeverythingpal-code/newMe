@@ -10,7 +10,7 @@ class SchoolController extends Controller
 {
     public function index()
     {
-        $schools = School::with('directorate')->get();
+        $schools = School::with('directorate')->withCount('teachers')->get();
         return view('schools.index', compact('schools'));
     }
 

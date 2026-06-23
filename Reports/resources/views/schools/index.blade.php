@@ -94,7 +94,7 @@
                                 <td class="px-4 py-3 align-middle text-gray-600 overflow-hidden text-ellipsis whitespace-nowrap">{{ $school->directorate->Directorate_Name ?? '-' }}</td>
                                 <td class="px-4 py-3 align-middle">
                                     <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
-                                        {{ $school->teachers()->count() }} معلم
+                                        {{ $school->teachers_count }} معلم
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 align-middle">
