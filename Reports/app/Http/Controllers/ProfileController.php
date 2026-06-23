@@ -42,13 +42,18 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Only admins are allowed to delete their own account from here
+        if (! Auth::guard('admin')->check()) {
+            abort(403);
+        }
+
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 
         $user = $request->user();
 
-        Auth::logout();
+        Auth::guard('admin')->logout();
 
         $user->delete();
 
