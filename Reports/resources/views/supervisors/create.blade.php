@@ -73,21 +73,10 @@
                         @enderror
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-bold mb-2">
-                            الصلاحية <span class="text-red-500">*</span>
-                        </label>
-                        <select name="role"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
-                            required>
-                            <option value="">-- اختر الصلاحية --</option>
-                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>مدير</option>
-                            <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>مشرف</option>
-                        </select>
-                        @error('role')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <input type="hidden" name="role" value="user">
+                    @error('role')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">
