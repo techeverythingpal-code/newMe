@@ -25,7 +25,8 @@
         <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h3 class="font-bold text-lg mb-3">⬆️ استيراد المشرفين من Excel</h3>
             <p class="text-sm text-gray-500 mb-4">
-               الأعمدة المطلوبة: <span class="font-mono">SuperVisor_Name, SuperVisor_Major, directorate_id, role</span>
+              الأعمدة المطلوبة: <span class="font-mono">SuperVisor_Name, SuperVisor_Major, directorate_id, role</span><br>
+               <span class="text-gray-400">عمود اختياري: <span class="font-mono">SuperVisor_id</span> (إذا تُرك فارغًا سيتم توليده تلقائيًا)</span>
                 <br>
                 <span class="text-amber-600">⚠️ سيتم تعيين كلمة مرور مؤقتة لكل مشرف جديد، يجب تحديثها بعد الاستيراد.</span>
             </p>
