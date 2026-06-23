@@ -72,33 +72,35 @@
 
 
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl">
-                <table class="w-full text-right text-sm">
+                <table class="w-full table-fixed text-right text-sm" id="schoolsTable">
                     <thead>
-                        <tr class="bg-emerald-50 text-emerald-700 border-b border-emerald-100">
-                            <th class="px-6 py-4">#</th>
-                            <th class="px-6 py-4">رقم المدرسة</th>
-                            <th class="px-6 py-4">اسم المدرسة</th>
-                            <th class="px-6 py-4">المديرية</th>
-                            <th class="px-6 py-4">عدد المعلمين</th>
-                            <th class="px-6 py-4">الإجراءات</th>
+                        <tr class="bg-emerald-50 text-emerald-700">
+                            <th class="px-4 py-3 w-10 text-xs font-semibold">#</th>
+                            <th class="px-4 py-3 w-24 text-xs font-semibold">رقم المدرسة</th>
+                            <th class="px-4 py-3 text-xs font-semibold">اسم المدرسة</th>
+                            <th class="px-4 py-3 w-36 text-xs font-semibold">المديرية</th>
+                            <th class="px-4 py-3 w-28 text-xs font-semibold">عدد المعلمين</th>
+                            <th class="px-4 py-3 w-36 text-xs font-semibold">الإجراءات</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-gray-100">
                         @forelse($schools as $school)
-                            <tr class="border-b border-gray-100 hover:bg-emerald-50 transition">
-                                <td class="px-6 py-4 text-gray-400">{{ $loop->iteration }}</td>
-                                <td class="px-6 py-4 font-bold text-emerald-600">{{ $school->School_ID }}</td>
-                                <td class="px-6 py-4 font-medium text-gray-800">{{ $school->SchoolName }}</td>
-                                <td class="px-6 py-4 text-gray-600">{{ $school->directorate->Directorate_Name ?? '-' }}</td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">
+                            <tr class="odd:bg-white even:bg-gray-50/60 hover:bg-emerald-50 transition-colors">
+                                <td class="px-4 py-3 align-middle text-gray-400">{{ $loop->iteration }}</td>
+                                <td class="px-4 py-3 align-middle font-bold text-emerald-600 whitespace-nowrap">{{ $school->School_ID }}</td>
+                                <td class="px-4 py-3 align-middle font-medium text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap" title="{{ $school->SchoolName }}">
+                                    {{ $school->SchoolName }}
+                                </td>
+                                <td class="px-4 py-3 align-middle text-gray-600 overflow-hidden text-ellipsis whitespace-nowrap">{{ $school->directorate->Directorate_Name ?? '-' }}</td>
+                                <td class="px-4 py-3 align-middle">
+                                    <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
                                         {{ $school->teachers()->count() }} معلم
                                     </span>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-3 align-middle">
                                     <div class="flex gap-2 justify-end">
                                         <a href="{{ route('schools.edit', $school->School_ID) }}"
-                                            class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-4 rounded-lg text-xs transition">
+                                            class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1.5 px-3 rounded-lg text-xs transition whitespace-nowrap">
                                             ✏️ تعديل
                                         </a>
                                         <form action="{{ route('schools.destroy', $school->School_ID) }}"
@@ -107,7 +109,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-4 rounded-lg text-xs transition">
+                                                class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1.5 px-3 rounded-lg text-xs transition whitespace-nowrap">
                                                 🗑️ حذف
                                             </button>
                                         </form>
