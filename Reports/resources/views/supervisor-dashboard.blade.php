@@ -209,12 +209,12 @@
                 <div class="flex gap-1">
                     <button data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}
                         class="page-btn px-3 py-1 rounded-lg border border-gray-300 ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}">
-                        التالي
+                        السابق
                     </button>
                     <span class="px-2 py-1">صفحة ${currentPage} من ${totalPages}</span>
                     <button data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}
                         class="page-btn px-3 py-1 rounded-lg border border-gray-300 ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}">
-                        السابق
+                        التالي
                     </button>
                 </div>
             `;
