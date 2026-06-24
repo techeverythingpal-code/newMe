@@ -36,7 +36,7 @@
 
             {{-- My Teachers Table --}}
             <div class="bg-white rounded-2xl shadow p-5">
-                <div class="flex justify-between items-center mb-4">
+               <div class="flex justify-between items-center mb-4">
                     <div class="flex gap-2">
                         <a href="{{ route('teachers.create') }}"
                             class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
@@ -46,6 +46,15 @@
                             class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
                             📥 تصدير Excel
                         </a>
+                        <form action="{{ route('teacher-grades.reset-all') }}" method="POST"
+                            onsubmit="return confirm('هل أنت متأكد من حذف درجات جميع معلميك؟ لا يمكن التراجع عن هذا الإجراء.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
+                                🗑️ حذف كل الدرجات
+                            </button>
+                        </form>
                     </div>
                     <h3 class="font-semibold text-gray-700">معلمون</h3>
                 </div>
@@ -114,9 +123,10 @@
         let currentPage = 1;
 
         const routes = {
-            show:    id => "{{ url('teachers') }}/" + id,
-            edit:    id => "{{ url('teachers') }}/" + id + "/edit",
-            destroy: id => "{{ url('teachers') }}/" + id,
+            show:        id => "{{ url('teachers') }}/" + id,
+            edit:        id => "{{ url('teachers') }}/" + id + "/edit",
+            destroy:     id => "{{ url('teachers') }}/" + id,
+            resetScores: id => "{{ url('teachers') }}/" + id + "/grades/reset",
         };
 
         const searchInput    = document.getElementById('searchInput');
@@ -186,6 +196,15 @@
                                 class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                                 ✏️ تعديل
                             </a>
+                            <form action="${routes.resetScores(t.id)}" method="POST"
+                                onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                                    🗑️ حذف الدرجات
+                                </button>
+                            </form>
                             <form action="${routes.destroy(t.id)}" method="POST"
                                 onsubmit="return confirm('هل أنت متأكد؟')">
                                 @csrf
