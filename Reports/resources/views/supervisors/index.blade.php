@@ -117,10 +117,14 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex gap-2 justify-end">
-                                        <a href="{{ route('supervisors.edit', $supervisor->SuperVisor_id) }}"
-                                            class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-4 rounded-lg text-xs transition">
-                                            ✏️ تعديل
-                                        </a>
+                                    <a href="{{ route('supervisors.show', $supervisor->SuperVisor_id) }}"
+                                        class="bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-1 px-4 rounded-lg text-xs transition">
+                                        📊 الرسوم البيانية
+                                    </a>
+                                    <a href="{{ route('supervisors.edit', $supervisor->SuperVisor_id) }}"
+                                        class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-4 rounded-lg text-xs transition">
+                                        ✏️ تعديل
+                                    </a>
                                         @if($supervisor->SuperVisor_id !== auth()->id())
                                             <form action="{{ route('supervisors.destroy', $supervisor->SuperVisor_id) }}"
                                                 method="POST"
