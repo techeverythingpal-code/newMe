@@ -49,8 +49,8 @@
                     <h3 class="font-semibold text-gray-700">معلمون</h3>
                 </div>
 
-                {{-- Filters --}}
-                <form method="GET" action="{{ route('dashboard') }}" class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-5">
+                {{-- Filters (live: auto-submits as you type/select) --}}
+                <form id="filterForm" method="GET" action="{{ route('dashboard') }}" class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-5">
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="بحث (اسم، تخصص، مؤهل...)"
                         class="border border-gray-300 rounded-lg px-3 py-2 text-sm md:col-span-2">
@@ -77,10 +77,6 @@
                             class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg text-sm transition">
                             إعادة تعيين
                         </a>
-                        <button type="submit"
-                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
-                            🔍 بحث
-                        </button>
                     </div>
                 </form>
 
@@ -170,4 +166,20 @@
         });
     </script>
     @endif
+
+    <script>
+        const filterForm = document.getElementById('filterForm');
+        let debounceTimer;
+
+        filterForm.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+            input.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => filterForm.submit(), 500);
+            });
+        });
+
+        filterForm.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', () => filterForm.submit());
+        });
+    </script>
 </x-app-layout>
