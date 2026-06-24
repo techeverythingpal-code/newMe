@@ -280,14 +280,28 @@ class ExcelController extends Controller
 
     public function exportTeachers()
     {
-        $teachers = TeacherInfo::with(['school', 'supervisor'])->orderBy('Teacher_id')->get();
+        $query = TeacherInfo::with(['school', 'supervisor', 'grades'])->orderBy('Teacher_id');
+
+        // Supervisor only exports their own teachers
+        if (! Auth::guard('admin')->check()) {
+            $query->where('supervisor_id', Auth::guard('web')->user()->SuperVisor_id);
+        }
+
+        $teachers = $query->get();
 
         $headers = [
             'Teacher_id', 'Teacher_Name', 'school_id', 'SchoolName',
             'supervisor_id', 'SuperVisor_Name', 'date', 'teacher_qualify', 'teacher_major',
+            'score1', 'score2', 'score3', 'score4', 'score5',
+            'score6', 'score7', 'score8', 'score9', 'score10',
+            'score11', 'score12', 'score13', 'score14', 'score15',
+            'score16', 'score17', 'score18', 'score19', 'score20',
+            'score21', 'score22', 'total',
         ];
 
         $rows = $teachers->map(function ($t) {
+            $g = $t->grades;
+
             return [
                 $t->Teacher_id,
                 $t->Teacher_Name,
@@ -298,6 +312,11 @@ class ExcelController extends Controller
                 $t->date,
                 $t->teacher_qualify,
                 $t->teacher_major,
+                $g->score1 ?? 0, $g->score2 ?? 0, $g->score3 ?? 0, $g->score4 ?? 0, $g->score5 ?? 0,
+                $g->score6 ?? 0, $g->score7 ?? 0, $g->score8 ?? 0, $g->score9 ?? 0, $g->score10 ?? 0,
+                $g->score11 ?? 0, $g->score12 ?? 0, $g->score13 ?? 0, $g->score14 ?? 0, $g->score15 ?? 0,
+                $g->score16 ?? 0, $g->score17 ?? 0, $g->score18 ?? 0, $g->score19 ?? 0, $g->score20 ?? 0,
+                $g->score21 ?? 0, $g->score22 ?? 0, $g->total ?? 0,
             ];
         })->toArray();
 
