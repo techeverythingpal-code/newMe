@@ -53,8 +53,7 @@ class SuperVisorController extends Controller
         'avgTotal',
         'highestScore',
         'lowestScore',
-        'chartLabels',
-        'chartData',
+        
         
     ));
 } 
