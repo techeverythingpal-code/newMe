@@ -31,16 +31,13 @@
 
             </div>
 
-
-            {{-- Charts --}}
+            {{-- Chart (always shows ALL teachers, unaffected by filters below) --}}
             @if($totalTeachers > 0)
             <div class="bg-white rounded-2xl p-5 shadow mb-8">
                 <h3 class="text-right font-semibold text-gray-700 mb-4">درجات معلميك</h3>
                 <canvas id="teacherScoresChart"></canvas>
             </div>
-
-            
-        @endif
+            @endif
 
             {{-- My Teachers Table --}}
             <div class="bg-white rounded-2xl shadow p-5">
@@ -51,6 +48,42 @@
                     </a>
                     <h3 class="font-semibold text-gray-700">معلمون</h3>
                 </div>
+
+                {{-- Filters --}}
+                <form method="GET" action="{{ route('dashboard') }}" class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-5">
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="بحث (اسم، تخصص، مؤهل...)"
+                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm md:col-span-2">
+
+                    <select name="school_id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <option value="">كل المدارس</option>
+                        @foreach($schools as $school)
+                            <option value="{{ $school->School_ID }}" @selected(request('school_id') == $school->School_ID)>
+                                {{ $school->SchoolName }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <input type="number" name="min_score" value="{{ request('min_score') }}"
+                        placeholder="من (المجموع)"
+                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+
+                    <input type="number" name="max_score" value="{{ request('max_score') }}"
+                        placeholder="إلى (المجموع)"
+                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+
+                    <div class="md:col-span-5 flex gap-2 justify-end">
+                        <a href="{{ route('dashboard') }}"
+                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg text-sm transition">
+                            إعادة تعيين
+                        </a>
+                        <button type="submit"
+                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
+                            🔍 بحث
+                        </button>
+                    </div>
+                </form>
+
                 <table class="w-full text-right text-sm">
                     <thead>
                         <tr class="bg-blue-50 text-blue-700 border-b border-blue-100">
@@ -100,17 +133,20 @@
                         @empty
                             <tr>
                                 <td colspan="6" class="p-5 text-center text-gray-400">
-                                    لا يوجد معلمون بعد
+                                    لا يوجد معلمون مطابقون لهذا البحث
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
+
+                <div class="mt-4">
+                    {{ $teachers->links() }}
+                </div>
             </div>
 
         </div>
     </div>
-
 
     @if($totalTeachers > 0)
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -132,12 +168,6 @@
                 scales: { y: { beginAtZero: true, max: 100 } }
             }
         });
-
-        
     </script>
     @endif
-
-
-
-
 </x-app-layout>

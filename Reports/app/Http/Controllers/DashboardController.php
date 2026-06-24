@@ -18,13 +18,15 @@ class DashboardController extends Controller
         if (! Auth::guard('admin')->check()) {
             $user = Auth::guard('web')->user();
 
-            $teachers = TeacherInfo::with(['school', 'grades'])
-                ->where('supervisor_id', $user->SuperVisor_id)
-                ->get();
+           // Full, unfiltered set — used ONLY for the charts
+        $allTeachers = TeacherInfo::with(['school', 'grades'])
+            ->where('supervisor_id', $user->SuperVisor_id)
+            ->get();
 
-            $totalTeachers = $teachers->count();
-            $avgTotal      = $teachers->avg(fn($t) => $t->grades->total ?? 0);
-            $highestScore  = $teachers->max(fn($t) => $t->grades->total ?? 0);
+
+            $totalTeachers = $allTeachers->count();
+        $avgTotal      = $allTeachers->avg(fn($t) => $t->grades->total ?? 0);
+        $highestScore  = $allTeachers->max(fn($t) => $t->grades->total ?? 0);
 
             $chartLabels = $teachers->pluck('Teacher_Name');
             $chartData   = $teachers->map(fn($t) => $t->grades->total ?? 0);
@@ -37,21 +39,50 @@ class DashboardController extends Controller
                 'score21' => 2, 'score22' => 2,
             ];
 
+            // Schools dropdown options (only schools this supervisor actually has teachers in)
+        $schools = School::whereIn('School_ID', $allTeachers->pluck('school_id'))->get();
+
+        // Filtered + paginated query — used for the table only
+        $query = TeacherInfo::with(['school', 'grades'])
+            ->where('supervisor_id', $user->SuperVisor_id);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('Teacher_Name', 'like', "%{$search}%")
+                  ->orWhere('teacher_major', 'like', "%{$search}%")
+                  ->orWhere('teacher_qualify', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('school_id')) {
+            $query->where('school_id', $request->school_id);
+        }
+
+        if ($request->filled('min_score')) {
+            $query->whereHas('grades', fn($q) => $q->where('total', '>=', $request->min_score));
+        }
+
+        if ($request->filled('max_score')) {
+            $query->whereHas('grades', fn($q) => $q->where('total', '<=', $request->max_score));
+        }
+
+        $teachers = $query->paginate(10)->withQueryString();
+
+  
+
              
-
-
-            
-
 
 
 
             return view('supervisor-dashboard', compact(
-                'teachers',
-                'totalTeachers',
-                'avgTotal',
-                'highestScore',
-                'chartLabels',
-                'chartData',
+                 'teachers',
+            'totalTeachers',
+            'avgTotal',
+            'highestScore',
+            'chartLabels',
+            'chartData',
+            'schools'
                
             ));
         }
