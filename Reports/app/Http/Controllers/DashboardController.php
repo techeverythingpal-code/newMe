@@ -45,8 +45,6 @@ class DashboardController extends Controller
                 'totalTeachers',
                 'avgTotal',
                 'highestScore',
-                'chartLabels',
-                'chartData',
                 'schools',
                 'teachersData'
             ));
