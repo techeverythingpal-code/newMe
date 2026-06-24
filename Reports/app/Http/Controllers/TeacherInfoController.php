@@ -30,8 +30,16 @@ class TeacherInfoController extends Controller
     public function create()
     {
         $schools     = School::all();
-        $supervisors = SuperVisor::all();
-        return view('teachers.create', compact('schools', 'supervisors'));
+        // A supervisor is locked to themselves — no choice needed.
+        if (Auth::guard('admin')->check()) {
+            $supervisors = SuperVisor::all();
+            $currentSupervisor = null;
+        } else {
+            $supervisors = collect();
+            $currentSupervisor = Auth::guard('web')->user();
+        }
+       
+        return view('teachers.create', compact('schools', 'supervisors', 'currentSupervisor'));
     }
 
     public function store(Request $request)
