@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\SuperVisor;
+use App\Models\TeacherInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+
 
 class SuperVisorController extends Controller
 {
@@ -14,6 +16,64 @@ class SuperVisorController extends Controller
         $supervisors = SuperVisor::withCount('teachers')->with('directorate')->get();
         return view('supervisors.index', compact('supervisors'));
           }
+
+
+   public function show(SuperVisor $supervisor)
+{
+    $supervisor->load('directorate');
+
+    $teachers = TeacherInfo::with('grades')
+        ->where('supervisor_id', $supervisor->SuperVisor_id)
+        ->get();
+
+    $totalTeachers = $teachers->count();
+    $avgTotal      = $teachers->avg(fn($t) => $t->grades->total ?? 0);
+    $highestScore  = $teachers->max(fn($t) => $t->grades->total ?? 0);
+    $lowestScore   = $totalTeachers > 0
+        ? $teachers->min(fn($t) => $t->grades->total ?? 0)
+        : 0;
+
+    $chartLabels = $teachers->pluck('Teacher_Name');
+    $chartData   = $teachers->map(fn($t) => $t->grades->total ?? 0);
+
+    // --- Radar chart: average % per evaluation criterion ---
+    $scoreMax = [
+        'score1' => 5, 'score2' => 7, 'score3' => 7, 'score4' => 7, 'score5' => 7,
+        'score6' => 5, 'score7' => 4, 'score8' => 4, 'score9' => 6, 'score10' => 6,
+        'score11' => 4, 'score12' => 6, 'score13' => 6, 'score14' => 3, 'score15' => 3,
+        'score16' => 4, 'score17' => 3, 'score18' => 3, 'score19' => 4, 'score20' => 2,
+        'score21' => 2, 'score22' => 2,
+    ];
+
+    $radarLabels = [];
+    $radarData   = [];
+
+    foreach ($scoreMax as $field => $max) {
+        $values = $teachers
+            ->map(fn($t) => $t->grades?->{$field})
+            ->filter(fn($v) => $v !== null);
+
+        $avgPercent = $values->count() > 0
+            ? round(($values->avg() / $max) * 100, 1)
+            : 0;
+
+        $radarLabels[] = (int) str_replace('score', '', $field);
+        $radarData[]   = $avgPercent;
+    }
+
+    return view('supervisors.show', compact(
+        'supervisor',
+        'teachers',
+        'totalTeachers',
+        'avgTotal',
+        'highestScore',
+        'lowestScore',
+        'chartLabels',
+        'chartData',
+        'radarLabels',
+        'radarData'
+    ));
+} 
     
 
     public function create()
