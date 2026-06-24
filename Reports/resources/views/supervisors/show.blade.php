@@ -35,17 +35,7 @@
 
             </div>
 
-           {{-- Chart --}}
-            <div class="bg-white rounded-2xl p-5 shadow mb-8">
-                <h3 class="text-right font-semibold text-gray-700 mb-4">
-                    درجات المعلمين لدى {{ $supervisor->SuperVisor_Name }}
-                </h3>
-                @if($totalTeachers > 0)
-                    <canvas id="teacherScoresChart"></canvas>
-                @else
-                    <div class="text-center text-gray-400 py-10">لا يوجد معلمون مرتبطون بهذا المشرف بعد</div>
-                @endif
-            </div>
+           
 
            
 
@@ -90,30 +80,7 @@
     </div>
 
     @if($totalTeachers > 0)
-    {{-- Chart.js --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        new Chart(document.getElementById('teacherScoresChart'), {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($chartLabels) !!},
-                datasets: [{
-                    label: 'المجموع',
-                    data: {!! json_encode($chartData) !!},
-                    backgroundColor: '#8b5cf6',
-                    borderRadius: 8,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, max: 100 } }
-            }
-        });
-
-
-        
-    </script>
+   
 
 
     @endif

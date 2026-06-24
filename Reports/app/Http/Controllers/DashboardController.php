@@ -26,8 +26,7 @@ class DashboardController extends Controller
             $avgTotal      = $allTeachers->avg(fn($t) => $t->grades->total ?? 0);
             $highestScore  = $allTeachers->max(fn($t) => $t->grades->total ?? 0);
 
-            $chartLabels = $allTeachers->pluck('Teacher_Name');
-            $chartData   = $allTeachers->map(fn($t) => $t->grades->total ?? 0);
+            
 
             $schools = School::whereIn('School_ID', $allTeachers->pluck('school_id'))->get();
 
