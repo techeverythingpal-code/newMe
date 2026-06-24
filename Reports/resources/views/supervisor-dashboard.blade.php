@@ -37,10 +37,16 @@
             {{-- My Teachers Table --}}
             <div class="bg-white rounded-2xl shadow p-5">
                 <div class="flex justify-between items-center mb-4">
-                    <a href="{{ route('teachers.create') }}"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
-                        + إضافة معلم
-                    </a>
+                    <div class="flex gap-2">
+                        <a href="{{ route('teachers.create') }}"
+                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
+                            + إضافة معلم
+                        </a>
+                        <a href="{{ route('teachers.export') }}"
+                            class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
+                            📥 تصدير Excel
+                        </a>
+                    </div>
                     <h3 class="font-semibold text-gray-700">معلمون</h3>
                 </div>
 

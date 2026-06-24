@@ -53,7 +53,7 @@
                                 {{ request()->routeIs('teachers.*')
                                     ? 'bg-white/20 text-white'
                                     : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
-                            <span>🧑‍🏫</span> معلموي
+                            <span>🧑‍🏫</span> معلمون
                         </a>
                     @endif
                 </div>
