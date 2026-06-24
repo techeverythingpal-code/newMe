@@ -79,17 +79,27 @@
                         <label class="block text-gray-700 font-bold mb-2">
                             المشرف <span class="text-red-500">*</span>
                         </label>
-                        <select name="supervisor_id"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                            required>
-                            <option value="">-- اختر المشرف --</option>
-                            @foreach($supervisors as $supervisor)
-                                <option value="{{ $supervisor->SuperVisor_id }}"
-                                    {{ old('supervisor_id') == $supervisor->SuperVisor_id ? 'selected' : '' }}>
-                                    {{ $supervisor->SuperVisor_Name }}
-                                </option>
-                            @endforeach
-                        </select>
+
+                        @if($currentSupervisor)
+                            {{-- Logged-in supervisor: locked to themselves --}}
+                            <input type="text" value="{{ $currentSupervisor->SuperVisor_Name }}" disabled
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600">
+                            <input type="hidden" name="supervisor_id" value="{{ $currentSupervisor->SuperVisor_id }}">
+                        @else
+                            {{-- Admin: free choice --}}
+                            <select name="supervisor_id"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                                required>
+                                <option value="">-- اختر المشرف --</option>
+                                @foreach($supervisors as $supervisor)
+                                    <option value="{{ $supervisor->SuperVisor_id }}"
+                                        {{ old('supervisor_id') == $supervisor->SuperVisor_id ? 'selected' : '' }}>
+                                        {{ $supervisor->SuperVisor_Name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @endif
+
                         @error('supervisor_id')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
