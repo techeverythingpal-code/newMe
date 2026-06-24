@@ -31,13 +31,8 @@
 
             </div>
 
-            {{-- Chart (always shows ALL teachers, unaffected by filters below) --}}
-            @if($totalTeachers > 0)
-            <div class="bg-white rounded-2xl p-5 shadow mb-8">
-                <h3 class="text-right font-semibold text-gray-700 mb-4">درجات معلميك</h3>
-                <canvas id="teacherScoresChart"></canvas>
-            </div>
-            @endif
+           
+           
 
             {{-- My Teachers Table --}}
             <div class="bg-white rounded-2xl shadow p-5">
@@ -104,28 +99,7 @@
         </div>
     </div>
 
-    @if($totalTeachers > 0)
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        new Chart(document.getElementById('teacherScoresChart'), {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($chartLabels) !!},
-                datasets: [{
-                    label: 'المجموع',
-                    data: {!! json_encode($chartData) !!},
-                    backgroundColor: '#3b82f6',
-                    borderRadius: 8,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, max: 100 } }
-            }
-        });
-    </script>
-    @endif
+   
 
     <script>
         // All teacher data, fetched once from the server — filtering happens here in the browser

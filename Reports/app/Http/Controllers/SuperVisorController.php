@@ -33,8 +33,7 @@ class SuperVisorController extends Controller
         ? $teachers->min(fn($t) => $t->grades->total ?? 0)
         : 0;
 
-    $chartLabels = $teachers->pluck('Teacher_Name');
-    $chartData   = $teachers->map(fn($t) => $t->grades->total ?? 0);
+    
 
     // --- Radar chart: average % per evaluation criterion ---
     $scoreMax = [
