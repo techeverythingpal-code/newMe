@@ -173,25 +173,7 @@
             }
         });
 
-        new Chart(document.getElementById('radarChart'), {
-            type: 'radar',
-            data: {
-                labels: {!! json_encode($radarLabels) !!},
-                datasets: [{
-                    label: 'متوسط % لكل معيار',
-                    data: {!! json_encode($radarData) !!},
-                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                    borderColor: '#3b82f6',
-                    pointBackgroundColor: '#3b82f6',
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    r: { beginAtZero: true, max: 100 }
-                }
-            }
-        });
+        
     </script>
     @endif
 
