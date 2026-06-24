@@ -45,21 +45,7 @@ class SuperVisorController extends Controller
         'score21' => 2, 'score22' => 2,
     ];
 
-    $radarLabels = [];
-    $radarData   = [];
-
-    foreach ($scoreMax as $field => $max) {
-        $values = $teachers
-            ->map(fn($t) => $t->grades?->{$field})
-            ->filter(fn($v) => $v !== null);
-
-        $avgPercent = $values->count() > 0
-            ? round(($values->avg() / $max) * 100, 1)
-            : 0;
-
-        $radarLabels[] = (int) str_replace('score', '', $field);
-        $radarData[]   = $avgPercent;
-    }
+   
 
     return view('supervisors.show', compact(
         'supervisor',
@@ -70,8 +56,7 @@ class SuperVisorController extends Controller
         'lowestScore',
         'chartLabels',
         'chartData',
-        'radarLabels',
-        'radarData'
+        
     ));
 } 
     
