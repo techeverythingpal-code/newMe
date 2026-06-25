@@ -24,4 +24,18 @@ class TeacherGrade extends Model
     {
         return $this->belongsTo(TeacherInfo::class, 'teacher_id', 'Teacher_id');
     }
+
+    // Returns ['label' => '...', 'color' => 'green|blue|yellow|orange|red']
+    public function getAssessmentAttribute(): array
+    {
+        $total = $this->total ?? 0;
+
+        return match (true) {
+            $total >= 85 => ['label' => 'ممتاز',      'color' => 'green'],
+            $total >= 75 => ['label' => 'جيد جداً',    'color' => 'blue'],
+            $total >= 65 => ['label' => 'جيد',         'color' => 'yellow'],
+            $total >= 55 => ['label' => 'متوسط',       'color' => 'orange'],
+            default      => ['label' => 'ضعيف/مقبول', 'color' => 'red'],
+        };
+    }
 }

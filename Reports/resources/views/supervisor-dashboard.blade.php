@@ -150,6 +150,15 @@
             return div.innerHTML;
         }
 
+        const assessmentColorClasses = {
+            green:  'bg-green-100 text-green-700',
+            blue:   'bg-blue-100 text-blue-700',
+            yellow: 'bg-yellow-100 text-yellow-700',
+            orange: 'bg-orange-100 text-orange-700',
+            red:    'bg-red-100 text-red-700',
+            gray:   'bg-gray-100 text-gray-500',
+        };
+
         function renderTable() {
             const filtered = getFiltered();
             const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -167,11 +176,15 @@
                 card.innerHTML = `
                     <div class="flex items-start justify-between">
                         <span class="text-xs text-gray-400">#${start + index + 1}</span>
-                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
-                            ${t.total} / 100
-                        </span>
+                        <div class="flex gap-1">
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
+                                ${t.total} / 100
+                            </span>
+                            <span class="${assessmentColorClasses[t.assessment.color] || assessmentColorClasses.gray} px-3 py-1 rounded-full text-xs font-bold">
+                                ${escapeHtml(t.assessment.label)}
+                            </span>
+                        </div>
                     </div>
-
                     <div>
                         <div class="font-bold text-gray-800 text-base">${escapeHtml(t.name)}</div>
                         <div class="text-sm text-gray-500 mt-1">🏫 ${escapeHtml(t.school)}</div>
