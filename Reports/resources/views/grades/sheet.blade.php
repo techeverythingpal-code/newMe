@@ -104,6 +104,9 @@
         }
 
         .grades-sheet {
+            --name-w: 170px;
+            --school-w: 150px;
+            --score-w: 84px;
             border-collapse: separate;
             border-spacing: 0;
             table-layout: fixed;
@@ -118,10 +121,10 @@
             overflow: hidden;
         }
 
-        .col-w-name   { width: 170px; }
-        .col-w-school { width: 150px; }
-        .col-w-score  { width: 84px; }
-        .col-w-total  { width: 84px; }
+        .col-w-name   { width: var(--name-w); }
+        .col-w-school { width: var(--school-w); }
+        .col-w-score  { width: var(--score-w); }
+        .col-w-total  { width: var(--score-w); }
 
         .grades-sheet thead th {
             position: sticky;
@@ -143,12 +146,14 @@
         }
         .col-name {
             right: 0;
+            width: var(--name-w);
             z-index: 2;
             font-weight: 700;
             color: #1f2937;
         }
         .col-school {
-            right: var(--name-col-width, 170px);
+            right: var(--name-w);
+            width: var(--school-w);
             z-index: 1;
             color: #4b5563;
         }
@@ -218,15 +223,6 @@
         const savedIndicator = document.getElementById('saved-indicator');
         const errorIndicator = document.getElementById('error-indicator');
         let hideTimer = null;
-
-        function syncStickyOffsets() {
-            const nameCell = document.querySelector('thead .col-name');
-            if (!nameCell) return;
-            const width = nameCell.getBoundingClientRect().width;
-            document.documentElement.style.setProperty('--name-col-width', width + 'px');
-        }
-        syncStickyOffsets();
-        window.addEventListener('resize', syncStickyOffsets);
 
         function showStatus(state) {
             saveIndicator.classList.add('hidden');
