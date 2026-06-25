@@ -27,65 +27,84 @@
             </div>
 
             <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
-                <div class="sheet-scroll">
-                    <table class="grades-sheet" dir="rtl">
-                        <colgroup>
-                            <col class="col-w-name">
-                            <col class="col-w-school">
-                            @foreach ($scores as $field => [$label, $max])
-                                <col class="col-w-score">
-                            @endforeach
-                            <col class="col-w-total">
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th class="sticky-col col-name">اسم المعلم</th>
-                                <th class="sticky-col col-school">المدرسة</th>
-                                @foreach ($scores as $field => [$label, $max])
-                                    <th class="score-header" title="{{ $label }}">
-                                        <div class="score-header-inner">
-                                            <span class="score-num">{{ $loop->iteration }}</span>
-                                            <span class="score-label">{{ $label }}</span>
-                                            <span class="score-max">/ {{ $max }}</span>
-                                        </div>
-                                    </th>
-                                @endforeach
-                                <th class="total-header">المجموع</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($teachers as $teacher)
-                                <tr data-teacher-id="{{ $teacher->Teacher_id }}">
-                                    <td class="sticky-col col-name" title="{{ $teacher->Teacher_Name }}">
-                                        {{ $teacher->Teacher_Name }}
-                                    </td>
-                                    <td class="sticky-col col-school" title="{{ $teacher->school->SchoolName ?? '' }}">
-                                        {{ $teacher->school->SchoolName ?? '—' }}
-                                    </td>
-                                    @foreach ($scores as $field => [$label, $max])
-                                        <td class="score-cell">
-                                            <input
-                                                type="number"
-                                                class="score-input"
-                                                data-field="{{ $field }}"
-                                                min="0"
-                                                max="{{ $max }}"
-                                                value="{{ $teacher->grades->$field ?? 0 }}">
-                                        </td>
-                                    @endforeach
-                                    <td class="total-cell">
-                                        <span class="row-total">{{ $teacher->grades->total ?? 0 }}</span>
-                                    </td>
-                                </tr>
-                            @empty
+                <div class="sheet-wrap" dir="rtl">
+
+                    <div class="frozen-pane" id="frozenPane">
+                        <table class="grades-sheet frozen-table">
+                            <colgroup>
+                                <col class="col-w-name">
+                                <col class="col-w-school">
+                            </colgroup>
+                            <thead>
                                 <tr>
-                                    <td colspan="{{ count($scores) + 3 }}" class="text-center py-8 text-gray-400">
-                                        لا يوجد معلمون لعرضهم
-                                    </td>
+                                    <th>اسم المعلم</th>
+                                    <th>المدرسة</th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse ($teachers as $teacher)
+                                    <tr>
+                                        <td title="{{ $teacher->Teacher_Name }}">{{ $teacher->Teacher_Name }}</td>
+                                        <td title="{{ $teacher->school->SchoolName ?? '' }}">{{ $teacher->school->SchoolName ?? '—' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="2" class="text-center text-gray-400">لا يوجد معلمون</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="scroll-pane" id="scrollPane">
+                        <table class="grades-sheet scroll-table" dir="rtl">
+                            <colgroup>
+                                @foreach ($scores as $field => [$label, $max])
+                                    <col class="col-w-score">
+                                @endforeach
+                                <col class="col-w-total">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    @foreach ($scores as $field => [$label, $max])
+                                        <th class="score-header" title="{{ $label }}">
+                                            <div class="score-header-inner">
+                                                <span class="score-num">{{ $loop->iteration }}</span>
+                                                <span class="score-label">{{ $label }}</span>
+                                                <span class="score-max">/ {{ $max }}</span>
+                                            </div>
+                                        </th>
+                                    @endforeach
+                                    <th class="total-header">المجموع</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($teachers as $teacher)
+                                    <tr data-teacher-id="{{ $teacher->Teacher_id }}">
+                                        @foreach ($scores as $field => [$label, $max])
+                                            <td class="score-cell">
+                                                <input
+                                                    type="number"
+                                                    class="score-input"
+                                                    data-field="{{ $field }}"
+                                                    min="0"
+                                                    max="{{ $max }}"
+                                                    value="{{ $teacher->grades->$field ?? 0 }}">
+                                            </td>
+                                        @endforeach
+                                        <td class="total-cell">
+                                            <span class="row-total">{{ $teacher->grades->total ?? 0 }}</span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="{{ count($scores) + 1 }}" class="text-center py-8 text-gray-400">
+                                            لا يوجد معلمون لعرضهم
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
 
@@ -96,22 +115,30 @@
     </div>
 
     <style>
-        .sheet-scroll {
+        .sheet-wrap {
+            display: flex;
+            max-height: 80vh;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .frozen-pane {
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex-shrink: 0;
+            border-left: 2px solid #d1d5db;
+        }
+        .frozen-pane::-webkit-scrollbar { display: none; }
+
+        .scroll-pane {
             overflow-x: auto;
             overflow-y: auto;
-            max-height: 80vh;
-            position: relative;
+            flex: 1;
         }
 
         .grades-sheet {
-            --name-w: 170px;
-            --school-w: 150px;
-            --score-w: 84px;
             border-collapse: separate;
             border-spacing: 0;
             table-layout: fixed;
-            width: max-content;
-            min-width: 100%;
             font-size: 13px;
         }
         .grades-sheet th,
@@ -119,52 +146,33 @@
             border: 1px solid #e5e7eb;
             box-sizing: border-box;
             overflow: hidden;
+            height: 42px;
         }
-
-        .col-w-name   { width: var(--name-w); }
-        .col-w-school { width: var(--school-w); }
-        .col-w-score  { width: var(--score-w); }
-        .col-w-total  { width: var(--score-w); }
-
         .grades-sheet thead th {
             position: sticky;
             top: 0;
             background-color: #eef2ff;
-            background-clip: padding-box;
             color: #374151;
-            z-index: 3;
+            z-index: 2;
             padding: 6px 4px;
             font-weight: 600;
-            isolation: isolate;
         }
 
-        .sticky-col {
-            position: sticky;
-            background: #ffffff;
+        .col-w-name   { width: 170px; }
+        .col-w-school { width: 150px; }
+        .frozen-table { width: 320px; }
+        .frozen-table td {
             padding: 8px 10px;
             text-align: right;
-            text-overflow: ellipsis;
             white-space: nowrap;
+            text-overflow: ellipsis;
         }
-        .col-name {
-            right: 0;
-            width: var(--name-w);
-            z-index: 2;
-            font-weight: 700;
-            color: #1f2937;
-        }
-        .col-school {
-            right: var(--name-w);
-            width: var(--school-w);
-            z-index: 1;
-            color: #4b5563;
-        }
-        thead .col-name,
-        thead .col-school {
-            z-index: 10;
-            background-color: #eef2ff;
-            background-clip: padding-box;
-        }
+        .frozen-table td:first-child { font-weight: 700; color: #1f2937; }
+        .frozen-table td:last-child  { color: #4b5563; }
+
+        .col-w-score { width: 84px; }
+        .col-w-total { width: 84px; }
+        .scroll-table { width: max-content; min-width: 100%; }
 
         .score-header { padding: 4px 2px; }
         .score-header-inner {
@@ -216,12 +224,40 @@
             background: #eef2ff;
         }
 
-        tbody tr:hover td:not(.sticky-col) { background: #f9fafb; }
-        tbody tr:hover .total-cell { background: #e0e7ff; }
-        tbody tr:hover .sticky-col { background: #f3f4f6; }
+        .row-hover td { background: #f9fafb !important; }
+        .frozen-table .row-hover td { background: #f3f4f6 !important; }
+        .scroll-table .row-hover .total-cell { background: #e0e7ff !important; }
     </style>
 
     <script>
+        const frozenPane = document.getElementById('frozenPane');
+        const scrollPane = document.getElementById('scrollPane');
+
+        let syncingFromFrozen = false;
+        let syncingFromScroll = false;
+
+        frozenPane.addEventListener('scroll', () => {
+            if (syncingFromScroll) { syncingFromScroll = false; return; }
+            syncingFromFrozen = true;
+            scrollPane.scrollTop = frozenPane.scrollTop;
+        });
+        scrollPane.addEventListener('scroll', () => {
+            if (syncingFromFrozen) { syncingFromFrozen = false; return; }
+            syncingFromScroll = true;
+            frozenPane.scrollTop = scrollPane.scrollTop;
+        });
+
+        const frozenRows = frozenPane.querySelectorAll('tbody tr');
+        const scrollRows = scrollPane.querySelectorAll('tbody tr');
+        frozenRows.forEach((row, i) => {
+            const partner = scrollRows[i];
+            if (!partner) return;
+            row.addEventListener('mouseenter', () => { row.classList.add('row-hover'); partner.classList.add('row-hover'); });
+            row.addEventListener('mouseleave', () => { row.classList.remove('row-hover'); partner.classList.remove('row-hover'); });
+            partner.addEventListener('mouseenter', () => { row.classList.add('row-hover'); partner.classList.add('row-hover'); });
+            partner.addEventListener('mouseleave', () => { row.classList.remove('row-hover'); partner.classList.remove('row-hover'); });
+        });
+
         const saveIndicator  = document.getElementById('save-indicator');
         const savedIndicator = document.getElementById('saved-indicator');
         const errorIndicator = document.getElementById('error-indicator');
@@ -245,7 +281,7 @@
             }
         }
 
-        document.querySelectorAll('tbody tr[data-teacher-id]').forEach(row => {
+        document.querySelectorAll('.scroll-table tbody tr[data-teacher-id]').forEach(row => {
             const teacherId = row.dataset.teacherId;
             const inputs = row.querySelectorAll('.score-input');
             const totalSpan = row.querySelector('.row-total');
