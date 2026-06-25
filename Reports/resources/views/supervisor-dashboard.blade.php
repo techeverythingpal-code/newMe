@@ -121,7 +121,8 @@
         let currentPage = 1;
 
         const routes = {
-            show:        id => "{{ url('teachers') }}/" + id,
+            show:          id => "{{ url('teachers') }}/" + id,
+            justification: id => "{{ url('teachers') }}/" + id + "/justification",
             edit:        id => "{{ url('teachers') }}/" + id + "/edit",
             destroy:     id => "{{ url('teachers') }}/" + id,
             resetScores: id => "{{ url('teachers') }}/" + id + "/grades/reset",
@@ -248,6 +249,11 @@
                     </div>
 
                     <div class="flex flex-wrap gap-2 mt-auto pt-2 border-t border-gray-100">
+                        ${t.total >= 85 ? `
+                        <a href="${routes.justification(t.id)}"
+                            class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                            📝 نموذج التبرير
+                        </a>` : ''}
                         <a href="${routes.show(t.id)}"
                             class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             👁️ عرض

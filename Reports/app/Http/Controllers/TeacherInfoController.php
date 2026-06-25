@@ -81,6 +81,17 @@ class TeacherInfoController extends Controller
         return view('teachers.show', compact('teacher'));
     }
 
+    public function justification(TeacherInfo $teacher)
+    {
+        // Ownership check, same pattern as the rest of the controller
+        if (! Auth::guard('admin')->check()
+            && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
+            abort(403);
+        }
+
+        return view('teachers.justification', compact('teacher'));
+    }
+
     public function edit(TeacherInfo $teacher)
     {
         $schools     = School::all();
