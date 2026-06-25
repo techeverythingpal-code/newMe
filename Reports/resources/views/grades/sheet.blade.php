@@ -156,6 +156,10 @@
             z-index: 2;
             padding: 6px 4px;
             font-weight: 600;
+            height: 70px;
+        }
+        .frozen-table thead th {
+            vertical-align: middle;
         }
 
         .col-w-name   { width: 170px; }
