@@ -91,6 +91,7 @@
         .grades-sheet {
             border-collapse: separate;
             border-spacing: 0;
+            table-layout: fixed;
         }
         .grades-sheet th, .grades-sheet td {
             border: 1px solid #e5e7eb;
@@ -111,12 +112,26 @@
             z-index: 1;
             padding: 8px 12px;
             text-align: right;
+            box-sizing: border-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .col-name { right: 0; min-width: 160px; z-index: 3; }
-        .col-school { right: 160px; min-width: 140px; }
+        .col-name {
+            right: 0;
+            width: 160px;
+            min-width: 160px;
+            max-width: 160px;
+            z-index: 3;
+        }
+        .col-school {
+            right: 160px;
+            width: 140px;
+            min-width: 140px;
+            max-width: 140px;
+        }
         thead .col-name, thead .col-school { z-index: 4; background: #eef2ff; }
 
-        .score-header { min-width: 70px; max-width: 90px; }
+        .score-header { width: 80px; }
         .score-header-inner {
             display: flex;
             flex-direction: column;
@@ -159,13 +174,14 @@
         }
         .score-input.row-error { border-color: #ef4444; background: #fef2f2; }
 
-        .total-header { min-width: 80px; background: #e0e7ff !important; }
+        .total-header { width: 80px; background: #e0e7ff !important; }
         .total-cell {
             text-align: center;
             font-weight: 700;
             color: #4338ca;
             background: #eef2ff;
-            min-width: 80px;
+            width: 80px;
+            box-sizing: border-box;
         }
         tbody tr:hover td:not(.sticky-col) { background: #f9fafb; }
         tbody tr:hover .total-cell { background: #e0e7ff; }
