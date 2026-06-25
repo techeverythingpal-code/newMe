@@ -9,25 +9,35 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Stats Cards --}}
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 
-                <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg">
+                <button type="button" id="cardAllTeachers"
+                    class="stat-card bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
                     <div class="text-4xl mb-2">👨‍🏫</div>
                     <div class="text-3xl font-bold">{{ $totalTeachers }}</div>
                     <div class="text-sm opacity-80 mt-1">إجمالي المعلمين</div>
-                </div>
+                </button>
 
-                <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-5 text-white shadow-lg">
+                <button type="button" id="cardAvgTotal"
+                    class="stat-card bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
                     <div class="text-4xl mb-2">📊</div>
                     <div class="text-3xl font-bold">{{ number_format($avgTotal, 1) }}</div>
                     <div class="text-sm opacity-80 mt-1">متوسط الدرجات</div>
-                </div>
+                </button>
 
-                <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-5 text-white shadow-lg">
+                <button type="button" id="cardHighestScore"
+                    class="stat-card bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
                     <div class="text-4xl mb-2">🏆</div>
                     <div class="text-3xl font-bold">{{ $highestScore }}</div>
                     <div class="text-sm opacity-80 mt-1">أعلى درجة</div>
-                </div>
+                </button>
+
+                <button type="button" id="cardExcellent" data-min-score="85"
+                    class="stat-card bg-gradient-to-br from-green-500 to-green-700 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
+                    <div class="text-4xl mb-2">⭐</div>
+                    <div class="text-3xl font-bold">{{ $excellentCount }}</div>
+                    <div class="text-sm opacity-80 mt-1">تقدير ممتاز</div>
+                </button>
 
             </div>
 
@@ -125,6 +135,52 @@
         const cardGrid       = document.getElementById('teachersCardGrid');
         const emptyState     = document.getElementById('emptyState');
         const paginationEl   = document.getElementById('paginationControls');
+
+        const statCards      = document.querySelectorAll('.stat-card');
+
+        function setActiveCard(card) {
+            statCards.forEach(c => c.classList.remove('ring-4', 'ring-white', 'ring-offset-2'));
+            if (card) card.classList.add('ring-4', 'ring-white', 'ring-offset-2');
+        }
+
+        function scrollToList() {
+            document.getElementById('teachersCardGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        document.getElementById('cardAllTeachers').addEventListener('click', () => {
+            searchInput.value = '';
+            schoolFilter.value = '';
+            minScoreFilter.value = '';
+            maxScoreFilter.value = '';
+            currentPage = 1;
+            renderTable();
+            setActiveCard(document.getElementById('cardAllTeachers'));
+            scrollToList();
+        });
+
+        document.getElementById('cardAvgTotal').addEventListener('click', () => {
+            setActiveCard(document.getElementById('cardAvgTotal'));
+            scrollToList();
+        });
+
+        document.getElementById('cardHighestScore').addEventListener('click', () => {
+            minScoreFilter.value = {{ $highestScore }};
+            maxScoreFilter.value = '';
+            currentPage = 1;
+            renderTable();
+            setActiveCard(document.getElementById('cardHighestScore'));
+            scrollToList();
+        });
+
+        document.getElementById('cardExcellent').addEventListener('click', (e) => {
+            const min = e.currentTarget.dataset.minScore;
+            minScoreFilter.value = min;
+            maxScoreFilter.value = '';
+            currentPage = 1;
+            renderTable();
+            setActiveCard(document.getElementById('cardExcellent'));
+            scrollToList();
+        });
 
         function getFiltered() {
             const search    = searchInput.value.trim().toLowerCase();

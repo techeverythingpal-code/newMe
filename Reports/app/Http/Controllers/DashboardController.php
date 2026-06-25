@@ -22,9 +22,10 @@ class DashboardController extends Controller
                 ->where('supervisor_id', $user->SuperVisor_id)
                 ->get();
 
-            $totalTeachers = $allTeachers->count();
-            $avgTotal      = $allTeachers->avg(fn($t) => $t->grades->total ?? 0);
-            $highestScore  = $allTeachers->max(fn($t) => $t->grades->total ?? 0);
+            $totalTeachers   = $allTeachers->count();
+            $avgTotal        = $allTeachers->avg(fn($t) => $t->grades->total ?? 0);
+            $highestScore    = $allTeachers->max(fn($t) => $t->grades->total ?? 0);
+            $excellentCount  = $allTeachers->filter(fn($t) => ($t->grades->total ?? 0) >= 85)->count();
 
             
 
@@ -46,6 +47,7 @@ class DashboardController extends Controller
                 'totalTeachers',
                 'avgTotal',
                 'highestScore',
+                'excellentCount',
                 'schools',
                 'teachersData'
             ));
