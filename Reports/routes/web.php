@@ -33,8 +33,8 @@ Route::middleware(['auth:admin,web'])->group(function () {
     Route::get('teachers/export', [ExcelController::class, 'exportTeachers'])->name('teachers.export');
     Route::post('teachers/import', [ExcelController::class, 'importTeachers'])->name('teachers.import');
 
-    Route::resource('teachers', TeacherInfoController::class);
     Route::get('teachers/grades-sheet', [TeacherGradeController::class, 'sheet'])->name('teacher-grades.sheet');
+    Route::resource('teachers', TeacherInfoController::class);
     Route::patch('teachers/{teacher}/grades/quick', [TeacherGradeController::class, 'quickUpdate'])->name('teacher-grades.quick-update');
     Route::get('teachers/{teacher}/grades/edit', [TeacherGradeController::class, 'edit'])->name('teacher-grades.edit');
     Route::patch('teachers/{teacher}/grades', [TeacherGradeController::class, 'update'])->name('teacher-grades.update');
