@@ -147,4 +147,144 @@
             font-weight: 700;
             color: #1f2937;
         }
-        .col-school
+        .col-school {
+            right: 170px;
+            z-index: 1;
+            color: #4b5563;
+        }
+        thead .col-name,
+        thead .col-school {
+            z-index: 4;
+            background: #eef2ff;
+        }
+
+        .score-header { padding: 4px 2px; }
+        .score-header-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.15;
+            white-space: normal;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            font-size: 10.5px;
+            max-height: 64px;
+            overflow: hidden;
+        }
+        .score-header .score-num  { font-size: 10px; color: #9ca3af; }
+        .score-header .score-label {
+            color: #374151;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .score-header .score-max { font-weight: 700; color: #4f46e5; }
+
+        .score-cell { padding: 2px; text-align: center; }
+        .score-input {
+            width: 100%;
+            max-width: 56px;
+            text-align: center;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 4px 2px;
+            font-weight: 600;
+            box-sizing: border-box;
+        }
+        .score-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px rgba(79,70,229,0.2);
+        }
+        .score-input.row-error { border-color: #ef4444; background: #fef2f2; }
+
+        .total-header { background: #e0e7ff !important; }
+        .total-cell {
+            text-align: center;
+            font-weight: 700;
+            color: #4338ca;
+            background: #eef2ff;
+        }
+
+        tbody tr:hover td:not(.sticky-col) { background: #f9fafb; }
+        tbody tr:hover .total-cell { background: #e0e7ff; }
+        tbody tr:hover .sticky-col { background: #f3f4f6; }
+    </style>
+
+    <script>
+        const saveIndicator  = document.getElementById('save-indicator');
+        const savedIndicator = document.getElementById('saved-indicator');
+        const errorIndicator = document.getElementById('error-indicator');
+        let hideTimer = null;
+
+        function showStatus(state) {
+            saveIndicator.classList.add('hidden');
+            savedIndicator.classList.add('hidden');
+            errorIndicator.classList.add('hidden');
+            clearTimeout(hideTimer);
+
+            if (state === 'saving') {
+                saveIndicator.classList.remove('hidden');
+                saveIndicator.classList.add('flex');
+            } else if (state === 'saved') {
+                savedIndicator.classList.remove('hidden');
+                hideTimer = setTimeout(() => savedIndicator.classList.add('hidden'), 1500);
+            } else if (state === 'error') {
+                errorIndicator.classList.remove('hidden');
+                hideTimer = setTimeout(() => errorIndicator.classList.add('hidden'), 3000);
+            }
+        }
+
+        document.querySelectorAll('tbody tr[data-teacher-id]').forEach(row => {
+            const teacherId = row.dataset.teacherId;
+            const inputs = row.querySelectorAll('.score-input');
+            const totalSpan = row.querySelector('.row-total');
+
+            function liveTotal() {
+                let total = 0;
+                inputs.forEach(inp => total += parseInt(inp.value) || 0);
+                totalSpan.textContent = total;
+            }
+
+            inputs.forEach(input => {
+                input.addEventListener('input', liveTotal);
+
+                input.addEventListener('change', async () => {
+                    const max = parseInt(input.max);
+                    let val = parseInt(input.value);
+                    if (isNaN(val) || val < 0) val = 0;
+                    if (val > max) val = max;
+                    input.value = val;
+                    liveTotal();
+
+                    const payload = {};
+                    inputs.forEach(inp => payload[inp.dataset.field] = parseInt(inp.value) || 0);
+
+                    showStatus('saving');
+                    try {
+                        const res = await fetch(`/teachers/${teacherId}/grades/quick`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                            body: JSON.stringify(payload),
+                        });
+
+                        if (!res.ok) throw new Error('save failed');
+                        const data = await res.json();
+                        totalSpan.textContent = data.total;
+                        inputs.forEach(inp => inp.classList.remove('row-error'));
+                        showStatus('saved');
+                    } catch (err) {
+                        inputs.forEach(inp => inp.classList.add('row-error'));
+                        showStatus('error');
+                    }
+                });
+            });
+        });
+    </script>
+</x-app-layout>
