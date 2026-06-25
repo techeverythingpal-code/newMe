@@ -129,11 +129,13 @@
         .grades-sheet thead th {
             position: sticky;
             top: 0;
-            background: #eef2ff;
+            background-color: #eef2ff;
+            background-clip: padding-box;
             color: #374151;
             z-index: 3;
             padding: 6px 4px;
             font-weight: 600;
+            isolation: isolate;
         }
 
         .sticky-col {
@@ -159,8 +161,9 @@
         }
         thead .col-name,
         thead .col-school {
-            z-index: 4;
-            background: #eef2ff;
+            z-index: 10;
+            background-color: #eef2ff;
+            background-clip: padding-box;
         }
 
         .score-header { padding: 4px 2px; }
