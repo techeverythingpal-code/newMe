@@ -27,15 +27,15 @@
             </div>
 
             <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
-                <div class="overflow-x-auto" style="max-height: 80vh;">
-                    <table class="grades-sheet text-sm border-collapse w-full">
+                <div class="sheet-scroll">
+                    <table class="grades-sheet" dir="rtl">
                         <colgroup>
-                            <col style="width:160px">
-                            <col style="width:140px">
+                            <col class="col-w-name">
+                            <col class="col-w-school">
                             @foreach ($scores as $field => [$label, $max])
-                                <col style="width:80px">
+                                <col class="col-w-score">
                             @endforeach
-                            <col style="width:80px">
+                            <col class="col-w-total">
                         </colgroup>
                         <thead>
                             <tr>
@@ -56,10 +56,10 @@
                         <tbody>
                             @forelse ($teachers as $teacher)
                                 <tr data-teacher-id="{{ $teacher->Teacher_id }}">
-                                    <td class="sticky-col col-name font-bold text-gray-800">
+                                    <td class="sticky-col col-name" title="{{ $teacher->Teacher_Name }}">
                                         {{ $teacher->Teacher_Name }}
                                     </td>
-                                    <td class="sticky-col col-school text-gray-600">
+                                    <td class="sticky-col col-school" title="{{ $teacher->school->SchoolName ?? '' }}">
                                         {{ $teacher->school->SchoolName ?? '—' }}
                                     </td>
                                     @foreach ($scores as $field => [$label, $max])
@@ -96,139 +96,55 @@
     </div>
 
     <style>
+        .sheet-scroll {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 80vh;
+            position: relative;
+        }
+
         .grades-sheet {
             border-collapse: separate;
             border-spacing: 0;
             table-layout: fixed;
+            width: max-content;
+            min-width: 100%;
+            font-size: 13px;
         }
-        .grades-sheet th, .grades-sheet td {
+        .grades-sheet th,
+        .grades-sheet td {
             border: 1px solid #e5e7eb;
-            white-space: nowrap;
+            box-sizing: border-box;
+            overflow: hidden;
         }
+
+        .col-w-name   { width: 170px; }
+        .col-w-school { width: 150px; }
+        .col-w-score  { width: 84px; }
+        .col-w-total  { width: 84px; }
+
         .grades-sheet thead th {
             position: sticky;
             top: 0;
             background: #eef2ff;
             color: #374151;
-            z-index: 2;
+            z-index: 3;
             padding: 6px 4px;
             font-weight: 600;
         }
+
         .sticky-col {
             position: sticky;
-            background: #fff;
-            padding: 8px 12px;
+            background: #ffffff;
+            padding: 8px 10px;
             text-align: right;
-            box-sizing: border-box;
-            overflow: hidden;
             text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        .col-name  { right: 0px;   z-index: 2; }
-        .col-school{ right: 160px; z-index: 1; }
-        thead .col-name, thead .col-school { z-index: 5; background: #eef2ff; }
-
-        .score-header { box-sizing: border-box; }
-        .score-cell { padding: 2px; text-align: center; box-sizing: border-box; }
-        .score-input {
-            width: 48px;
-            text-align: center;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 4px 2px;
-            font-weight: 600;
-        }
-        .score-input:focus {
-            outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 2px rgba(79,70,229,0.2);
-        }
-        .score-input.row-error { border-color: #ef4444; background: #fef2f2; }
-
-        .total-header { background: #e0e7ff !important; box-sizing: border-box; }
-        .total-cell {
-            text-align: center;
+        .col-name {
+            right: 0;
+            z-index: 2;
             font-weight: 700;
-            color: #4338ca;
-            background: #eef2ff;
-            box-sizing: border-box;
+            color: #1f2937;
         }
-        tbody tr:hover td:not(.sticky-col) { background: #f9fafb; }
-        tbody tr:hover .total-cell { background: #e0e7ff; }
-    </style>
-
-    <script>
-        const saveIndicator  = document.getElementById('save-indicator');
-        const savedIndicator = document.getElementById('saved-indicator');
-        const errorIndicator = document.getElementById('error-indicator');
-        let hideTimer = null;
-
-        function showStatus(state) {
-            saveIndicator.classList.add('hidden');
-            savedIndicator.classList.add('hidden');
-            errorIndicator.classList.add('hidden');
-            clearTimeout(hideTimer);
-
-            if (state === 'saving') {
-                saveIndicator.classList.remove('hidden');
-                saveIndicator.classList.add('flex');
-            } else if (state === 'saved') {
-                savedIndicator.classList.remove('hidden');
-                hideTimer = setTimeout(() => savedIndicator.classList.add('hidden'), 1500);
-            } else if (state === 'error') {
-                errorIndicator.classList.remove('hidden');
-                hideTimer = setTimeout(() => errorIndicator.classList.add('hidden'), 3000);
-            }
-        }
-
-        document.querySelectorAll('tbody tr[data-teacher-id]').forEach(row => {
-            const teacherId = row.dataset.teacherId;
-            const inputs = row.querySelectorAll('.score-input');
-            const totalSpan = row.querySelector('.row-total');
-
-            function liveTotal() {
-                let total = 0;
-                inputs.forEach(inp => total += parseInt(inp.value) || 0);
-                totalSpan.textContent = total;
-            }
-
-            inputs.forEach(input => {
-                input.addEventListener('input', liveTotal);
-
-                input.addEventListener('change', async () => {
-                    // Clamp to valid range client-side
-                    const max = parseInt(input.max);
-                    let val = parseInt(input.value);
-                    if (isNaN(val) || val < 0) val = 0;
-                    if (val > max) val = max;
-                    input.value = val;
-                    liveTotal();
-
-                    const payload = {};
-                    inputs.forEach(inp => payload[inp.dataset.field] = parseInt(inp.value) || 0);
-
-                    showStatus('saving');
-                    try {
-                        const res = await fetch(`/teachers/${teacherId}/grades/quick`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            },
-                            body: JSON.stringify(payload),
-                        });
-
-                        if (!res.ok) throw new Error('save failed');
-                        const data = await res.json();
-                        totalSpan.textContent = data.total;
-                        inputs.forEach(inp => inp.classList.remove('row-error'));
-                        showStatus('saved');
-                    } catch (err) {
-                        inputs.forEach(inp => inp.classList.add('row-error'));
-                        showStatus('error');
-                    }
-                });
-            });
-        });
-    </script>
-</x-app-layout>
+        .col-school
