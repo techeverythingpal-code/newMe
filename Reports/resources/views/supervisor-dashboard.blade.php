@@ -229,8 +229,9 @@
 
             pageItems.forEach((t, index) => {
                 const card = document.createElement('div');
-                card.className = 'bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition p-4 flex flex-col gap-3';
+                card.className = 'relative bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition p-4 flex flex-col gap-3' + (t.total >= 85 ? ' ring-2 ring-yellow-300' : '');
                 card.innerHTML = `
+                    ${t.total >= 85 ? '<div class="absolute -top-2 -right-2 text-2xl drop-shadow">⭐</div>' : ''}
                     <div class="flex items-start justify-between">
                         <span class="text-xs text-gray-400">#${start + index + 1}</span>
                         <div class="flex gap-1">
