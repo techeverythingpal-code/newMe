@@ -52,10 +52,25 @@
             {{-- Grades Card --}}
             @if($teacher->grades)
             <div class="bg-white shadow-sm rounded-2xl p-6">
+                @php
+                    $colorClasses = [
+                        'green'  => 'bg-green-100 text-green-700',
+                        'blue'   => 'bg-blue-100 text-blue-700',
+                        'yellow' => 'bg-yellow-100 text-yellow-700',
+                        'orange' => 'bg-orange-100 text-orange-700',
+                        'red'    => 'bg-red-100 text-red-700',
+                    ];
+                    $assessment = $teacher->grades->assessment;
+                @endphp
                 <div class="flex justify-between items-center mb-4 border-b pb-2">
-                    <span class="bg-blue-100 text-blue-700 px-4 py-1 rounded-full font-bold">
-                        المجموع: {{ $teacher->grades->total }} / 100
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-blue-100 text-blue-700 px-4 py-1 rounded-full font-bold">
+                            المجموع: {{ $teacher->grades->total }} / 100
+                        </span>
+                        <span class="{{ $colorClasses[$assessment['color']] }} px-4 py-1 rounded-full font-bold text-sm">
+                            {{ $assessment['label'] }}
+                        </span>
+                    </div>
                     <h3 class="text-lg font-bold text-blue-700">📊 الدرجات التفصيلية</h3>
                 </div>
 
