@@ -32,11 +32,13 @@
                     <div class="frozen-pane" id="frozenPane">
                         <table class="grades-sheet frozen-table">
                             <colgroup>
+                                <col class="col-w-num">
                                 <col class="col-w-name">
                                 <col class="col-w-school">
                             </colgroup>
                             <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th>اسم المعلم</th>
                                     <th>المدرسة</th>
                                 </tr>
@@ -44,11 +46,12 @@
                             <tbody>
                                 @forelse ($teachers as $teacher)
                                     <tr>
+                                        <td class="row-num">{{ $loop->iteration }}</td>
                                         <td title="{{ $teacher->Teacher_Name }}">{{ $teacher->Teacher_Name }}</td>
                                         <td title="{{ $teacher->school->SchoolName ?? '' }}">{{ $teacher->school->SchoolName ?? '—' }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="2" class="text-center text-gray-400">لا يوجد معلمون</td></tr>
+                                    <tr><td colspan="3" class="text-center text-gray-400">لا يوجد معلمون</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -156,23 +159,25 @@
             z-index: 2;
             padding: 6px 4px;
             font-weight: 600;
-            height: 70px;
+            height: 75px;
         }
         .frozen-table thead th {
             vertical-align: middle;
         }
 
+        .col-w-num    { width: 40px; }
         .col-w-name   { width: 170px; }
         .col-w-school { width: 150px; }
-        .frozen-table { width: 320px; }
+        .frozen-table { width: 360px; }
         .frozen-table td {
             padding: 8px 10px;
             text-align: right;
             white-space: nowrap;
             text-overflow: ellipsis;
         }
-        .frozen-table td:first-child { font-weight: 700; color: #1f2937; }
-        .frozen-table td:last-child  { color: #4b5563; }
+        .frozen-table td.row-num { text-align: center; color: #9ca3af; font-weight: 600; }
+        .frozen-table td:nth-child(2) { font-weight: 700; color: #1f2937; }
+        .frozen-table td:last-child   { color: #4b5563; }
 
         .col-w-score { width: 84px; }
         .col-w-total { width: 84px; }
