@@ -47,6 +47,13 @@
                                     : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
                             <span>🧑‍🏫</span> المعلمون
                         </a>
+                        <a href="{{ route('teacher-grades.sheet') }}"
+                            class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
+                                {{ request()->routeIs('teacher-grades.sheet')
+                                    ? 'bg-white/20 text-white'
+                                    : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
+                            <span>📊</span> جدول الدرجات
+                        </a>
                     @else
                         <a href="{{ route('teachers.index') }}"
                             class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
@@ -54,6 +61,13 @@
                                     ? 'bg-white/20 text-white'
                                     : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
                             <span>🧑‍🏫</span> معلمون
+                        </a>
+                        <a href="{{ route('teacher-grades.sheet') }}"
+                            class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
+                                {{ request()->routeIs('teacher-grades.sheet')
+                                    ? 'bg-white/20 text-white'
+                                    : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
+                            <span>📊</span> جدول الدرجات
                         </a>
                     @endif
                 </div>
@@ -136,11 +150,23 @@
                     class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('teachers.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                     🧑‍🏫 المعلمون
                 </a>
+
+                <a href="{{ route('teacher-grades.sheet') }}"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('teacher-grades.sheet') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
+                    📊 جدول الدرجات
+                </a>
             @else
                 <a href="{{ route('teachers.index') }}"
                     class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('teachers.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                     🧑‍🏫 معلموي
                 </a>
+
+                <a href="{{ route('teacher-grades.sheet') }}"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('teacher-grades.sheet') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
+                    📊 جدول الدرجات
+                </a>
+
+
             @endif
         </div>
 
