@@ -88,21 +88,9 @@
                     </div>
                 </div>
 
-                <table class="w-full text-right text-sm">
-                    <thead>
-                        <tr class="bg-blue-50 text-blue-700 border-b border-blue-100">
-                            <th class="p-3">#</th>
-                            <th class="p-3">اسم المعلم</th>
-                            <th class="p-3">المدرسة</th>
-                            <th class="p-3">التخصص</th>
-                            <th class="p-3">المجموع</th>
-                            <th class="p-3">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="teachersTableBody">
-                        {{-- Rows are rendered by JavaScript --}}
-                    </tbody>
-                </table>
+                <div id="teachersCardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {{-- Cards are rendered by JavaScript --}}
+                </div>
 
                 <div id="emptyState" class="hidden p-5 text-center text-gray-400">
                     لا يوجد معلمون مطابقون لهذا البحث
@@ -134,7 +122,7 @@
         const minScoreFilter = document.getElementById('minScoreFilter');
         const maxScoreFilter = document.getElementById('maxScoreFilter');
         const resetBtn       = document.getElementById('resetFilters');
-        const tbody          = document.getElementById('teachersTableBody');
+        const cardGrid       = document.getElementById('teachersCardGrid');
         const emptyState     = document.getElementById('emptyState');
         const paginationEl   = document.getElementById('paginationControls');
 
@@ -170,54 +158,56 @@
             const start = (currentPage - 1) * PAGE_SIZE;
             const pageItems = filtered.slice(start, start + PAGE_SIZE);
 
-            tbody.innerHTML = '';
+            cardGrid.innerHTML = '';
             emptyState.classList.toggle('hidden', pageItems.length > 0);
 
             pageItems.forEach((t, index) => {
-                const row = document.createElement('tr');
-                row.className = 'border-b border-gray-100 hover:bg-blue-50 transition';
-                row.innerHTML = `
-                    <td class="p-3 text-gray-400">${start + index + 1}</td>
-                    <td class="p-3 font-medium text-gray-800">${escapeHtml(t.name)}</td>
-                    <td class="p-3 text-gray-600">${escapeHtml(t.school)}</td>
-                    <td class="p-3 text-gray-600">${escapeHtml(t.major)}</td>
-                    <td class="p-3">
+                const card = document.createElement('div');
+                card.className = 'bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition p-4 flex flex-col gap-3';
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <span class="text-xs text-gray-400">#${start + index + 1}</span>
                         <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
                             ${t.total} / 100
                         </span>
-                    </td>
-                    <td class="p-3">
-                        <div class="flex gap-2 justify-end">
-                            <a href="${routes.show(t.id)}"
-                                class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
-                                👁️ عرض
-                            </a>
-                            <a href="${routes.edit(t.id)}"
-                                class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
-                                ✏️ تعديل
-                            </a>
-                            <form action="${routes.resetScores(t.id)}" method="POST"
-                                onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-1 px-3 rounded-lg text-xs transition">
-                                    🗑️ حذف الدرجات
-                                </button>
-                            </form>
-                            <form action="${routes.destroy(t.id)}" method="POST"
-                                onsubmit="return confirm('هل أنت متأكد؟')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-3 rounded-lg text-xs transition">
-                                    🗑️ حذف
-                                </button>
-                            </form>
-                        </div>
-                    </td>
+                    </div>
+
+                    <div>
+                        <div class="font-bold text-gray-800 text-base">${escapeHtml(t.name)}</div>
+                        <div class="text-sm text-gray-500 mt-1">🏫 ${escapeHtml(t.school)}</div>
+                        <div class="text-sm text-gray-500">🎓 ${escapeHtml(t.major)}</div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mt-auto pt-2 border-t border-gray-100">
+                        <a href="${routes.show(t.id)}"
+                            class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                            👁️ عرض
+                        </a>
+                        <a href="${routes.edit(t.id)}"
+                            class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                            ✏️ تعديل
+                        </a>
+                        <form action="${routes.resetScores(t.id)}" method="POST"
+                            onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                                🗑️ حذف الدرجات
+                            </button>
+                        </form>
+                        <form action="${routes.destroy(t.id)}" method="POST"
+                            onsubmit="return confirm('هل أنت متأكد؟')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                                🗑️ حذف
+                            </button>
+                        </form>
+                    </div>
                 `;
-                tbody.appendChild(row);
+                cardGrid.appendChild(card);
             });
 
             renderPagination(totalPages, filtered.length);
