@@ -29,6 +29,14 @@
             <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
                 <div class="overflow-x-auto" style="max-height: 80vh;">
                     <table class="grades-sheet text-sm border-collapse w-full">
+                        <colgroup>
+                            <col style="width:160px">
+                            <col style="width:140px">
+                            @foreach ($scores as $field => [$label, $max])
+                                <col style="width:80px">
+                            @endforeach
+                            <col style="width:80px">
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th class="sticky-col col-name">اسم المعلم</th>
@@ -109,56 +117,18 @@
         .sticky-col {
             position: sticky;
             background: #fff;
-            z-index: 1;
             padding: 8px 12px;
             text-align: right;
             box-sizing: border-box;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .col-name {
-            right: 0;
-            width: 160px;
-            min-width: 160px;
-            max-width: 160px;
-            z-index: 3;
-        }
-        .col-school {
-            right: 160px;
-            width: 140px;
-            min-width: 140px;
-            max-width: 140px;
-        }
-        thead .col-name, thead .col-school { z-index: 4; background: #eef2ff; }
+        .col-name  { right: 0px;   z-index: 2; }
+        .col-school{ right: 160px; z-index: 1; }
+        thead .col-name, thead .col-school { z-index: 5; background: #eef2ff; }
 
-        .score-header { width: 80px; }
-        .score-header-inner {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            line-height: 1.2;
-            white-space: normal;
-            word-break: break-word;
-            font-size: 11px;
-            padding: 2px;
-        }
-        .score-header .score-num {
-            font-size: 10px;
-            color: #9ca3af;
-        }
-        .score-header .score-label {
-            font-size: 11px;
-            color: #374151;
-            max-height: 48px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .score-header .score-max {
-            font-weight: 700;
-            color: #4f46e5;
-        }
-
-        .score-cell { padding: 2px; text-align: center; }
+        .score-header { box-sizing: border-box; }
+        .score-cell { padding: 2px; text-align: center; box-sizing: border-box; }
         .score-input {
             width: 48px;
             text-align: center;
@@ -174,13 +144,12 @@
         }
         .score-input.row-error { border-color: #ef4444; background: #fef2f2; }
 
-        .total-header { width: 80px; background: #e0e7ff !important; }
+        .total-header { background: #e0e7ff !important; box-sizing: border-box; }
         .total-cell {
             text-align: center;
             font-weight: 700;
             color: #4338ca;
             background: #eef2ff;
-            width: 80px;
             box-sizing: border-box;
         }
         tbody tr:hover td:not(.sticky-col) { background: #f9fafb; }
