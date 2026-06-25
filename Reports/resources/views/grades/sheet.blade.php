@@ -290,6 +290,13 @@
             }
         }
 
+        // Prevent mouse-wheel scrolling over a focused number input from changing its value
+        document.addEventListener('wheel', (e) => {
+            if (document.activeElement && document.activeElement.classList.contains('score-input')) {
+                document.activeElement.blur();
+            }
+        }, { passive: true });
+        
         document.querySelectorAll('.scroll-table tbody tr[data-teacher-id]').forEach(row => {
             const teacherId = row.dataset.teacherId;
             const inputs = row.querySelectorAll('.score-input');
