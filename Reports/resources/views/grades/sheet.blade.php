@@ -148,7 +148,7 @@
             color: #1f2937;
         }
         .col-school {
-            right: 170px;
+            right: var(--name-col-width, 170px);
             z-index: 1;
             color: #4b5563;
         }
@@ -218,6 +218,15 @@
         const savedIndicator = document.getElementById('saved-indicator');
         const errorIndicator = document.getElementById('error-indicator');
         let hideTimer = null;
+
+        function syncStickyOffsets() {
+            const nameCell = document.querySelector('thead .col-name');
+            if (!nameCell) return;
+            const width = nameCell.getBoundingClientRect().width;
+            document.documentElement.style.setProperty('--name-col-width', width + 'px');
+        }
+        syncStickyOffsets();
+        window.addEventListener('resize', syncStickyOffsets);
 
         function showStatus(state) {
             saveIndicator.classList.add('hidden');
