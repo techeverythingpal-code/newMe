@@ -35,4 +35,9 @@ class TeacherInfo extends Model
     {
         return $this->hasOne(TeacherGrade::class, 'teacher_id', 'Teacher_id');
     }
+
+    public function justification()
+    {
+        return $this->hasOne(TeacherJustification::class, 'teacher_id', 'Teacher_id');
+    }
 }

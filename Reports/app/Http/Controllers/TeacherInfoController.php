@@ -81,15 +81,42 @@ class TeacherInfoController extends Controller
         return view('teachers.show', compact('teacher'));
     }
 
-    public function justification(TeacherInfo $teacher)
+    private function authorizeTeacherAccess(TeacherInfo $teacher): void
     {
-        // Ownership check, same pattern as the rest of the controller
         if (! Auth::guard('admin')->check()
             && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
             abort(403);
         }
+    }
 
-        return view('teachers.justification', compact('teacher'));
+    public function justification(TeacherInfo $teacher)
+    {
+        $this->authorizeTeacherAccess($teacher);
+
+        $justification = $teacher->justification;
+
+        return view('teachers.justification', compact('teacher', 'justification'));
+    }
+
+    public function storeJustification(Request $request, TeacherInfo $teacher)
+    {
+        $this->authorizeTeacherAccess($teacher);
+
+        $validated = $request->validate([
+            'strengths'         => 'nullable|string',
+            'weaknesses'        => 'nullable|string',
+            'recommendations'   => 'nullable|string',
+            'preparer_opinion'  => 'nullable|string',
+            'approver_notes'    => 'nullable|string',
+        ]);
+
+        $teacher->justification()->updateOrCreate(
+            ['teacher_id' => $teacher->Teacher_id],
+            $validated
+        );
+
+        return redirect()->route('teachers.show', $teacher->Teacher_id)
+            ->with('success', 'تم حفظ نموذج التبرير بنجاح');
     }
 
     public function edit(TeacherInfo $teacher)
