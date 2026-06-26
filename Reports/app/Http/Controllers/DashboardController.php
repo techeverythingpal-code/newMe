@@ -33,14 +33,15 @@ class DashboardController extends Controller
 
             // Flatten everything the table/search needs into plain arrays for JS
             $teachersData = $allTeachers->map(fn($t) => [
-                'id'          => $t->Teacher_id,
-                'name'        => $t->Teacher_Name,
-                'school'      => $t->school->SchoolName ?? '-',
-                'school_id'   => $t->school_id,
-                'major'       => $t->teacher_major,
-                'qualify'     => $t->teacher_qualify,
-                'total'       => $t->grades->total ?? 0,
-                'assessment'  => $t->grades->assessment ?? ['label' => '—', 'color' => 'gray'],
+                'id'              => $t->Teacher_id,
+                'name'            => $t->Teacher_Name,
+                'school'          => $t->school->SchoolName ?? '-',
+                'school_id'       => $t->school_id,
+                'major'           => $t->teacher_major,
+                'qualify'         => $t->teacher_qualify,
+                'total'           => $t->grades->total ?? 0,
+                'assessment'      => $t->grades->assessment ?? ['label' => '—', 'color' => 'gray'],
+                'supervisor_note' => $t->supervisor_note ?? '',
             ])->values();
 
             return view('supervisor-dashboard', compact(

@@ -121,8 +121,10 @@
         let currentPage = 1;
 
         const routes = {
-            show:          id => "{{ url('teachers') }}/" + id,
-            justification: id => "{{ url('teachers') }}/" + id + "/justification",
+            show:           id => "{{ url('teachers') }}/" + id,
+            justification:  id => "{{ url('teachers') }}/" + id + "/justification",
+            supervisorNote: id => "{{ url('teachers') }}/" + id + "/supervisor-note",
+            report:         id => "{{ url('teachers') }}/" + id + "/report",
             edit:        id => "{{ url('teachers') }}/" + id + "/edit",
             destroy:     id => "{{ url('teachers') }}/" + id,
             resetScores: id => "{{ url('teachers') }}/" + id + "/grades/reset",
@@ -249,12 +251,18 @@
                         <div class="text-sm text-gray-500">🎓 ${escapeHtml(t.major)}</div>
                     </div>
 
-                    <div class="flex flex-wrap gap-2 mt-auto pt-2 border-t border-gray-100">
+                    <div class="flex flex-wrap gap-2 pt-2 border-t border-gray-100">
                         ${t.total >= 85 ? `
                         <a href="${routes.justification(t.id)}"
                             class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             📝 نموذج التبرير
                         </a>` : ''}
+                        <button type="button" class="note-toggle-btn bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                            🗒️ إضافة ملاحظات المشرف
+                        </button>
+                        <a href="${routes.report(t.id)}" target="_blank" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                            🖨️ طباعة
+                        </a>
                         <a href="${routes.show(t.id)}"
                             class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             👁️ عرض
@@ -282,8 +290,47 @@
                             </button>
                         </form>
                     </div>
+
+                    <div class="note-box hidden mt-2 pt-2 border-t border-gray-100">
+                        <textarea class="note-textarea w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-yellow-300" rows="2" placeholder="اكتب ملاحظة...">${escapeHtml(t.supervisor_note)}</textarea>
+                        <div class="flex justify-end gap-2 mt-1">
+                            <span class="note-status text-xs text-gray-400"></span>
+                            <button type="button" class="note-save-btn bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                                حفظ الملاحظة
+                            </button>
+                        </div>
+                    </div>
                 `;
                 cardGrid.appendChild(card);
+
+                const noteBox    = card.querySelector('.note-box');
+                const noteToggle = card.querySelector('.note-toggle-btn');
+                const noteSave   = card.querySelector('.note-save-btn');
+                const noteText   = card.querySelector('.note-textarea');
+                const noteStatus = card.querySelector('.note-status');
+
+                noteToggle.addEventListener('click', () => noteBox.classList.toggle('hidden'));
+
+                noteSave.addEventListener('click', async () => {
+                    noteStatus.textContent = 'جاري الحفظ...';
+                    try {
+                        const res = await fetch(routes.supervisorNote(t.id), {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                            body: JSON.stringify({ supervisor_note: noteText.value }),
+                        });
+                        if (!res.ok) throw new Error();
+                        noteStatus.textContent = '✓ تم الحفظ';
+                        t.supervisor_note = noteText.value;
+                        setTimeout(() => noteStatus.textContent = '', 1500);
+                    } catch {
+                        noteStatus.textContent = '⚠ خطأ في الحفظ';
+                    }
+                });
             });
 
             renderPagination(totalPages, filtered.length);

@@ -10,6 +10,42 @@ use Illuminate\Support\Facades\Auth;
 class TeacherGradeController extends Controller
 {
     // Shared criteria definition: field => [label, max score]
+    
+    public static function scoreGroups(): array
+    {
+        // [group label => number of consecutive criteria it covers]
+        return [
+            'المنهاج والمحتوى' => 4,
+            'البيداغوجيا العامة وبيداغوجيا المحتوى' => 11,
+            'الكفايات الذاتية' => 4,
+            'أخلاقيات المهنة وقواعد السلوك' => 3,
+        ];
+    }
+
+    public static function numberToArabicWords(int $num): string
+    {
+        $ones = ['', 'واحد', 'اثنان', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة'];
+        $tens = ['', 'عشرة', 'عشرون', 'ثلاثون', 'أربعون', 'خمسون', 'ستون', 'سبعون', 'ثمانون', 'تسعون'];
+
+        if ($num === 0) return 'صفر';
+        if ($num === 100) return 'مئة';
+
+        if ($num < 10) return $ones[$num];
+
+        if ($num < 20) {
+            $teens = ['عشرة', 'أحد عشر', 'اثنا عشر', 'ثلاثة عشر', 'أربعة عشر', 'خمسة عشر', 'ستة عشر', 'سبعة عشر', 'ثمانية عشر', 'تسعة عشر'];
+            return $teens[$num - 10];
+        }
+
+        $tensPart = intdiv($num, 10);
+        $onesPart = $num % 10;
+
+        if ($onesPart === 0) {
+            return $tens[$tensPart];
+        }
+
+        return $ones[$onesPart] . ' و' . $tens[$tensPart];
+    }
     public static function scoreCriteria(): array
     {
         return [
@@ -65,6 +101,48 @@ class TeacherGradeController extends Controller
         $scores = self::scoreCriteria();
 
         return view('grades.sheet', compact('teachers', 'scores'));
+    }
+    public function printReport(TeacherInfo $teacher)
+    {
+        if (! Auth::guard('admin')->check()
+            && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
+            abort(403);
+        }
+
+        $teacher->load(['school', 'school.directorate', 'supervisor', 'grades']);
+
+        $criteria = self::scoreCriteria();
+        $groups   = self::scoreGroups();
+
+        // Slice the 22 criteria into their groups, in order
+        $groupedRows = [];
+        $fields = array_keys($criteria);
+        $cursor = 0;
+
+        foreach ($groups as $groupLabel => $count) {
+            $rows = [];
+            for ($i = 0; $i < $count; $i++) {
+                $field = $fields[$cursor];
+                [$label, $max] = $criteria[$field];
+                $rows[] = [
+                    'label' => $label,
+                    'max'   => $max,
+                    'score' => $teacher->grades->$field ?? 0,
+                ];
+                $cursor++;
+            }
+            $groupedRows[$groupLabel] = $rows;
+        }
+
+        $total = $teacher->grades->total ?? 0;
+        $totalWords = self::numberToArabicWords($total);
+
+        return view('teachers.report', [
+            'teacher'     => $teacher,
+            'groupedRows' => $groupedRows,
+            'total'       => $total,
+            'totalWords'  => $totalWords,
+        ]);
     }
 
     // Auto-save one teacher's row from the sheet (AJAX)

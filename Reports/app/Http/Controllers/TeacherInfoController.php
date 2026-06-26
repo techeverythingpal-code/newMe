@@ -51,6 +51,7 @@ class TeacherInfoController extends Controller
         'school_id'       => 'required|integer|exists:schools,School_ID',
         'date'            => 'required|date',
         'teacher_qualify' => 'required|string|max:255',
+        'academic_year' => 'nullable|string|max:20',
         'teacher_major'   => 'required|string|max:255',
     ]);
 
@@ -119,6 +120,20 @@ class TeacherInfoController extends Controller
             ->with('success', 'تم حفظ نموذج التبرير بنجاح');
     }
 
+
+    public function updateSupervisorNote(Request $request, TeacherInfo $teacher)
+    {
+        $this->authorizeTeacherAccess($teacher);
+
+        $validated = $request->validate([
+            'supervisor_note' => 'nullable|string|max:2000',
+        ]);
+
+        $teacher->update($validated);
+
+        return response()->json(['success' => true]);
+    }
+
     public function edit(TeacherInfo $teacher)
     {
         $schools     = School::all();
@@ -134,6 +149,7 @@ class TeacherInfoController extends Controller
             'school_id'       => 'required|integer|exists:schools,School_ID',
             'date'            => 'required|date',
             'teacher_qualify' => 'required|string|max:255',
+            'academic_year' => 'nullable|string|max:20',
             'teacher_major'   => 'required|string|max:255',
         ]);
 
