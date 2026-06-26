@@ -137,19 +137,23 @@
     <div class="report-page">
 
         <div class="header-row">
+            
+
             <div class="header-block right">
-                مديرية التربية والتعليم :<br>
-                المدرسة : {{ $teacher->school->SchoolName ?? '' }}<br>
-                الرقم الوطني : {{ $teacher->school->School_ID ?? '' }}
-            </div>
-            <div class="header-logo">
-                <img src="{{ asset('images/logo.png') }}" alt="شعار دولة فلسطين">
-            </div>
-            <div class="header-block left">
                 دولة فلسطين<br>
                 وزارة التربية والتعليم العالي<br>
                 الادارة العامة للإشراف التربوي
             </div>
+            <div class="header-logo">
+                <img src="{{ asset('images/logo.png') }}" alt="شعار دولة فلسطين">
+            </div>
+
+            <div class="header-block ">
+                مديرية التربية والتعليم :<br>
+                المدرسة : {{ $teacher->school->SchoolName ?? '' }}<br>
+                الرقم الوطني : {{ $teacher->school->School_ID ?? '' }}
+            </div>
+            
         </div>
 
         <h1 class="report-title">تقرير الاداء السنوي للمعلم / خاص بالمشرف التربوي</h1>
@@ -178,10 +182,13 @@
         <table class="scores-table">
             <thead>
                 <tr>
-                    <th style="width:7%">المعدل</th>
-                    <th style="width:7%">العلامة القصوى</th>
-                    <th>مؤشرات الاداء</th>
                     <th style="width:14%">المجال</th>
+                    <th>مؤشرات الاداء</th>
+                    <th style="width:7%">العلامة القصوى</th>
+                    <th style="width:7%">المعدل</th>
+                    
+                    
+                    
                 </tr>
             </thead>
             <tbody>
