@@ -137,12 +137,24 @@ class TeacherGradeController extends Controller
         $total = $teacher->grades->total ?? 0;
         $totalWords = self::numberToArabicWords($total);
 
-        return view('teachers.report', [
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('teachers.report', [
             'teacher'     => $teacher,
             'groupedRows' => $groupedRows,
             'total'       => $total,
             'totalWords'  => $totalWords,
-        ]);
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->stream('تقرير-' . $teacher->Teacher_Name . '.pdf');
+    }
+
+    public function printDialog(TeacherInfo $teacher)
+    {
+        if (! Auth::guard('admin')->check()
+            && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
+            abort(403);
+        }
+
+        return view('teachers.print-wrapper', compact('teacher'));
     }
 
     // Auto-save one teacher's row from the sheet (AJAX)

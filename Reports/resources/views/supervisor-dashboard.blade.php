@@ -124,7 +124,7 @@
             show:           id => "{{ url('teachers') }}/" + id,
             justification:  id => "{{ url('teachers') }}/" + id + "/justification",
             supervisorNote: id => "{{ url('teachers') }}/" + id + "/supervisor-note",
-            report:         id => "{{ url('teachers') }}/" + id + "/report",
+            report:         id => "{{ url('teachers') }}/" + id + "/report/print",
             edit:        id => "{{ url('teachers') }}/" + id + "/edit",
             destroy:     id => "{{ url('teachers') }}/" + id,
             resetScores: id => "{{ url('teachers') }}/" + id + "/grades/reset",
