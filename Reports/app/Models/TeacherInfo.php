@@ -19,6 +19,8 @@ class TeacherInfo extends Model
         'date',
         'teacher_qualify',
         'teacher_major',
+        'supervisor_note',
+        'academic_year',
     ];
 
     public function supervisor()

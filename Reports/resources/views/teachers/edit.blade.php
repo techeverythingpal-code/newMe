@@ -105,6 +105,19 @@
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">
+                            العام الدراسي
+                        </label>
+                        <input type="text" name="academic_year"
+                            value="{{ old('academic_year', $teacher->academic_year) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                            placeholder="مثال: 2025-2026">
+                        @error('academic_year')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">
                             المؤهل العلمي <span class="text-red-500">*</span>
                         </label>
                         <select name="teacher_qualify"
