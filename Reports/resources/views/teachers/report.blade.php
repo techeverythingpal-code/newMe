@@ -149,7 +149,7 @@
             </div>
 
             <div class="header-block ">
-                مديرية التربية والتعليم :<br>
+               مديرية التربية والتعليم : {{ $teacher->school->directorate->Directorate_Name ?? '' }}<br>
                 المدرسة : {{ $teacher->school->SchoolName ?? '' }}<br>
                 الرقم الوطني : {{ $teacher->school->School_ID ?? '' }}
             </div>
