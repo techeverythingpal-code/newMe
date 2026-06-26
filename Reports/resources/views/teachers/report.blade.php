@@ -30,8 +30,8 @@
             margin-bottom: 10px;
         }
         .header-block { font-size: 13px; line-height: 1.6; }
-        .header-block.left  { text-align: left; }
-        .header-block.right { text-align: right; }
+        .header-block.left  { text-align: center; }
+        .header-block.right { text-align: center; }
         .header-logo { text-align: center; }
         .header-logo img { width: 60px; height: 60px; }
 
@@ -105,6 +105,7 @@
         .signature-line {
             margin-top: 30px;
             font-size: 13px;
+            text-align: left;
         }
 
         /* Print controls (hidden when actually printing) */
@@ -130,16 +131,14 @@
 </head>
 <body>
 
-    <div class="print-controls">
-        <button onclick="window.print()">🖨️ طباعة</button>
-    </div>
+    
 
     <div class="report-page">
 
         <div class="header-row">
             
 
-            <div class="header-block right">
+            <div class="header-block " right>
                 دولة فلسطين<br>
                 وزارة التربية والتعليم العالي<br>
                 الادارة العامة للإشراف التربوي
@@ -148,7 +147,7 @@
                 <img src="{{ asset('images/logo.png') }}" alt="شعار دولة فلسطين">
             </div>
 
-            <div class="header-block ">
+            <div class="header-block " left>
                مديرية التربية والتعليم : {{ $teacher->school->directorate->Directorate_Name ?? '' }}<br>
                 المدرسة : {{ $teacher->school->SchoolName ?? '' }}<br>
                 الرقم الوطني : {{ $teacher->school->School_ID ?? '' }}
