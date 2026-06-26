@@ -38,6 +38,7 @@ Route::middleware(['auth:admin,web'])->group(function () {
     Route::patch('teachers/{teacher}/grades/quick', [TeacherGradeController::class, 'quickUpdate'])->name('teacher-grades.quick-update');
     Route::get('teachers/{teacher}/grades/edit', [TeacherGradeController::class, 'edit'])->name('teacher-grades.edit');
     Route::get('teachers/{teacher}/justification', [TeacherInfoController::class, 'justification'])->name('teachers.justification');
+    Route::post('teachers/{teacher}/justification', [TeacherInfoController::class, 'storeJustification'])->name('teachers.justification.store');
     Route::patch('teachers/{teacher}/grades', [TeacherGradeController::class, 'update'])->name('teacher-grades.update');
     Route::delete('teachers/{teacher}/grades/reset', [TeacherGradeController::class, 'resetSingle'])->name('teacher-grades.reset-single');
     Route::delete('teachers-grades/reset-all', [TeacherGradeController::class, 'resetAllForSupervisor'])->name('teacher-grades.reset-all');
