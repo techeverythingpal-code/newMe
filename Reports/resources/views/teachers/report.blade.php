@@ -195,35 +195,39 @@
                 @foreach ($groupedRows as $groupLabel => $rows)
                     @foreach ($rows as $i => $row)
                         <tr>
-                            <td>{{ $row['score'] }}</td>
-                            <td>{{ $row['max'] }}</td>
-                            <td class="indicator-cell">{{ $row['label'] }}</td>
                             @if ($i === 0)
                                 <td class="group-cell" rowspan="{{ count($rows) }}">{{ $groupLabel }}</td>
                             @endif
+                            <td class="indicator-cell">{{ $row['label'] }}</td>
+                            <td>{{ $row['max'] }}</td>
+                            <td>{{ $row['score'] }}</td>
+                            
                         </tr>
                     @endforeach
                 @endforeach
             </tbody>
             <tfoot>
                 <tr>
-                    <td>{{ $total }}</td>
-                    <td>100</td>
                     <td colspan="2">المجموع بالارقام</td>
+                    <td>100</td>
+                    <td>{{ $total }}</td>
+                    
+                    
                 </tr>
             </tfoot>
         </table>
 
         <div class="footer-row">
-            <div>المجموع بالحروف : {{ $totalWords }}</div>
             <div>التاريخ : {{ \Carbon\Carbon::now()->format('Y-m-d') }}</div>
+            <div>المجموع بالحروف : {{ $totalWords }}</div>
+            
         </div>
 
         <div class="notes-line">
             ملحوظات المشرف وتوصياته : {{ $teacher->supervisor_note ?? '-' }}
         </div>
 
-        <div class="signature-line">
+        <div class="signature-line" >
             اسم المشرف وتوقيعه : {{ $teacher->supervisor->SuperVisor_Name ?? '' }}
         </div>
 
