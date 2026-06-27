@@ -176,7 +176,7 @@
                     <table class="scores-table">
                         <thead>
                             <tr>
-                                <th style="width:14%">المجال</th>
+                                <th style="width:12%">المجال</th>
                                 <th>مؤشرات الاداء</th>
                                 <th style="width:7%">العلامة القصوى</th>
                                 <th style="width:7%">المعدل</th>
