@@ -103,10 +103,9 @@ class TeacherGradeController extends Controller
 
         return view('grades.sheet', compact('teachers', 'scores'));
     }
-    public function printReport(TeacherInfo $teacher)
+    
+    public function reportHtml(TeacherInfo $teacher)
     {
-        
-        
         if (! Auth::guard('admin')->check()
             && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
             abort(403);
@@ -117,7 +116,6 @@ class TeacherGradeController extends Controller
         $criteria = self::scoreCriteria();
         $groups   = self::scoreGroups();
 
-        // Slice the 22 criteria into their groups, in order
         $groupedRows = [];
         $fields = array_keys($criteria);
         $cursor = 0;
@@ -140,25 +138,15 @@ class TeacherGradeController extends Controller
         $total = $teacher->grades->total ?? 0;
         $totalWords = self::numberToArabicWords($total);
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('teachers.report', [
+        return view('teachers.report-content', [
             'teacher'     => $teacher,
             'groupedRows' => $groupedRows,
             'total'       => $total,
             'totalWords'  => $totalWords,
-        ])->setPaper('a4', 'portrait');
-
-        return $pdf->stream('تقرير-' . $teacher->Teacher_Name . '.pdf');
+        ]);
     }
 
-    public function printDialog(TeacherInfo $teacher)
-    {
-        if (! Auth::guard('admin')->check()
-            && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
-            abort(403);
-        }
-
-        return view('teachers.print-wrapper', compact('teacher'));
-    }
+    
 
     // Auto-save one teacher's row from the sheet (AJAX)
     public function quickUpdate(Request $request, TeacherInfo $teacher)

@@ -41,7 +41,7 @@ Route::middleware(['auth:admin,web'])->group(function () {
     Route::post('teachers/{teacher}/justification', [TeacherInfoController::class, 'storeJustification'])->name('teachers.justification.store');
     Route::patch('teachers/{teacher}/supervisor-note', [TeacherInfoController::class, 'updateSupervisorNote'])->name('teachers.supervisor-note.update');
     Route::get('teachers/{teacher}/report', [TeacherGradeController::class, 'printReport'])->name('teacher-grades.print');
-    Route::get('teachers/{teacher}/report/print', [TeacherGradeController::class, 'printDialog'])->name('teacher-grades.print-dialog');
+    Route::get('teachers/{teacher}/report-html', [TeacherGradeController::class, 'reportHtml'])->name('teacher-grades.report-html');
     Route::patch('teachers/{teacher}/grades', [TeacherGradeController::class, 'update'])->name('teacher-grades.update');
     Route::delete('teachers/{teacher}/grades/reset', [TeacherGradeController::class, 'resetSingle'])->name('teacher-grades.reset-single');
     Route::delete('teachers-grades/reset-all', [TeacherGradeController::class, 'resetAllForSupervisor'])->name('teacher-grades.reset-all');
