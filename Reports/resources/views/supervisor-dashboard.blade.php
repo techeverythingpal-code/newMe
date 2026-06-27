@@ -117,6 +117,12 @@
     <script>
         // All teacher data, fetched once from the server — filtering happens here in the browser
         const allTeachers = {!! json_encode($teachersData) !!};
+        const scoreCriteria = @json($scoreCriteria);
+        const scoreGroups   = @json($scoreGroups);
+        window.allTeachersData  = allTeachers;
+        window.scoreCriteriaData = scoreCriteria;
+        window.scoreGroupsData   = scoreGroups;
+        window.currentSupervisorName = @json(Auth::guard('web')->user()->SuperVisor_Name ?? '');
         const PAGE_SIZE = 10;
         let currentPage = 1;
 
