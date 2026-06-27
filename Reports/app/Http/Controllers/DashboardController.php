@@ -32,17 +32,31 @@ class DashboardController extends Controller
             $schools = School::whereIn('School_ID', $allTeachers->pluck('school_id'))->get();
 
             // Flatten everything the table/search needs into plain arrays for JS
+            $supervisorName = Auth::guard('admin')->check()
+                ? null
+                : Auth::guard('web')->user()->SuperVisor_Name;
+
             $teachersData = $allTeachers->map(fn($t) => [
                 'id'              => $t->Teacher_id,
                 'name'            => $t->Teacher_Name,
                 'school'          => $t->school->SchoolName ?? '-',
                 'school_id'       => $t->school_id,
+                'directorate'     => $t->school->directorate->Directorate_Name ?? '',
                 'major'           => $t->teacher_major,
                 'qualify'         => $t->teacher_qualify,
+                'academic_year'   => $t->academic_year ?? '',
                 'total'           => $t->grades->total ?? 0,
                 'assessment'      => $t->grades->assessment ?? ['label' => '—', 'color' => 'gray'],
                 'supervisor_note' => $t->supervisor_note ?? '',
+                'scores'          => $t->grades
+                    ? collect($t->grades->toArray())->only(array_keys(\App\Http\Controllers\TeacherGradeController::scoreCriteria()))
+                    : [],
             ])->values();
+
+            $scoreCriteria = collect(\App\Http\Controllers\TeacherGradeController::scoreCriteria())
+                ->map(fn($c, $field) => ['field' => $field, 'label' => $c[0], 'max' => $c[1]])
+                ->values();
+            $scoreGroups = \App\Http\Controllers\TeacherGradeController::scoreGroups();
 
             return view('supervisor-dashboard', compact(
                 'totalTeachers',
@@ -50,7 +64,9 @@ class DashboardController extends Controller
                 'highestScore',
                 'excellentCount',
                 'schools',
-                'teachersData'
+                'teachersData',
+                'scoreCriteria',
+                'scoreGroups'
             ));
         }
 

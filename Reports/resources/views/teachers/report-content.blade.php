@@ -1,4 +1,4 @@
-<div class="report-page">
+<div class="report-page" dir="rtl">
 
         <div class="header-row">
             
