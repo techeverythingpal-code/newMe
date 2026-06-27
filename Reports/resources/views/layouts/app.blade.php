@@ -119,10 +119,13 @@
                         const score = scores[c.field] ?? 0;
                         rowsHtml += `
                             <tr>
-                                <td>${score}</td>
-                                <td>${c.max}</td>
-                                <td class="indicator-cell">${escapeHtmlGlobal(c.label)}</td>
                                 ${i === 0 ? `<td class="group-cell" rowspan="${groupFields.length}">${escapeHtmlGlobal(groupLabel)}</td>` : ''}
+                                <td class="indicator-cell">${escapeHtmlGlobal(c.label)}</td>
+                                
+                                <td>${c.max}</td>
+                                <td>${score}</td>
+                                
+                                
                             </tr>`;
                     });
                 }
@@ -130,18 +133,20 @@
                 return `
                 <div class="report-page" dir="rtl">
                     <div class="header-row">
-                        <div class="header-block right">
-                            مديرية التربية والتعليم : ${escapeHtmlGlobal(t.directorate)}<br>
-                            المدرسة : ${escapeHtmlGlobal(t.school)}<br>
-                            الرقم الوطني : ${escapeHtmlGlobal(t.school_id)}
-                        </div>
-                        <div class="header-logo">
-                            <img src="{{ asset('images/logo.png') }}" alt="شعار دولة فلسطين">
-                        </div>
                         <div class="header-block center">
                             دولة فلسطين<br>
                             وزارة التربية والتعليم العالي<br>
                             الادارة العامة للإشراف التربوي
+                        </div>
+                        <div class="header-logo">
+                            <img src="{{ asset('images/logo.png') }}" alt="شعار دولة فلسطين">
+                        </div>
+                        
+
+                        <div class="header-block right">
+                            مديرية التربية والتعليم : ${escapeHtmlGlobal(t.directorate)}<br>
+                            المدرسة : ${escapeHtmlGlobal(t.school)}<br>
+                            الرقم الوطني : ${escapeHtmlGlobal(t.school_id)}
                         </div>
                     </div>
 
@@ -171,10 +176,13 @@
                     <table class="scores-table">
                         <thead>
                             <tr>
-                                <th style="width:7%">المعدل</th>
-                                <th style="width:7%">العلامة القصوى</th>
-                                <th>مؤشرات الاداء</th>
                                 <th style="width:14%">المجال</th>
+                                <th>مؤشرات الاداء</th>
+                                <th style="width:7%">العلامة القصوى</th>
+                                <th style="width:7%">المعدل</th>
+                                
+                                
+                                
                             </tr>
                         </thead>
                         <tbody>${rowsHtml}</tbody>
