@@ -25,7 +25,7 @@
                 body.printing-record #print-outlet { display: block !important; }
 
                 .report-page { max-width: 800px; margin: 0 auto; padding: 10px; font-family: 'Tahoma','Arial',sans-serif; color:#111; }
-                .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+                .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; margin-top:10px; }
                 .header-block { font-size: 13px; line-height: 1.6; }
                 .header-block.left { text-align: left; }
                 .header-block.right { text-align: right; }
