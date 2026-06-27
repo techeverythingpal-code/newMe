@@ -31,7 +31,7 @@
                 .header-block.right { text-align: right; }
                 .header-block.center { text-align: center; }
                 .header-logo { text-align: center; }
-                .header-logo img { width: 60px; height: 60px; }
+                .header-logo img { width: 60px;}
                 h1.report-title { text-align: center; font-size: 18px; margin: 10px 0 14px; border-bottom: 2px solid #333; padding-bottom: 8px; }
                 table.info-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 13px; }
                 table.info-table td { border: 1px solid #333; padding: 4px 10px; }
