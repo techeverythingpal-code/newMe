@@ -104,47 +104,7 @@ class TeacherGradeController extends Controller
         return view('grades.sheet', compact('teachers', 'scores'));
     }
     
-    public function reportHtml(TeacherInfo $teacher)
-    {
-        if (! Auth::guard('admin')->check()
-            && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
-            abort(403);
-        }
-
-        $teacher->load(['school', 'school.directorate', 'supervisor', 'grades']);
-
-        $criteria = self::scoreCriteria();
-        $groups   = self::scoreGroups();
-
-        $groupedRows = [];
-        $fields = array_keys($criteria);
-        $cursor = 0;
-
-        foreach ($groups as $groupLabel => $count) {
-            $rows = [];
-            for ($i = 0; $i < $count; $i++) {
-                $field = $fields[$cursor];
-                [$label, $max] = $criteria[$field];
-                $rows[] = [
-                    'label' => $label,
-                    'max'   => $max,
-                    'score' => $teacher->grades->$field ?? 0,
-                ];
-                $cursor++;
-            }
-            $groupedRows[$groupLabel] = $rows;
-        }
-
-        $total = $teacher->grades->total ?? 0;
-        $totalWords = self::numberToArabicWords($total);
-
-        return view('teachers.report-content', [
-            'teacher'     => $teacher,
-            'groupedRows' => $groupedRows,
-            'total'       => $total,
-            'totalWords'  => $totalWords,
-        ]);
-    }
+   
 
     
 
