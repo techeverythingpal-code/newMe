@@ -3,7 +3,7 @@
         <div class="header-row">
             
 
-            <div class="header-block " right>
+            <div class="header-block " left>
                 دولة فلسطين<br>
                 وزارة التربية والتعليم العالي<br>
                 الادارة العامة للإشراف التربوي
@@ -12,7 +12,7 @@
                 <img src="{{ asset('images/logo.png') }}" alt="شعار دولة فلسطين">
             </div>
 
-            <div class="header-block " left>
+            <div class="header-block " right>
                مديرية التربية والتعليم : {{ $teacher->school->directorate->Directorate_Name ?? '' }}<br>
                 المدرسة : {{ $teacher->school->SchoolName ?? '' }}<br>
                 الرقم الوطني : {{ $teacher->school->School_ID ?? '' }}
