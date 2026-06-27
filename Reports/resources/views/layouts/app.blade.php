@@ -188,16 +188,19 @@
                         <tbody>${rowsHtml}</tbody>
                         <tfoot>
                             <tr>
-                                <td>${t.total}</td>
-                                <td>100</td>
                                 <td colspan="2">المجموع بالارقام</td>
+                                <td>100</td>
+                                <td>${t.total}</td>
+                                
+                                
                             </tr>
                         </tfoot>
                     </table>
 
                     <div class="footer-row">
+                       <div>التاريخ : ${today}</div>
                         <div>المجموع بالحروف : ${numberToArabicWordsJs(t.total)}</div>
-                        <div>التاريخ : ${today}</div>
+                        
                     </div>
 
                     <div class="notes-line">
