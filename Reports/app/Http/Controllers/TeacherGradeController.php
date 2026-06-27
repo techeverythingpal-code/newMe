@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TeacherGrade;
 use App\Models\TeacherInfo;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
-use ArPHP\I18N\Arabic;
+
 use Illuminate\Support\Facades\Auth;
 
 class TeacherGradeController extends Controller
@@ -106,8 +105,7 @@ class TeacherGradeController extends Controller
     }
     public function printReport(TeacherInfo $teacher)
     {
-        // Initialize Ar-PHP and convert text to proper Arabic glyphs
-        $Arabic = new Arabic('Glyphs');
+        
         
         if (! Auth::guard('admin')->check()
             && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {

@@ -8,9 +8,19 @@
             size: A4;
             margin: 15mm 12mm;
         }
+        @font-face {
+            font-family: 'Amiri';
+            src: url('{{ public_path('fonts/Amiri-Regular.ttf') }}') format('truetype');
+            font-weight: normal;
+        }
+        @font-face {
+            font-family: 'Amiri';
+            src: url('{{ public_path('fonts/Amiri-Bold.ttf') }}') format('truetype');
+            font-weight: bold;
+        }
         * { box-sizing: border-box; }
         body {
-            font-family: 'Tahoma', 'Arial', sans-serif;
+            font-family: 'Amiri', sans-serif;
             direction: rtl;
             color: #111;
             margin: 0;
@@ -144,7 +154,7 @@
                 الادارة العامة للإشراف التربوي
             </div>
             <div class="header-logo">
-                <img src="{{ asset('images/logo.png') }}" alt="شعار دولة فلسطين">
+                <img src="{{ public_path('images/logo.png') }}" alt="شعار دولة فلسطين">
             </div>
 
             <div class="header-block " left>
