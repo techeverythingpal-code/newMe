@@ -260,9 +260,9 @@
                         <button type="button" class="note-toggle-btn bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             🗒️ إضافة ملاحظات المشرف
                         </button>
-                        <a href="${routes.report(t.id)}" target="_blank" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                        <button type="button" onclick="printTeacherReport(${t.id})" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             🖨️ طباعة
-                        </a>
+                        </button>
                         <a href="${routes.show(t.id)}"
                             class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             👁️ عرض
