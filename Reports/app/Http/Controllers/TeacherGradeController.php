@@ -162,6 +162,36 @@ class TeacherGradeController extends Controller
     ]);
 }
 
+// Prints a chosen set of teachers (?ids[]=1&ids[]=2...), or everyone in scope if no ids given
+public function reportBulk(Request $request)
+{
+    $ids = $request->query('ids', []);
+
+    if (! Auth::guard('admin')->check()) {
+        $query = TeacherInfo::where('supervisor_id', Auth::guard('web')->user()->SuperVisor_id);
+    } else {
+        $query = TeacherInfo::query();
+    }
+
+    if (!empty($ids)) {
+        $query->whereIn('Teacher_id', $ids);
+    }
+
+    $teachers = $query->with(['school.directorate', 'supervisor', 'grades'])
+        ->orderBy('Teacher_Name')
+        ->get();
+
+    if ($teachers->isEmpty()) {
+        abort(404, 'لا يوجد معلمون مطابقون');
+    }
+
+    return view('teachers.print-bulk', [
+        'teachers' => $teachers,
+        'criteria' => self::scoreCriteria(),
+        'groups'   => self::scoreGroups(),
+    ]);
+}
+
 
     private function zeroedScores(): array
     {

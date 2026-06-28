@@ -69,6 +69,26 @@
                     <h3 class="font-semibold text-gray-700">معلمون</h3>
                 </div>
 
+                <div class="flex flex-wrap items-center gap-2 mb-4 bg-gray-50 rounded-lg p-3">
+    <span class="text-sm font-bold text-gray-600">اطبع النطاق:</span>
+    <span class="text-sm text-gray-500">من المعلم رقم:</span>
+    <select id="rangeFromSelect" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
+        <option value="">-- اختر --</option>
+    </select>
+    <span class="text-sm text-gray-500">إلى المعلم رقم:</span>
+    <select id="rangeToSelect" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
+        <option value="">-- اختر --</option>
+    </select>
+    <button type="button" id="printRangeBtn"
+        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition">
+        🖨️ طباعة النطاق
+    </button>
+    <button type="button" id="printAllBtn"
+        class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition">
+        🖨️ طباعة الكل
+    </button>
+</div>
+
                 {{-- Filters (instant, client-side — no page reload) --}}
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-5">
                     <input type="text" id="searchInput"
@@ -135,6 +155,52 @@
             destroy:     id => "{{ url('teachers') }}/" + id,
             resetScores: id => "{{ url('teachers') }}/" + id + "/grades/reset",
         };
+
+        routes.reportsBulk = (ids) => {
+    const base = "{{ route('teachers.reports.print') }}";
+    if (!ids || ids.length === 0) return base;
+    const params = ids.map(id => 'ids[]=' + encodeURIComponent(id)).join('&');
+    return base + '?' + params;
+};
+
+const rangeFromSelect = document.getElementById('rangeFromSelect');
+const rangeToSelect   = document.getElementById('rangeToSelect');
+
+allTeachers.forEach((t, idx) => {
+    const label = (idx + 1) + ' - ' + t.name;
+
+    const opt1 = document.createElement('option');
+    opt1.value = idx;
+    opt1.textContent = label;
+    rangeFromSelect.appendChild(opt1);
+
+    const opt2 = document.createElement('option');
+    opt2.value = idx;
+    opt2.textContent = label;
+    rangeToSelect.appendChild(opt2);
+});
+
+document.getElementById('printRangeBtn').addEventListener('click', () => {
+    const fromIdx = rangeFromSelect.value;
+    const toIdx   = rangeToSelect.value;
+
+    if (fromIdx === '' || toIdx === '') {
+        alert('يرجى اختيار نطاق المعلمين أولاً');
+        return;
+    }
+
+    const start = Math.min(Number(fromIdx), Number(toIdx));
+    const end   = Math.max(Number(fromIdx), Number(toIdx));
+    const ids   = allTeachers.slice(start, end + 1).map(t => t.id);
+
+    window.open(routes.reportsBulk(ids), '_blank');
+});
+
+document.getElementById('printAllBtn').addEventListener('click', () => {
+    window.open(routes.reportsBulk([]), '_blank');
+});
+
+
 
         const searchInput    = document.getElementById('searchInput');
         const schoolFilter   = document.getElementById('schoolFilter');
@@ -266,10 +332,12 @@
                         <button type="button" class="note-toggle-btn bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             🗒️ إضافة ملاحظات المشرف
                         </button>
-                       {{-- <button type="button" onclick="printTeacherReport(${t.id})" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">
-                            🖨️ طباعة
-                        </button> --}} 
-                        <a href="{{ url('teachers') }}/${t.id}/report" target="_blank" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">🖨️ تقرير</a>
+
+                        <a href="${routes.report(t.id)}" target="_blank"
+    class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+    🖨️ طباعة
+</a>
+                       
 
                         <a href="${routes.show(t.id)}"
                             class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
