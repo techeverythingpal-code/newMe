@@ -24,11 +24,19 @@
         table.info-table td { border: 1px solid #333; padding: 4px 10px; }
         table.info-table td.label { font-weight: bold; background: #f3f4f6; width: 16%; }
         table.info-table td.value { width: 34%; }
-        table.scores-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+        table.scores-table { width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    table-layout: fixed;}
         table.scores-table th, table.scores-table td { border: 1px solid #333; padding: 3px 8px; text-align: center; font-size: 11.5px; }
         table.scores-table thead th { background: #e5e7eb; font-weight: bold; }
         table.scores-table td.indicator-cell { text-align: right; }
-        table.scores-table td.group-cell { font-weight: bold;background: #f9fafb;vertical-align: middle; }
+        table.scores-table td.group-cell { font-weight: bold;
+    background: #f9fafb;
+    vertical-align: middle;
+    width: 9%;
+    white-space: normal;
+    word-wrap: break-word; }
         table.scores-table tfoot td { font-weight: bold; background: #f3f4f6; }
         .footer-row { display: flex; justify-content: space-between; margin-top: 14px; font-size: 13px; }
         .notes-line { margin-top: 14px; font-size: 13px; }
@@ -90,7 +98,7 @@
         <table class="scores-table">
             <thead>
                 <tr>
-                    <th style="width:10%">المجال</th>
+                    <th style="width:9%">المجال</th>
                     <th>مؤشرات الاداء</th>
                     <th style="width:7%">العلامة القصوى</th>
                     <th style="width:7%">المعدل</th>
