@@ -51,6 +51,10 @@
             @page { size: A4 portrait; margin: 0.5cm; }
             body { padding: 0; background: #fff; }
             .toolbar { display: none; }
+            #academic-year-input {
+        border: none !important;
+        background: transparent !important;
+    }
         }
     </style>
 </head>
@@ -96,7 +100,12 @@
                 <td class="label">تاريخ التعيين</td>
                 <td class="value">{{ $teacher->date }}</td>
                 <td class="label">العام الدراسي</td>
-                <td class="value">{{ $teacher->academic_year ?? '—' }}</td>
+                <td class="value">
+    <input type="text" id="academic-year-input"
+        value="{{ $teacher->academic_year ?? '' }}"
+        placeholder="مثال: 2025/2026"
+        style="border:none; background:transparent; width:100%; text-align:center; font-size:13px; font-family:inherit;">
+</td>
             </tr>
         </table>
 
