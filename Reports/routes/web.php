@@ -37,6 +37,8 @@ Route::middleware(['auth:admin,web'])->group(function () {
     Route::resource('teachers', TeacherInfoController::class);
     Route::patch('teachers/{teacher}/grades/quick', [TeacherGradeController::class, 'quickUpdate'])->name('teacher-grades.quick-update');
     Route::get('teachers/{teacher}/grades/edit', [TeacherGradeController::class, 'edit'])->name('teacher-grades.edit');
+    Route::get('teachers/{teacher}/report', [TeacherGradeController::class, 'report'])->name('teacher-grades.report');
+    
     Route::get('teachers/{teacher}/justification', [TeacherInfoController::class, 'justification'])->name('teachers.justification');
     Route::post('teachers/{teacher}/justification', [TeacherInfoController::class, 'storeJustification'])->name('teachers.justification.store');
     Route::patch('teachers/{teacher}/supervisor-note', [TeacherInfoController::class, 'updateSupervisorNote'])->name('teachers.supervisor-note.update');
