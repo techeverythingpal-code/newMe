@@ -29,11 +29,11 @@
     font-size: 12.5px;
     table-layout: fixed;}
         table.scores-table th, table.scores-table td { border: 1px solid #333;
-    padding: 5px 8px;
+    padding: 6px 8px;
     text-align: center;
     vertical-align: middle;
     font-size: 11.5px;
-    line-height: 1.2; }
+    line-height: 1.3; }
         table.scores-table thead th { background: #e5e7eb; font-weight: bold; }
         table.scores-table td.indicator-cell { text-align: right; vertical-align: middle;}
         table.scores-table td.group-cell { font-weight: bold;
