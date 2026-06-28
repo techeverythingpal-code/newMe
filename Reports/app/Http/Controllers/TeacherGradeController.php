@@ -146,6 +146,23 @@ class TeacherGradeController extends Controller
             ->with('success', 'تم حفظ الدرجات بنجاح');
     }
 
+    public function report(TeacherInfo $teacher)
+{
+    if (! Auth::guard('admin')->check()
+        && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
+        abort(403);
+    }
+
+    $teacher->load(['school.directorate', 'supervisor', 'grades']);
+
+    return view('teachers.print', [
+        'teacher'  => $teacher,
+        'criteria' => self::scoreCriteria(),
+        'groups'   => self::scoreGroups(),
+    ]);
+}
+
+
     private function zeroedScores(): array
     {
         $data = ['total' => 0];
