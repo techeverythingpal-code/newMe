@@ -20,6 +20,7 @@ class DashboardController extends Controller
 
             $allTeachers = TeacherInfo::with(['school', 'grades'])
                 ->where('supervisor_id', $user->SuperVisor_id)
+                ->orderBy('Teacher_Name')
                 ->get();
 
             $totalTeachers   = $allTeachers->count();
