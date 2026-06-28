@@ -103,8 +103,8 @@
                 <td class="value">
     <input type="text" id="academic-year-input"
         value="{{ $teacher->academic_year ?? '' }}"
-        placeholder="مثال: 2025/2026"
-        style="border:none; background:transparent; width:100%; text-align:center; font-size:13px; font-family:inherit;">
+        placeholder="العام الدراسي هنا"
+        style="border:none; background:transparent; width:100%; text-align:right; font-size:13px; font-family:inherit;">
 </td>
             </tr>
         </table>
