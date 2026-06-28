@@ -34,7 +34,7 @@
         table.scores-table td.group-cell { font-weight: bold;
     background: #f9fafb;
     vertical-align: middle;
-    width: 9%;
+    width: 10%;
     white-space: normal;
     word-wrap: break-word; }
         table.scores-table tfoot td { font-weight: bold; background: #f3f4f6; }
@@ -98,7 +98,7 @@
         <table class="scores-table">
             <thead>
                 <tr>
-                    <th style="width:9%">المجال</th>
+                    <th style="width:10%">المجال</th>
                     <th>مؤشرات الاداء</th>
                     <th style="width:7%">العلامة القصوى</th>
                     <th style="width:7%">المعدل</th>
