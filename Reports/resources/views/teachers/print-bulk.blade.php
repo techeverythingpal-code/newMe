@@ -64,7 +64,7 @@
 
     <div class="toolbar">
         <span>عدد التقارير: {{ $teachers->count() }}</span>
-        <button onclick="window.print()">🖨️ طباعة الكل</button>
+        <button onclick="window.print()">🖨️ طباعة التقارير المختارة</button>
     </div>
 
     @foreach($teachers as $teacher)
