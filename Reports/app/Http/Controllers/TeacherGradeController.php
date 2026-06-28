@@ -146,7 +146,7 @@ class TeacherGradeController extends Controller
             ->with('success', 'تم حفظ الدرجات بنجاح');
     }
 
-    public function report(TeacherInfo $teacher)
+   public function report(Request $request, TeacherInfo $teacher)
 {
     if (! Auth::guard('admin')->check()
         && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
@@ -156,9 +156,10 @@ class TeacherGradeController extends Controller
     $teacher->load(['school.directorate', 'supervisor', 'grades']);
 
     return view('teachers.print', [
-        'teacher'  => $teacher,
-        'criteria' => self::scoreCriteria(),
-        'groups'   => self::scoreGroups(),
+        'teacher'      => $teacher,
+        'criteria'     => self::scoreCriteria(),
+        'groups'       => self::scoreGroups(),
+        'academicYear' => $request->query('academic_year', '2026/2027'),
     ]);
 }
 
@@ -186,9 +187,10 @@ public function reportBulk(Request $request)
     }
 
     return view('teachers.print-bulk', [
-        'teachers' => $teachers,
-        'criteria' => self::scoreCriteria(),
-        'groups'   => self::scoreGroups(),
+        'teachers'     => $teachers,
+        'criteria'     => self::scoreCriteria(),
+        'groups'       => self::scoreGroups(),
+        'academicYear' => $request->query('academic_year', '2026/2027'),
     ]);
 }
 

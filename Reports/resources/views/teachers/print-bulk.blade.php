@@ -25,7 +25,7 @@
         table.info-table td { border: 1px solid #333; padding: 4px 10px; }
         table.info-table td.label { font-weight: bold; background: #f3f4f6; width: 16%; }
         table.info-table td.value { width: 34%; }
-        .academic-year-input { border:none; background:transparent; width:100%; text-align:center; font-size:13px; font-family:inherit; }
+        
         table.scores-table { width: 100%; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; }
         table.scores-table th, table.scores-table td {
             border: 1px solid #333;
@@ -68,7 +68,7 @@
     </div>
 
     @foreach($teachers as $teacher)
-        @include('teachers.partials.report-body', ['teacher' => $teacher, 'criteria' => $criteria, 'groups' => $groups])
+        @include('teachers.partials.report-body', ['teacher' => $teacher, 'criteria' => $criteria, 'groups' => $groups, 'academicYear' => $academicYear])
     @endforeach
 
 </body>

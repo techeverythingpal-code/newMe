@@ -38,12 +38,7 @@
             <td class="label">تاريخ التعيين</td>
             <td class="value">{{ $teacher->date }}</td>
             <td class="label">العام الدراسي</td>
-            <td class="value">
-                <input type="text" id="academic-year-input-{{ $teacher->Teacher_id }}"
-                    value="{{ $teacher->academic_year ?? '' }}"
-                    placeholder="مثال: 2025/2026"
-                    class="academic-year-input">
-            </td>
+            <td class="value">{{ $academicYear }}</td>
         </tr>
     </table>
 
