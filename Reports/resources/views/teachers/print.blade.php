@@ -28,13 +28,18 @@
     border-collapse: collapse;
     font-size: 12.5px;
     table-layout: fixed;}
-        table.scores-table th, table.scores-table td { border: 1px solid #333; padding: 3px 8px; text-align: center; font-size: 11.5px; }
+        table.scores-table th, table.scores-table td { border: 1px solid #333;
+    padding: 8px 8px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 11.5px;
+    line-height: 1.5; }
         table.scores-table thead th { background: #e5e7eb; font-weight: bold; }
-        table.scores-table td.indicator-cell { text-align: right; }
+        table.scores-table td.indicator-cell { text-align: right; vertical-align: middle;}
         table.scores-table td.group-cell { font-weight: bold;
     background: #f9fafb;
     vertical-align: middle;
-    width: 11%;
+    width: 10%;
     white-space: normal;
     word-wrap: break-word; }
         table.scores-table tfoot td { font-weight: bold; background: #f3f4f6; }
