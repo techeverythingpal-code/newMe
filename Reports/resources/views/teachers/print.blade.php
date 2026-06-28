@@ -5,7 +5,7 @@
     <title>تقرير الاداء السنوي - {{ $teacher->Teacher_Name }}</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: 'Tahoma','Arial',sans-serif; color:#111; background:#f3f4f6; margin:0; padding:20px; }
+        body { font-family: 'Tahoma','Arial',sans-serif; color:#111; background:#f3f4f6; margin:0; padding:10px; }
         .toolbar { max-width:800px; margin:0 auto 14px; display:flex; justify-content:flex-end; gap:8px; }
         .toolbar button {
             background:#2563eb; color:#fff; border:none; padding:8px 18px;
@@ -28,7 +28,7 @@
         table.scores-table th, table.scores-table td { border: 1px solid #333; padding: 3px 8px; text-align: center; font-size: 11.5px; }
         table.scores-table thead th { background: #e5e7eb; font-weight: bold; }
         table.scores-table td.indicator-cell { text-align: right; }
-        table.scores-table td.group-cell { font-weight: bold; background: #f9fafb; }
+        table.scores-table td.group-cell { font-weight: bold;background: #f9fafb;vertical-align: middle; }
         table.scores-table tfoot td { font-weight: bold; background: #f3f4f6; }
         .footer-row { display: flex; justify-content: space-between; margin-top: 14px; font-size: 13px; }
         .notes-line { margin-top: 14px; font-size: 13px; }
@@ -90,7 +90,7 @@
         <table class="scores-table">
             <thead>
                 <tr>
-                    <th style="width:12%">المجال</th>
+                    <th style="width:10%">المجال</th>
                     <th>مؤشرات الاداء</th>
                     <th style="width:7%">العلامة القصوى</th>
                     <th style="width:7%">المعدل</th>

@@ -269,7 +269,7 @@
                        {{-- <button type="button" onclick="printTeacherReport(${t.id})" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             🖨️ طباعة
                         </button> --}} 
-                        <a href="{{ url('teachers') }}/${t.id}/report" target="_blank">🖨️ تقرير</a>
+                        <a href="{{ url('teachers') }}/${t.id}/report" target="_blank" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">🖨️ تقرير</a>
 
                         <a href="${routes.show(t.id)}"
                             class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
