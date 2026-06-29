@@ -67,33 +67,33 @@
                 </div>
 
                 {{-- Academic year + bulk print --}}
-                <div class="flex flex-wrap items-center gap-2 mb-4 bg-gray-50 rounded-lg p-3">
-                    <span class="text-sm font-bold text-gray-600">العام الدراسي:</span>
-                    <select id="academicYearSelect" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
-                        <option value="2026/2027">2026/2027</option>
-                        <option value="2027/2028">2027/2028</option>
-                        <option value="2028/2029">2028/2029</option>
-                        <option value="2029/2030">2029/2030</option>
-                    </select>
+                <div class="flex flex-wrap items-center gap-3 mb-4 bg-gray-50 rounded-lg p-4">
+    <span class="text-sm font-bold text-gray-600">العام الدراسي:</span>
+    <select id="academicYearSelect" class="border border-gray-300 rounded-lg px-3 py-2 text-sm min-w-[120px]">
+        <option value="2026/2027">2026/2027</option>
+        <option value="2027/2028">2027/2028</option>
+        <option value="2028/2029">2028/2029</option>
+        <option value="2029/2030">2029/2030</option>
+    </select>
 
-                    <span class="text-sm font-bold text-gray-600 mr-4">اطبع النطاق:</span>
-                    <span class="text-sm text-gray-500">من المعلم رقم:</span>
-                    <select id="rangeFromSelect" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
-                        <option value="">-- اختر --</option>
-                    </select>
-                    <span class="text-sm text-gray-500">إلى المعلم رقم:</span>
-                    <select id="rangeToSelect" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
-                        <option value="">-- اختر --</option>
-                    </select>
-                    <button type="button" id="printRangeBtn"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition">
-                        🖨️ طباعة النطاق
-                    </button>
-                    <button type="button" id="printAllBtn"
-                        class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition">
-                        🖨️ طباعة الكل
-                    </button>
-                </div>
+    <span class="text-sm font-bold text-gray-600 mr-4">اطبع النطاق:</span>
+    <span class="text-sm text-gray-500">من المعلم رقم:</span>
+    <select id="rangeFromSelect" class="border border-gray-300 rounded-lg px-3 py-2 text-sm min-w-[180px]">
+        <option value="">-- اختر --</option>
+    </select>
+    <span class="text-sm text-gray-500">إلى المعلم رقم:</span>
+    <select id="rangeToSelect" class="border border-gray-300 rounded-lg px-3 py-2 text-sm min-w-[180px]">
+        <option value="">-- اختر --</option>
+    </select>
+    <button type="button" id="printRangeBtn"
+        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
+        🖨️ طباعة النطاق
+    </button>
+    <button type="button" id="printAllBtn"
+        class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
+        🖨️ طباعة الكل
+    </button>
+</div>
 
                 {{-- Filters (instant, client-side — no page reload) --}}
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-5">
