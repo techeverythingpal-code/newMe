@@ -126,7 +126,7 @@ class TeacherInfoController extends Controller
         $this->authorizeTeacherAccess($teacher);
 
         $validated = $request->validate([
-            'supervisor_note' => 'nullable|string|max:2000',
+    'supervisor_note' => 'nullable|string|max:250',
         ]);
 
         $teacher->update($validated);
