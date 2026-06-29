@@ -109,33 +109,29 @@
 </div>
 
                 {{-- Filters (instant, client-side — no page reload) --}}
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-5">
-                    <input type="text" id="searchInput"
-                        placeholder="بحث (اسم، تخصص، مؤهل...)"
-                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm md:col-span-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+    <input type="text" id="searchInput"
+        placeholder="بحث (اسم، تخصص، مؤهل...)"
+        class="border border-gray-300 rounded-lg px-3 py-2 text-sm md:col-span-2">
 
-                    <select id="schoolFilter" class=" rtl-select border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                        <option value="">كل المدارس</option>
-                        @foreach($schools as $school)
-                            <option value="{{ $school->School_ID }}">{{ $school->SchoolName }}</option>
-                        @endforeach
-                    </select>
+    <select id="schoolFilter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        <option value="">كل المدارس</option>
+        @foreach($schools as $school)
+            <option value="{{ $school->School_ID }}">{{ $school->SchoolName }}</option>
+        @endforeach
+    </select>
 
-                    <input type="number" id="minScoreFilter"
-                        placeholder="من (المجموع)"
-                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+    {{-- Hidden — driven internally by the stat cards, not user-editable --}}
+    <input type="hidden" id="minScoreFilter">
+    <input type="hidden" id="maxScoreFilter">
 
-                    <input type="number" id="maxScoreFilter"
-                        placeholder="إلى (المجموع)"
-                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
-
-                    <div class="md:col-span-5 flex gap-2 justify-end">
-                        <button id="resetFilters" type="button"
-                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg text-sm transition">
-                            إعادة تعيين
-                        </button>
-                    </div>
-                </div>
+    <div class="md:col-span-3 flex gap-2 justify-end">
+        <button id="resetFilters" type="button"
+            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg text-sm transition">
+            إعادة تعيين
+        </button>
+    </div>
+</div>
 
                 <div id="teachersCardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {{-- Cards are rendered by JavaScript --}}
