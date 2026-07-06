@@ -85,8 +85,8 @@
     </div>
 
     <div class="notes-line">
-        ملحوظات المشرف وتوصياته : {{ $teacher->supervisor_note ?? '-' }}
-    </div>
+    ملحوظات المشرف وتوصياته : {{ $teacher->supervisor_note ?? '-' }}
+</div>
 
     <div class="signature-line">
         اسم المشرف وتوقيعه : {{ $teacher->supervisor->SuperVisor_Name ?? '' }}

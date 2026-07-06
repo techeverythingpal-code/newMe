@@ -71,24 +71,32 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-gray-700 font-bold mb-2">
-                            المشرف <span class="text-red-500">*</span>
-                        </label>
-                        <select name="supervisor_id"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                            required>
-                            <option value="">-- اختر المشرف --</option>
-                            @foreach($supervisors as $supervisor)
-                                <option value="{{ $supervisor->SuperVisor_id }}"
-                                    {{ $teacher->supervisor_id == $supervisor->SuperVisor_id ? 'selected' : '' }}>
-                                    {{ $supervisor->SuperVisor_Name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('supervisor_id')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+    <label class="block text-gray-700 font-bold mb-2">
+        المشرف <span class="text-red-500">*</span>
+    </label>
+    @if (auth()->guard('admin')->check())
+        <select name="supervisor_id"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            required>
+            <option value="">-- اختر المشرف --</option>
+            @foreach($supervisors as $supervisor)
+                <option value="{{ $supervisor->SuperVisor_id }}"
+                    {{ $teacher->supervisor_id == $supervisor->SuperVisor_id ? 'selected' : '' }}>
+                    {{ $supervisor->SuperVisor_Name }}
+                </option>
+            @endforeach
+        </select>
+    @else
+        <input type="text"
+            value="{{ optional($supervisors->firstWhere('SuperVisor_id', $teacher->supervisor_id))->SuperVisor_Name }}"
+            class="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-100 cursor-not-allowed"
+            disabled>
+        <input type="hidden" name="supervisor_id" value="{{ $teacher->supervisor_id }}">
+    @endif
+    @error('supervisor_id')
+        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+    @enderror
+</div>
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">

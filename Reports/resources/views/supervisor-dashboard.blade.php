@@ -5,8 +5,21 @@
         </h2>
     </x-slot>
 
+<style>
+    .rtl-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23666'%3E%3Cpath d='M5.5 7l4.5 4.5L14.5 7' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 10px center;
+    background-size: 14px;
+    padding-left: 32px;
+}
+</style>
+
     <div class="py-6" dir="rtl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Stats Cards --}}
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -67,62 +80,58 @@
                 </div>
 
                 {{-- Academic year + bulk print --}}
-                <div class="flex flex-wrap items-center gap-2 mb-4 bg-gray-50 rounded-lg p-3">
-                    <span class="text-sm font-bold text-gray-600">العام الدراسي:</span>
-                    <select id="academicYearSelect" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
-                        <option value="2026/2027">2026/2027</option>
-                        <option value="2027/2028">2027/2028</option>
-                        <option value="2028/2029">2028/2029</option>
-                        <option value="2029/2030">2029/2030</option>
-                    </select>
+                <div class="flex flex-wrap items-center gap-3 mb-4 bg-gray-50 rounded-lg p-4">
+    <span class="text-sm font-bold text-gray-600">العام الدراسي:</span>
+    <select id="academicYearSelect" class="rtl-select border border-gray-300 rounded-lg px-3 py-2 text-sm min-w-[120px]">
+        <option value="2026/2027">2026/2027</option>
+        <option value="2027/2028">2027/2028</option>
+        <option value="2028/2029">2028/2029</option>
+        <option value="2029/2030">2029/2030</option>
+    </select>
 
-                    <span class="text-sm font-bold text-gray-600 mr-4">اطبع النطاق:</span>
-                    <span class="text-sm text-gray-500">من المعلم رقم:</span>
-                    <select id="rangeFromSelect" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
-                        <option value="">-- اختر --</option>
-                    </select>
-                    <span class="text-sm text-gray-500">إلى المعلم رقم:</span>
-                    <select id="rangeToSelect" class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
-                        <option value="">-- اختر --</option>
-                    </select>
-                    <button type="button" id="printRangeBtn"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition">
-                        🖨️ طباعة النطاق
-                    </button>
-                    <button type="button" id="printAllBtn"
-                        class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition">
-                        🖨️ طباعة الكل
-                    </button>
-                </div>
+    <span class="text-sm font-bold text-gray-600 mr-4">اطبع النطاق:</span>
+    <span class="text-sm text-gray-500">من المعلم رقم:</span>
+    <select id="rangeFromSelect" class=" rtl-select border border-gray-300 rounded-lg px-3 py-2 text-sm min-w-[180px]">
+        <option value="">-- اختر --</option>
+    </select>
+    <span class="text-sm text-gray-500">إلى المعلم رقم:</span>
+    <select id="rangeToSelect" class="border rtl-select border-gray-300 rounded-lg px-3 py-2 text-sm min-w-[180px]">
+        <option value="">-- اختر --</option>
+    </select>
+    <button type="button" id="printRangeBtn"
+        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
+        🖨️ طباعة النطاق
+    </button>
+    <button type="button" id="printAllBtn"
+        class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
+        🖨️ طباعة الكل
+    </button>
+</div>
 
                 {{-- Filters (instant, client-side — no page reload) --}}
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-5">
-                    <input type="text" id="searchInput"
-                        placeholder="بحث (اسم، تخصص، مؤهل...)"
-                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm md:col-span-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+    <input type="text" id="searchInput"
+        placeholder="بحث (اسم، تخصص، مؤهل...)"
+        class="border border-gray-300 rounded-lg px-3 py-2 text-sm md:col-span-2">
 
-                    <select id="schoolFilter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                        <option value="">كل المدارس</option>
-                        @foreach($schools as $school)
-                            <option value="{{ $school->School_ID }}">{{ $school->SchoolName }}</option>
-                        @endforeach
-                    </select>
+    <select id="schoolFilter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        <option value="">كل المدارس</option>
+        @foreach($schools as $school)
+            <option value="{{ $school->School_ID }}">{{ $school->SchoolName }}</option>
+        @endforeach
+    </select>
 
-                    <input type="number" id="minScoreFilter"
-                        placeholder="من (المجموع)"
-                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+    {{-- Hidden — driven internally by the stat cards, not user-editable --}}
+    <input type="hidden" id="minScoreFilter">
+    <input type="hidden" id="maxScoreFilter">
 
-                    <input type="number" id="maxScoreFilter"
-                        placeholder="إلى (المجموع)"
-                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
-
-                    <div class="md:col-span-5 flex gap-2 justify-end">
-                        <button id="resetFilters" type="button"
-                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg text-sm transition">
-                            إعادة تعيين
-                        </button>
-                    </div>
-                </div>
+    <div class="md:col-span-3 flex gap-2 justify-end">
+        <button id="resetFilters" type="button"
+            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg text-sm transition">
+            إعادة تعيين
+        </button>
+    </div>
+</div>
 
                 <div id="teachersCardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {{-- Cards are rendered by JavaScript --}}
@@ -147,7 +156,7 @@
         window.scoreCriteriaData = scoreCriteria;
         window.scoreGroupsData   = scoreGroups;
         window.currentSupervisorName = @json(Auth::guard('web')->user()->SuperVisor_Name ?? '');
-        const PAGE_SIZE = 10;
+        const PAGE_SIZE = 9;
         let currentPage = 1;
 
         const routes = {
@@ -380,8 +389,10 @@
                     </div>
 
                     <div class="note-box hidden mt-2 pt-2 border-t border-gray-100">
-                        <textarea class="note-textarea w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-yellow-300" rows="2" placeholder="اكتب ملاحظة...">${escapeHtml(t.supervisor_note)}</textarea>
-                        <div class="flex justify-end gap-2 mt-1">
+                        <textarea class="note-textarea w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-yellow-300" rows="2" maxlength="250" placeholder="اكتب ملاحظة...">${escapeHtml(t.supervisor_note)}</textarea>
+                    <div class="flex justify-between items-center mt-1">
+                        <span class="note-counter text-xs text-gray-400">0/180</span>
+                        <div class="flex items-center gap-2">
                             <span class="note-status text-xs text-gray-400"></span>
                             <button type="button" class="note-save-btn bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                                 حفظ الملاحظة
@@ -396,6 +407,17 @@
                 const noteSave   = card.querySelector('.note-save-btn');
                 const noteText   = card.querySelector('.note-textarea');
                 const noteStatus = card.querySelector('.note-status');
+                const noteCounter = card.querySelector('.note-counter');
+
+                function updateNoteCounter() {
+                const len = noteText.value.length;
+                noteCounter.textContent = len + '/250';
+                noteCounter.classList.toggle('text-red-500', len >= 250);
+                noteCounter.classList.toggle('text-gray-400', len < 250);
+                }
+
+                updateNoteCounter();
+                noteText.addEventListener('input', updateNoteCounter);
 
                 noteToggle.addEventListener('click', () => noteBox.classList.toggle('hidden'));
 
