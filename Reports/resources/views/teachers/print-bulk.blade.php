@@ -50,6 +50,14 @@
         .notes-line { margin-top: 14px; font-size: 13px; }
         .signature-line { margin-top: 10px; font-size: 13px; text-align: left; }
 
+        .notes-line {
+            margin-top: 14px;
+            font-size: 13px;
+            max-height: 40px;
+            overflow: hidden;
+            line-height: 1.4;
+            }
+
         @media print {
             @page { size: A4 portrait; margin: 0.5cm; }
             body { padding: 0; background: #fff; }
