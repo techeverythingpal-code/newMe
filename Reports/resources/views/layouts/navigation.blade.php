@@ -60,7 +60,7 @@
                                 {{ request()->routeIs('teachers.*')
                                     ? 'bg-white/20 text-white'
                                     : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
-                            <span>🧑‍🏫</span> معلمون
+                            <span>🧑‍🏫</span> جميع المعلمين
                         </a>
                         <a href="{{ route('teacher-grades.sheet') }}"
                             class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
