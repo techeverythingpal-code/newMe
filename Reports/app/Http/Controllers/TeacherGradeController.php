@@ -47,6 +47,8 @@ class TeacherGradeController extends Controller
 
         return $ones[$onesPart] . ' و' . $tens[$tensPart];
     }
+
+    
     public static function scoreCriteria(): array
     {
         return [
