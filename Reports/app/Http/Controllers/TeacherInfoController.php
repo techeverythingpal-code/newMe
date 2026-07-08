@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TeacherInfo;
 use App\Models\TeacherGrade;
 use App\Models\School;
+use App\Http\Controllers\TeacherGradeController;
 use App\Models\SuperVisor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -78,8 +79,10 @@ class TeacherInfoController extends Controller
 
     public function show(TeacherInfo $teacher)
     {
-        $teacher->load(['school', 'supervisor', 'grades']);
-        return view('teachers.show', compact('teacher'));
+
+     $teacher->load(['school', 'supervisor', 'grades']);
+        $scores = \App\Http\Controllers\TeacherGradeController::scoreCriteria();
+        return view('teachers.show', compact('teacher', 'scores'));
     }
 
     private function authorizeTeacherAccess(TeacherInfo $teacher): void
