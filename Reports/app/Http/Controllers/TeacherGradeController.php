@@ -132,7 +132,8 @@ class TeacherGradeController extends Controller
     public function edit(TeacherInfo $teacher)
     {
         $grades = $teacher->grades;
-        return view('grades.edit', compact('teacher', 'grades'));
+        $scores = self::scoreCriteria();
+        return view('grades.edit', compact('teacher', 'grades', 'scores'));
     }
 
     public function update(Request $request, TeacherInfo $teacher)
