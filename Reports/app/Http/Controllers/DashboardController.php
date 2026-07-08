@@ -45,6 +45,7 @@ class DashboardController extends Controller
                 'directorate'     => $t->school->directorate->Directorate_Name ?? '',
                 'major'           => $t->teacher_major,
                 'qualify'         => $t->teacher_qualify,
+                'date'            => $t->date ?? '',
                 'academic_year'   => $t->academic_year ?? '',
                 'total'           => $t->grades->total ?? 0,
                 'assessment'      => $t->grades->assessment ?? ['label' => '—', 'color' => 'gray'],

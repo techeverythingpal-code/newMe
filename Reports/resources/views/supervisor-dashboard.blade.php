@@ -76,7 +76,20 @@
                             </button>
                         </form>
                     </div>
-                    <h3 class="font-semibold text-gray-700">معلمون</h3>
+                    <div class="flex items-center gap-3">
+                        <div class="flex bg-gray-100 rounded-lg p-1">
+                            <button type="button" id="viewCardsBtn"
+                                class="view-toggle-btn px-3 py-1.5 rounded-md text-sm font-bold transition">
+                                🔲 بطاقات
+                            </button>
+                            <button type="button" id="viewTableBtn"
+                                class="view-toggle-btn px-3 py-1.5 rounded-md text-sm font-bold transition">
+                                🗂️ قائمة
+                            </button>
+                        </div>
+                        <h3 class="font-semibold text-gray-700">معلمون</h3>
+                    </div>
+                
                 </div>
 
                 {{-- Academic year + bulk print --}}
@@ -137,6 +150,27 @@
                     {{-- Cards are rendered by JavaScript --}}
                 </div>
 
+                <div id="teachersTableWrap" class="hidden overflow-x-auto">
+                    <table class="w-full text-right text-sm">
+                        <thead>
+                            <tr class="bg-blue-50 text-blue-700 border-b border-blue-100">
+                                <th class="px-4 py-3">#</th>
+                                <th class="px-4 py-3">رقم المعلم</th>
+                                <th class="px-4 py-3">اسم المعلم</th>
+                                <th class="px-4 py-3">المدرسة</th>
+                                <th class="px-4 py-3">التخصص</th>
+                                <th class="px-4 py-3">المؤهل</th>
+                                <th class="px-4 py-3">تاريخ التعيين</th>
+                                <th class="px-4 py-3">المجموع</th>
+                                <th class="px-4 py-3">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teachersTableBody">
+                            {{-- Rows are rendered by JavaScript --}}
+                        </tbody>
+                    </table>
+                </div>
+
                 <div id="emptyState" class="hidden p-5 text-center text-gray-400">
                     لا يوجد معلمون مطابقون لهذا البحث
                 </div>
@@ -158,6 +192,7 @@
         window.currentSupervisorName = @json(Auth::guard('web')->user()->SuperVisor_Name ?? '');
         const PAGE_SIZE = 9;
         let currentPage = 1;
+        let viewMode = localStorage.getItem('teachersViewMode') || 'cards';
 
         const routes = {
             show:           id => "{{ url('teachers') }}/" + id,
@@ -233,6 +268,10 @@
         const maxScoreFilter = document.getElementById('maxScoreFilter');
         const resetBtn       = document.getElementById('resetFilters');
         const cardGrid       = document.getElementById('teachersCardGrid');
+        const tableWrap      = document.getElementById('teachersTableWrap');
+        const tableBody      = document.getElementById('teachersTableBody');
+        const viewCardsBtn   = document.getElementById('viewCardsBtn');
+        const viewTableBtn   = document.getElementById('viewTableBtn');
         const emptyState     = document.getElementById('emptyState');
         const paginationEl   = document.getElementById('paginationControls');
 
@@ -242,6 +281,36 @@
             statCards.forEach(c => c.classList.remove('ring-4', 'ring-white', 'ring-offset-2'));
             if (card) card.classList.add('ring-4', 'ring-white', 'ring-offset-2');
         }
+
+        function updateViewToggleUI() {
+            const activeClasses   = ['bg-white', 'shadow', 'text-blue-600'];
+            const inactiveClasses = ['text-gray-500'];
+
+            viewCardsBtn.classList.remove(...activeClasses, ...inactiveClasses);
+            viewTableBtn.classList.remove(...activeClasses, ...inactiveClasses);
+
+            (viewMode === 'cards' ? viewCardsBtn : viewTableBtn).classList.add(...activeClasses);
+            (viewMode === 'cards' ? viewTableBtn : viewCardsBtn).classList.add(...inactiveClasses);
+
+            cardGrid.classList.toggle('hidden', viewMode !== 'cards');
+            tableWrap.classList.toggle('hidden', viewMode !== 'table');
+        }
+
+        viewCardsBtn.addEventListener('click', () => {
+            viewMode = 'cards';
+            localStorage.setItem('teachersViewMode', viewMode);
+            updateViewToggleUI();
+            renderTable();
+        });
+
+        viewTableBtn.addEventListener('click', () => {
+            viewMode = 'table';
+            localStorage.setItem('teachersViewMode', viewMode);
+            updateViewToggleUI();
+            renderTable();
+        });
+
+        updateViewToggleUI();
 
         function scrollToList() {
             document.getElementById('teachersCardGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -323,8 +392,19 @@
             const start = (currentPage - 1) * PAGE_SIZE;
             const pageItems = filtered.slice(start, start + PAGE_SIZE);
 
-            cardGrid.innerHTML = '';
             emptyState.classList.toggle('hidden', pageItems.length > 0);
+
+            if (viewMode === 'cards') {
+                renderCards(pageItems, start);
+            } else {
+                renderRows(pageItems, start);
+            }
+
+            renderPagination(totalPages, filtered.length);
+        }
+
+        function renderCards(pageItems, start) {
+            cardGrid.innerHTML = '';
 
             pageItems.forEach((t, index) => {
                 const card = document.createElement('div');
@@ -442,8 +522,63 @@
                     }
                 });
             });
+        }
 
-            renderPagination(totalPages, filtered.length);
+        function renderRows(pageItems, start) {
+            tableBody.innerHTML = '';
+
+            pageItems.forEach((t, index) => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-100 hover:bg-blue-50 transition' + (t.total >= 85 ? ' bg-yellow-50/40' : '');
+                row.innerHTML = `
+                    <td class="px-4 py-3 text-gray-400">${start + index + 1}</td>
+                    <td class="px-4 py-3 font-bold text-blue-600">${escapeHtml(String(t.id))}</td>
+                    <td class="px-4 py-3 font-medium text-gray-800">${escapeHtml(t.name)}</td>
+                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.school)}</td>
+                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.major)}</td>
+                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.qualify)}</td>
+                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.date)}</td>
+                    <td class="px-4 py-3">
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
+                            ${t.total} / 100
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex gap-2 justify-end flex-wrap">
+                            <a href="${routes.show(t.id)}"
+                                class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                                👁️ عرض
+                            </a>
+                            <a href="${routes.edit(t.id)}"
+                                class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                                ✏️ تعديل
+                            </a>
+                            <button type="button" onclick="window.open(routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()), '_blank')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                                🖨️ طباعة
+                            </button>
+                            <form action="${routes.resetScores(t.id)}" method="POST"
+                                onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                                    🗑️ حذف الدرجات
+                                </button>
+                            </form>
+                            <form action="${routes.destroy(t.id)}" method="POST"
+                                onsubmit="return confirm('هل أنت متأكد؟')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                                    🗑️ حذف
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
         }
 
         function renderPagination(totalPages, totalCount) {
