@@ -36,7 +36,7 @@ Route::middleware(['auth:admin,web'])->group(function () {
     Route::get('teachers/grades-sheet', [TeacherGradeController::class, 'sheet'])->name('teacher-grades.sheet');
     Route::get('teachers/{teacher}/report/print', [TeacherGradeController::class, 'report'])->name('teachers.report.print');
     Route::get('teachers/reports/print', [TeacherGradeController::class, 'reportBulk'])->name('teachers.reports.print');
-    Route::resource('teachers', TeacherInfoController::class);
+    Route::resource('teachers', TeacherInfoController::class)->except(['index']);
     Route::patch('teachers/{teacher}/grades/quick', [TeacherGradeController::class, 'quickUpdate'])->name('teacher-grades.quick-update');
     Route::get('teachers/{teacher}/grades/edit', [TeacherGradeController::class, 'edit'])->name('teacher-grades.edit');
     
