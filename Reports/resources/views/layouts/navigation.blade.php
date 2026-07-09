@@ -134,10 +134,7 @@
                     class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('supervisors.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                     👤 المشرفون
                 </a>
-                <a href="{{ route('teachers.index') }}"
-                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('teachers.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
-                    🧑‍🏫 المعلمون
-                </a>
+                
 
                 <a href="{{ route('teacher-grades.sheet') }}"
                     class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('teacher-grades.sheet') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
