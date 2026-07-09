@@ -549,39 +549,40 @@
                     <td class="px-4 py-3 text-gray-600">${escapeHtml(t.qualify)}</td>
                     <td class="px-4 py-3 text-gray-600">${escapeHtml(t.date)}</td>
                     <td class="px-4 py-3">
-                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold" dir="ltr" style="display:inline-block">
                             ${t.total} / 100
                         </span>
                     </td>
                     <td class="px-4 py-3">
-                        <div class="flex gap-2 justify-end flex-wrap">
-                            <a href="${routes.show(t.id)}"
-                                class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
-                                👁️ عرض
+                        <div class="flex gap-1.5 justify-end items-center flex-nowrap">
+                            <a href="${routes.show(t.id)}" title="عرض"
+                                class="bg-green-100 hover:bg-green-200 text-green-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                👁️
                             </a>
-                            <a href="${routes.edit(t.id)}"
-                                class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
-                                ✏️ تعديل
+                            <a href="${routes.edit(t.id)}" title="تعديل"
+                                class="bg-blue-100 hover:bg-blue-200 text-blue-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                ✏️
                             </a>
-                            <button type="button" onclick="window.open(routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()), '_blank')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">
-                                🖨️ طباعة
+                            <button type="button" title="طباعة" onclick="window.open(routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()), '_blank')"
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                🖨️
                             </button>
                             <form action="${routes.resetScores(t.id)}" method="POST"
                                 onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit"
-                                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-1 px-3 rounded-lg text-xs transition">
-                                    🗑️ حذف الدرجات
+                                <button type="submit" title="حذف الدرجات"
+                                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                    🗑️
                                 </button>
                             </form>
                             <form action="${routes.destroy(t.id)}" method="POST"
                                 onsubmit="return confirm('هل أنت متأكد؟')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit"
-                                    class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-3 rounded-lg text-xs transition">
-                                    🗑️ حذف
+                                <button type="submit" title="حذف"
+                                    class="bg-red-100 hover:bg-red-200 text-red-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                    ❌
                                 </button>
                             </form>
                         </div>
