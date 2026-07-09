@@ -12,21 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TeacherInfoController extends Controller
 {
-    public function index()
-{
-   if (! Auth::guard('admin')->check()) {
-        // Supervisor sees only their teachers
-        $user = Auth::guard('web')->user();
-        $teachers = TeacherInfo::with(['school', 'supervisor', 'grades'])
-            ->where('supervisor_id', $user->SuperVisor_id)
-            ->get();
-    } else {
-        // Admin sees all teachers
-        $teachers = TeacherInfo::with(['school', 'supervisor', 'grades'])->get();
-    }
-
-    return view('teachers.index', compact('teachers'));
-}
+    
 
     public function create()
     {
