@@ -16,6 +16,14 @@
     background-size: 14px;
     padding-left: 32px;
 }
+
+.view-toggle-btn {
+    color: #6b7280;
+}
+
+.view-toggle-btn.bg-white {
+    color: #2563eb;
+}
 </style>
 
     <div class="py-6" dir="rtl">
@@ -57,6 +65,21 @@
             {{-- My Teachers Table --}}
             <div class="bg-white rounded-2xl shadow p-5">
                <div class="flex justify-between items-center mb-4">
+                    
+                    <div class="flex items-center gap-3">
+                    <h3 class="font-semibold text-gray-700">عرض بيانات المعلمين : </h3>
+                        <div class="flex bg-gray-100 rounded-lg p-1">
+                            <button type="button" id="viewCardsBtn"
+                                class="view-toggle-btn px-3 py-1.5 rounded-md text-sm font-bold transition">
+                                🔲 بطاقات
+                            </button>
+                            <button type="button" id="viewTableBtn"
+                                class="view-toggle-btn px-3 py-1.5 rounded-md text-sm font-bold transition">
+                                🗂️ قائمة
+                            </button>
+                        </div>
+                        
+                    </div>
                     <div class="flex gap-2">
                         <a href="{{ route('teachers.create') }}"
                             class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
@@ -75,19 +98,6 @@
                                 🗑️ حذف كل الدرجات
                             </button>
                         </form>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="flex bg-gray-100 rounded-lg p-1">
-                            <button type="button" id="viewCardsBtn"
-                                class="view-toggle-btn px-3 py-1.5 rounded-md text-sm font-bold transition">
-                                🔲 بطاقات
-                            </button>
-                            <button type="button" id="viewTableBtn"
-                                class="view-toggle-btn px-3 py-1.5 rounded-md text-sm font-bold transition">
-                                🗂️ قائمة
-                            </button>
-                        </div>
-                        <h3 class="font-semibold text-gray-700">معلمون</h3>
                     </div>
                 
                 </div>
@@ -122,7 +132,7 @@
 </div>
 
                 {{-- Filters (instant, client-side — no page reload) --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-5">
     <input type="text" id="searchInput"
         placeholder="بحث (اسم، تخصص، مؤهل...)"
         class="border border-gray-300 rounded-lg px-3 py-2 text-sm md:col-span-2">
@@ -138,12 +148,12 @@
     <input type="hidden" id="minScoreFilter">
     <input type="hidden" id="maxScoreFilter">
 
-    <div class="md:col-span-3 flex gap-2 justify-end">
+    
         <button id="resetFilters" type="button"
             class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg text-sm transition">
             إعادة تعيين
         </button>
-    </div>
+    
 </div>
 
                 <div id="teachersCardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
