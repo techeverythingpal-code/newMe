@@ -18,11 +18,11 @@ class DashboardController extends Controller
         if (! Auth::guard('admin')->check()) {
             $user = Auth::guard('web')->user();
 
-            $allTeachers = TeacherInfo::with(['school', 'grades'])
+            $allTeachers = TeacherInfo::with(['school.directorate', 'grades'])
                 ->where('supervisor_id', $user->SuperVisor_id)
                 ->orderBy('Teacher_Name')
                 ->get();
-
+                
             $totalTeachers   = $allTeachers->count();
             $avgTotal        = $allTeachers->avg(fn($t) => $t->grades->total ?? 0);
             $highestScore    = $allTeachers->max(fn($t) => $t->grades->total ?? 0);
