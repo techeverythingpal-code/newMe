@@ -29,6 +29,7 @@ Route::middleware(['auth:admin,web', 'admin'])->group(function () {
 // Admin + Supervisor
 Route::middleware(['auth:admin,web'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/teachers-data', [DashboardController::class, 'teachersData'])->name('dashboard.teachers-data');
 
     Route::get('teachers/export', [ExcelController::class, 'exportTeachers'])->name('teachers.export');
     Route::post('teachers/import', [ExcelController::class, 'importTeachers'])->name('teachers.import');
