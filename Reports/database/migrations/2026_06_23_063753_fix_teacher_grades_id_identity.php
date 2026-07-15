@@ -7,6 +7,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::connection()->getDriverName() !== 'pgsql') {
+            return;
+        }
+
         DB::statement('SELECT setval(pg_get_serial_sequence(\'teacher_grades\', \'id\'), COALESCE((SELECT MAX(id) FROM teacher_grades), 1))');
 
         DB::statement('
@@ -25,6 +29,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::connection()->getDriverName() !== 'pgsql') {
+            return;
+        }
+
         DB::statement('ALTER TABLE teacher_grades ALTER COLUMN id DROP IDENTITY IF EXISTS');
     }
 };
