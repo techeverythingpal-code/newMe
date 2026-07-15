@@ -2,11 +2,16 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::connection()->getDriverName() !== 'pgsql') {
+            return;
+        }
+
         // Restore auto-increment behavior on teacher_infos.id
         DB::statement('SELECT setval(pg_get_serial_sequence(\'teacher_infos\', \'id\'), COALESCE((SELECT MAX(id) FROM teacher_infos), 1))');
 
@@ -26,6 +31,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::connection()->getDriverName() !== 'pgsql') {
+            return;
+        }
+
         DB::statement('ALTER TABLE teacher_infos ALTER COLUMN id DROP IDENTITY IF EXISTS');
     }
 };
