@@ -11,7 +11,7 @@
             {{-- Count Cards --}}
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 
-    <a href="{{ route('teachers.index') }}" class="block bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
+    <a href="#" class="block bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
         <div class="text-4xl mb-2">👨‍🏫</div>
         <div class="text-3xl font-bold">{{ $totalTeachers }}</div>
         <div class="text-sm opacity-80 mt-1">إجمالي المعلمين</div>
