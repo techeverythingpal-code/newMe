@@ -13,11 +13,19 @@ return new class extends Migration
             throw new \Exception("Cannot make directorate_id required: {$missing} supervisor(s) have no directorate set. Please assign a directorate to all supervisors first.");
         }
 
-        DB::statement('ALTER TABLE super_visors ALTER COLUMN directorate_id SET NOT NULL');
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE super_visors ALTER COLUMN directorate_id SET NOT NULL');
+        } else {
+            DB::statement('ALTER TABLE super_visors MODIFY directorate_id INT NOT NULL');
+        }
     }
 
     public function down(): void
     {
-        DB::statement('ALTER TABLE super_visors ALTER COLUMN directorate_id DROP NOT NULL');
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE super_visors ALTER COLUMN directorate_id DROP NOT NULL');
+        } else {
+            DB::statement('ALTER TABLE super_visors MODIFY directorate_id INT NULL');
+        }
     }
 };
