@@ -10,7 +10,9 @@ return new class extends Migration
     public function up(): void
     {
         // Allow SuperVisor_id to be set manually instead of auto-generated
-        DB::statement('ALTER TABLE super_visors ALTER COLUMN "SuperVisor_id" DROP IDENTITY IF EXISTS');
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE super_visors ALTER COLUMN "SuperVisor_id" DROP IDENTITY IF EXISTS');
+        }
 
         // If a supervisor's ID is changed later, automatically update any
         // linked teacher records so they keep pointing to the right supervisor
