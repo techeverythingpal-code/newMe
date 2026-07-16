@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\Auth;
 
 class TeacherInfoController extends Controller
 {
-    
+    public function index()
+    {
+        return view('teachers.index');
+    }
 
     public function create()
     {
