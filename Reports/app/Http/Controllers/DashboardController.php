@@ -110,4 +110,60 @@ class DashboardController extends Controller
             'teachersPerSupervisor'
         ));
     }
+
+    /**
+     * JSON endpoint for the admin teachers list page (resources/views/teachers/index.blade.php).
+     * Guard-filtered server-side: a supervisor calling this directly only ever
+     * gets their own teachers back, never the full list.
+     */
+    public function teachersData(Request $request)
+    {
+        $search  = trim((string) $request->get('search', ''));
+        $perPage = 20;
+
+        $query = TeacherInfo::with(['school.directorate', 'supervisor', 'grades']);
+
+        if (! Auth::guard('admin')->check()) {
+            $user = Auth::guard('web')->user();
+            $query->where('supervisor_id', $user->SuperVisor_id);
+        }
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('Teacher_Name', 'like', "%{$search}%");
+
+                if (is_numeric($search)) {
+                    $q->orWhere('Teacher_id', (int) $search);
+                }
+
+                $q->orWhereHas('school', function ($sq) use ($search) {
+                    $sq->where('SchoolName', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $teachers = $query->orderBy('Teacher_Name')->paginate($perPage);
+
+        $data = $teachers->getCollection()->map(fn ($t) => [
+            'id'            => $t->Teacher_id,
+            'name'          => $t->Teacher_Name,
+            'school'        => $t->school->SchoolName ?? '-',
+            'directorate'   => $t->school->directorate->Directorate_Name ?? '',
+            'supervisor'    => $t->supervisor->SuperVisor_Name ?? '-',
+            'major'         => $t->teacher_major,
+            'qualify'       => $t->teacher_qualify,
+            'date'          => $t->date ?? '',
+            'academic_year' => $t->academic_year ?? '',
+            'total'         => $t->grades->total ?? 0,
+            'assessment'    => $t->grades->assessment ?? ['label' => '—', 'color' => 'gray'],
+        ])->values();
+
+        return response()->json([
+            'data'         => $data,
+            'current_page' => $teachers->currentPage(),
+            'last_page'    => $teachers->lastPage(),
+            'total'        => $teachers->total(),
+            'per_page'     => $teachers->perPage(),
+        ]);
+    }
 }
