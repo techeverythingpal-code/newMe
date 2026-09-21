@@ -85,6 +85,7 @@
                                                     type="number"
                                                     class="score-input"
                                                     data-field="{{ $field }}"
+                                                    data-last-valid="{{ $teacher->grades->$field ?? 0 }}"
                                                     min="0"
                                                     max="{{ $max }}"
                                                     value="{{ $teacher->grades->$field ?? 0 }}">
@@ -309,10 +310,19 @@
                 input.addEventListener('input', liveTotal);
 
                 input.addEventListener('change', async () => {
+                    const min = parseInt(input.min);
                     const max = parseInt(input.max);
-                    let val = parseInt(input.value);
-                    if (isNaN(val) || val < 0) val = 0;
-                    if (val > max) val = max;
+                    const rawVal = input.value;
+                    const val = parseInt(rawVal);
+
+                    // Reject anything out of range instead of clamping it silently
+                    if (rawVal === '' || isNaN(val) || val < min || val > max) {
+                        alert(`القيمة غير صحيحة. الرجاء إدخال رقم بين ${min} و ${max}.`);
+                        input.value = input.dataset.lastValid;
+                        liveTotal();
+                        return;
+                    }
+
                     input.value = val;
                     liveTotal();
 
@@ -334,7 +344,10 @@
                         if (!res.ok) throw new Error('save failed');
                         const data = await res.json();
                         totalSpan.textContent = data.total;
-                        inputs.forEach(inp => inp.classList.remove('row-error'));
+                        inputs.forEach(inp => {
+                            inp.classList.remove('row-error');
+                            inp.dataset.lastValid = inp.value;
+                        });
                         showStatus('saved');
                     } catch (err) {
                         inputs.forEach(inp => inp.classList.add('row-error'));
