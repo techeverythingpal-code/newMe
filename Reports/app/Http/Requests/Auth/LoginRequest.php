@@ -32,6 +32,15 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        // Force a clean slate before attempting a new login. Without this,
+        // leftover state from a previous session (e.g. a "remember me"
+        // cookie that wasn't fully cleared on logout) can silently
+        // re-authenticate the OLD account on the very next request after
+        // switching users — showing the admin dashboard even though you
+        // just submitted supervisor credentials.
+        Auth::guard('admin')->logout();
+        Auth::guard('web')->logout();
+
         $remember = $this->boolean('remember');
 
         if (Auth::guard('admin')->attempt([
