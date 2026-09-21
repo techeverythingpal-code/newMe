@@ -235,7 +235,7 @@
         .frozen-table .row-hover td { background: #f3f4f6 !important; }
         .scroll-table .row-hover .total-cell { background: #e0e7ff !important; }
     </style>
-    <script>
+        <script>
         const frozenPane = document.getElementById('frozenPane');
         const scrollPane = document.getElementById('scrollPane');
 
@@ -306,7 +306,8 @@
             }
 
             // Validates + saves one input's row. Returns true on success, false otherwise.
-            // Never calls blur() itself, so it never triggers the browser's own focus handling.
+            // On failure, forcibly returns focus to `input` regardless of how it got here
+            // (Enter, Tab, or a mouse click elsewhere may all have already moved focus away).
             async function commitValue(input) {
                 const min = parseInt(input.min);
                 const max = parseInt(input.max);
@@ -317,6 +318,8 @@
                     alert(`القيمة غير صحيحة. الرجاء إدخال رقم بين ${min} و ${max}.`);
                     input.value = input.dataset.lastValid;
                     liveTotal();
+                    input.focus();
+                    input.select();
                     return false;
                 }
 
@@ -357,18 +360,16 @@
             inputs.forEach(input => {
                 input.addEventListener('input', liveTotal);
 
-                // Enter: commit directly, no blur() involved, so focus can never leave this cell.
+                // Enter: commit directly, no blur() involved.
                 input.addEventListener('keydown', (e) => {
                     if (e.key !== 'Enter') return;
                     e.preventDefault();
                     e.stopPropagation();
-                    commitValue(input).finally(() => {
-                        input.focus();
-                        input.select();
-                    });
+                    commitValue(input);
                 });
 
-                // Tab away / click elsewhere still triggers the native 'change' event.
+                // Tab away / click elsewhere: focus has already moved by the time this fires;
+                // commitValue() pulls it back itself if the value turns out invalid.
                 input.addEventListener('change', () => {
                     commitValue(input);
                 });
