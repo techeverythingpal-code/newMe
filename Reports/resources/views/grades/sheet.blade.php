@@ -236,7 +236,7 @@
         .scroll-table .row-hover .total-cell { background: #e0e7ff !important; }
     </style>
 
-    <script>
+        <script>
         const frozenPane = document.getElementById('frozenPane');
         const scrollPane = document.getElementById('scrollPane');
 
@@ -302,7 +302,7 @@
 
             function liveTotal() {
                 let total = 0;
-                inputs.forEach(input => total += parseInt(inp.value) || 0);
+                inputs.forEach(inp => total += parseInt(inp.value) || 0);
                 totalSpan.textContent = total;
             }
 
@@ -316,7 +316,8 @@
                         input.focus();       // return cursor to this same cell
                         input.select();      // select the value so it's easy to overtype
                     }
-});
+                });
+
                 input.addEventListener('change', async () => {
                     const min = parseInt(input.min);
                     const max = parseInt(input.max);
