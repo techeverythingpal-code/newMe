@@ -235,8 +235,7 @@
         .frozen-table .row-hover td { background: #f3f4f6 !important; }
         .scroll-table .row-hover .total-cell { background: #e0e7ff !important; }
     </style>
-
-        <script>
+    <script>
         const frozenPane = document.getElementById('frozenPane');
         const scrollPane = document.getElementById('scrollPane');
 
@@ -294,7 +293,7 @@
                 document.activeElement.blur();
             }
         }, { passive: true });
-        
+
         document.querySelectorAll('.scroll-table tbody tr[data-teacher-id]').forEach(row => {
             const teacherId = row.dataset.teacherId;
             const inputs = row.querySelectorAll('.score-input');
@@ -306,64 +305,75 @@
                 totalSpan.textContent = total;
             }
 
+            // Validates + saves one input's row. Returns true on success, false otherwise.
+            // Never calls blur() itself, so it never triggers the browser's own focus handling.
+            async function commitValue(input) {
+                const min = parseInt(input.min);
+                const max = parseInt(input.max);
+                const rawVal = input.value;
+                const val = parseInt(rawVal);
+
+                if (rawVal === '' || isNaN(val) || val < min || val > max) {
+                    alert(`القيمة غير صحيحة. الرجاء إدخال رقم بين ${min} و ${max}.`);
+                    input.value = input.dataset.lastValid;
+                    liveTotal();
+                    return false;
+                }
+
+                input.value = val;
+                liveTotal();
+
+                const payload = {};
+                inputs.forEach(inp => payload[inp.dataset.field] = parseInt(inp.value) || 0);
+
+                showStatus('saving');
+                try {
+                    const res = await fetch(`/teachers/${teacherId}/grades/quick`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                        body: JSON.stringify(payload),
+                    });
+
+                    if (!res.ok) throw new Error('save failed');
+                    const data = await res.json();
+                    totalSpan.textContent = data.total;
+                    inputs.forEach(inp => {
+                        inp.classList.remove('row-error');
+                        inp.dataset.lastValid = inp.value;
+                    });
+                    showStatus('saved');
+                    return true;
+                } catch (err) {
+                    inputs.forEach(inp => inp.classList.add('row-error'));
+                    showStatus('error');
+                    return false;
+                }
+            }
+
             inputs.forEach(input => {
                 input.addEventListener('input', liveTotal);
 
+                // Enter: commit directly, no blur() involved, so focus can never leave this cell.
                 input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();  // stop the browser from moving focus on its own
-                        input.blur();        // synchronously triggers the 'change' handler below
-                        input.focus();       // return cursor to this same cell
-                        input.select();      // select the value so it's easy to overtype
-                    }
+                    if (e.key !== 'Enter') return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    commitValue(input).finally(() => {
+                        input.focus();
+                        input.select();
+                    });
                 });
 
-                input.addEventListener('change', async () => {
-                    const min = parseInt(input.min);
-                    const max = parseInt(input.max);
-                    const rawVal = input.value;
-                    const val = parseInt(rawVal);
-
-                    // Reject anything out of range instead of clamping it silently
-                    if (rawVal === '' || isNaN(val) || val < min || val > max) {
-                        alert(`القيمة غير صحيحة. الرجاء إدخال رقم بين ${min} و ${max}.`);
-                        input.value = input.dataset.lastValid;
-                        liveTotal();
-                        return;
-                    }
-
-                    input.value = val;
-                    liveTotal();
-
-                    const payload = {};
-                    inputs.forEach(inp => payload[inp.dataset.field] = parseInt(inp.value) || 0);
-
-                    showStatus('saving');
-                    try {
-                        const res = await fetch(`/teachers/${teacherId}/grades/quick`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            },
-                            body: JSON.stringify(payload),
-                        });
-
-                        if (!res.ok) throw new Error('save failed');
-                        const data = await res.json();
-                        totalSpan.textContent = data.total;
-                        inputs.forEach(inp => {
-                            inp.classList.remove('row-error');
-                            inp.dataset.lastValid = inp.value;
-                        });
-                        showStatus('saved');
-                    } catch (err) {
-                        inputs.forEach(inp => inp.classList.add('row-error'));
-                        showStatus('error');
-                    }
+                // Tab away / click elsewhere still triggers the native 'change' event.
+                input.addEventListener('change', () => {
+                    commitValue(input);
                 });
             });
         });
     </script>
+    
 </x-app-layout>
