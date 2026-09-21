@@ -302,13 +302,21 @@
 
             function liveTotal() {
                 let total = 0;
-                inputs.forEach(inp => total += parseInt(inp.value) || 0);
+                inputs.forEach(input => total += parseInt(inp.value) || 0);
                 totalSpan.textContent = total;
             }
 
             inputs.forEach(input => {
                 input.addEventListener('input', liveTotal);
 
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();  // stop the browser from moving focus on its own
+                        input.blur();        // synchronously triggers the 'change' handler below
+                        input.focus();       // return cursor to this same cell
+                        input.select();      // select the value so it's easy to overtype
+                    }
+});
                 input.addEventListener('change', async () => {
                     const min = parseInt(input.min);
                     const max = parseInt(input.max);
