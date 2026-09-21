@@ -134,6 +134,7 @@
             overflow-x: auto;
             overflow-y: auto;
             flex: 1;
+            min-width: 0;
         }
 
         .grades-sheet {
