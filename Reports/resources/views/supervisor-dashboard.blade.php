@@ -129,6 +129,10 @@
         class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
         🖨️ طباعة الكل
     </button>
+    <button type="button" id="printSummaryBtn"
+        class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
+        📊 طباعة التقرير الموجز
+    </button>
 </div>
 
                 {{-- Filters (instant, client-side — no page reload) --}}
@@ -270,6 +274,112 @@
 
         document.getElementById('printAllBtn').addEventListener('click', () => {
             window.open(routes.reportsBulk([]), '_blank');
+        });
+
+        document.getElementById('printSummaryBtn').addEventListener('click', () => {
+            const summary = { scoreA: 0, scoreB: 0, scoreC: 0, scoreD: 0, scoreF: 0 };
+
+            allTeachers.forEach(t => {
+                const total = t.total ?? 0;
+                if (total >= 85) summary.scoreA++;
+                else if (total >= 75) summary.scoreB++;
+                else if (total >= 65) summary.scoreC++;
+                else if (total >= 55) summary.scoreD++;
+                else summary.scoreF++;
+            });
+
+            const totalTeachersCount = allTeachers.length;
+            const directorateName    = allTeachers[0]?.directorate || '';
+            const academicYear       = getAcademicYear();
+            const supervisorName     = window.currentSupervisorName || '';
+            const dateStr = new Date().toLocaleDateString('ar-EG', {
+                year: 'numeric', month: 'long', day: 'numeric',
+            });
+
+            const html = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <title>تقرير إحصائي موجز</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Tahoma','Arial',sans-serif; color:#111; background:#f3f4f6; margin:0; padding:20px; }
+        .toolbar { max-width:800px; margin:0 auto 14px; display:flex; justify-content:flex-end; gap:8px; }
+        .toolbar button {
+            background:#2563eb; color:#fff; border:none; padding:8px 18px;
+            border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;
+        }
+        .toolbar button:hover { background:#1d4ed8; }
+        .summary-report-page { max-width: 800px; margin: 0 auto 20px; padding: 20px; background:#fff; }
+        .summary-report-header { text-align: center; margin-bottom: 16px; }
+        .summary-report-header p { font-size: 13px; margin: 2px 0; }
+        .summary-report-header h3 { font-size: 18px; margin: 10px 0 0; border-bottom: 2px solid #333; padding-bottom: 8px; }
+        table.summary-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+        table.summary-table th, table.summary-table td { border: 1px solid #333; padding: 8px 10px; text-align: right; }
+        table.summary-table thead th { background: #e5e7eb; font-weight: bold; text-align: center; }
+        table.summary-table td:last-child { text-align: center; width: 20%; }
+        table.summary-table tr.total-row td { background: #f3f4f6; }
+        .summary-report-footer { display: flex; justify-content: space-between; margin-top: 24px; font-size: 13px; }
+        @media print {
+            @page { size: A4 portrait; margin: 0.5cm; }
+            body { padding: 0; background: #fff; }
+            .toolbar { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <button onclick="window.print()">🖨️ طباعة التقرير</button>
+    </div>
+    <div class="summary-report-page">
+        <div class="summary-report-header">
+            <p>مديرية التربية والتعليم / ${escapeHtml(directorateName)}</p>
+            <p>العام الدراسي: ${escapeHtml(academicYear)}</p>
+            <h3>تقرير إحصائي موجز لنتائج تقييم المعلمين</h3>
+        </div>
+        <table class="summary-table">
+            <thead>
+            <tr><th colspan="2">فئات التقدير وعدد المعلمين</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>عدد المعلمين بتقدير ممتاز (85 فأكثر)</td>
+                <td>${summary.scoreA}</td>
+            </tr>
+            <tr>
+                <td>عدد المعلمين بتقدير جيد جداً (75 - 84)</td>
+                <td>${summary.scoreB}</td>
+            </tr>
+            <tr>
+                <td>عدد المعلمين بتقدير جيد (65 - 74)</td>
+                <td>${summary.scoreC}</td>
+            </tr>
+            <tr>
+                <td>عدد المعلمين بتقدير متوسط (55 - 64)</td>
+                <td>${summary.scoreD}</td>
+            </tr>
+            <tr>
+                <td>عدد المعلمين بتقدير مقبول (54 فما دون)</td>
+                <td>${summary.scoreF}</td>
+            </tr>
+            <tr class="total-row">
+                <td><strong>العدد الكلي للمعلمين</strong></td>
+                <td><strong>${totalTeachersCount}</strong></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="summary-report-footer">
+            <p><strong>اسم المشرف:</strong> ${escapeHtml(supervisorName)}</p>
+            <p><strong>التاريخ:</strong> ${dateStr}</p>
+            <p><strong>التوقيع:</strong> .........................</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+            const win = window.open('', '_blank');
+            win.document.write(html);
+            win.document.close();
         });
 
         const searchInput    = document.getElementById('searchInput');
@@ -540,108 +650,3 @@
             pageItems.forEach((t, index) => {
                 const row = document.createElement('tr');
                 row.className = 'border-b border-gray-100 hover:bg-blue-50 transition' + (t.total >= 85 ? ' bg-yellow-50/40' : '');
-                row.innerHTML = `
-                    <td class="px-4 py-3 text-gray-400">${start + index + 1}</td>
-                    <td class="px-4 py-3 font-bold text-blue-600">${escapeHtml(String(t.id))}</td>
-                    <td class="px-4 py-3 font-medium text-gray-800">${escapeHtml(t.name)}</td>
-                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.school)}</td>
-                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.major)}</td>
-                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.qualify)}</td>
-                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.date)}</td>
-                    <td class="px-4 py-3">
-                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold" dir="ltr" style="display:inline-block">
-                            ${t.total} / 100
-                        </span>
-                    </td>
-                    <td class="px-4 py-3">
-                        <div class="flex gap-1.5 justify-end items-center flex-nowrap">
-                            <a href="${routes.show(t.id)}" title="عرض"
-                                class="bg-green-100 hover:bg-green-200 text-green-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
-                                👁️
-                            </a>
-                            <a href="${routes.edit(t.id)}" title="تعديل"
-                                class="bg-blue-100 hover:bg-blue-200 text-blue-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
-                                ✏️
-                            </a>
-                            <button type="button" title="طباعة" onclick="window.open(routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()), '_blank')"
-                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
-                                🖨️
-                            </button>
-                            <form action="${routes.resetScores(t.id)}" method="POST"
-                                onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" title="حذف الدرجات"
-                                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
-                                    🗑️
-                                </button>
-                            </form>
-                            <form action="${routes.destroy(t.id)}" method="POST"
-                                onsubmit="return confirm('هل أنت متأكد؟')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" title="حذف"
-                                    class="bg-red-100 hover:bg-red-200 text-red-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
-                                    ❌
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-
-        function renderPagination(totalPages, totalCount) {
-            if (totalCount === 0) {
-                paginationEl.innerHTML = '';
-                return;
-            }
-
-            paginationEl.innerHTML = `
-                <span>إجمالي النتائج: ${totalCount}</span>
-                <div class="flex gap-1">
-                    <button data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}
-                        class="page-btn px-3 py-1 rounded-lg border border-gray-300 ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}">
-                        السابق
-                    </button>
-                    <span class="px-2 py-1">صفحة ${currentPage} من ${totalPages}</span>
-                    <button data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}
-                        class="page-btn px-3 py-1 rounded-lg border border-gray-300 ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}">
-                        التالي
-                    </button>
-                </div>
-            `;
-
-            paginationEl.querySelectorAll('.page-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const page = parseInt(btn.dataset.page);
-                    if (page >= 1 && page <= totalPages) {
-                        currentPage = page;
-                        renderTable();
-                    }
-                });
-            });
-        }
-
-        function applyFilters() {
-            currentPage = 1;
-            renderTable();
-        }
-
-        searchInput.addEventListener('input', applyFilters);
-        schoolFilter.addEventListener('change', applyFilters);
-        minScoreFilter.addEventListener('input', applyFilters);
-        maxScoreFilter.addEventListener('input', applyFilters);
-
-        resetBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            schoolFilter.value = '';
-            minScoreFilter.value = '';
-            maxScoreFilter.value = '';
-            applyFilters();
-        });
-
-        renderTable();
-    </script>
-</x-app-layout>
