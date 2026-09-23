@@ -650,3 +650,111 @@
             pageItems.forEach((t, index) => {
                 const row = document.createElement('tr');
                 row.className = 'border-b border-gray-100 hover:bg-blue-50 transition' + (t.total >= 85 ? ' bg-yellow-50/40' : '');
+
+                                row.innerHTML = `
+                    <td class="px-4 py-3 text-gray-400">${start + index + 1}</td>
+                    <td class="px-4 py-3 font-bold text-blue-600">${escapeHtml(String(t.id))}</td>
+                    <td class="px-4 py-3 font-medium text-gray-800">${escapeHtml(t.name)}</td>
+                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.school)}</td>
+                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.major)}</td>
+                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.qualify)}</td>
+                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.date)}</td>
+                    <td class="px-4 py-3">
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold" dir="ltr" style="display:inline-block">
+                            ${t.total} / 100
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex gap-1.5 justify-end items-center flex-nowrap">
+                            <a href="${routes.show(t.id)}" title="عرض"
+                                class="bg-green-100 hover:bg-green-200 text-green-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                👁️
+                            </a>
+                            <a href="${routes.edit(t.id)}" title="تعديل"
+                                class="bg-blue-100 hover:bg-blue-200 text-blue-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                ✏️
+                            </a>
+                            <button type="button" title="طباعة" onclick="window.open(routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()), '_blank')"
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                🖨️
+                            </button>
+                            <form action="${routes.resetScores(t.id)}" method="POST"
+                                onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" title="حذف الدرجات"
+                                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                    🗑️
+                                </button>
+                            </form>
+                            <form action="${routes.destroy(t.id)}" method="POST"
+                                onsubmit="return confirm('هل أنت متأكد؟')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" title="حذف"
+                                    class="bg-red-100 hover:bg-red-200 text-red-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                    ❌
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function renderPagination(totalPages, totalCount) {
+            if (totalCount === 0) {
+                paginationEl.innerHTML = '';
+                return;
+            }
+
+            paginationEl.innerHTML = `
+                <span>إجمالي النتائج: ${totalCount}</span>
+                <div class="flex gap-1">
+                    <button data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}
+                        class="page-btn px-3 py-1 rounded-lg border border-gray-300 ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}">
+                        السابق
+                    </button>
+                    <span class="px-2 py-1">صفحة ${currentPage} من ${totalPages}</span>
+                    <button data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}
+                        class="page-btn px-3 py-1 rounded-lg border border-gray-300 ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}">
+                        التالي
+                    </button>
+                </div>
+            `;
+
+            paginationEl.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = parseInt(btn.dataset.page);
+                    if (page >= 1 && page <= totalPages) {
+                        currentPage = page;
+                        renderTable();
+                    }
+                });
+            });
+        }
+
+        function applyFilters() {
+            currentPage = 1;
+            renderTable();
+        }
+
+        searchInput.addEventListener('input', applyFilters);
+        schoolFilter.addEventListener('change', applyFilters);
+        minScoreFilter.addEventListener('input', applyFilters);
+        maxScoreFilter.addEventListener('input', applyFilters);
+
+        resetBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            schoolFilter.value = '';
+            minScoreFilter.value = '';
+            maxScoreFilter.value = '';
+            applyFilters();
+        });
+
+        renderTable();
+    </script>
+</x-app-layout>
+
+
