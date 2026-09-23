@@ -17,6 +17,8 @@ class TeacherInfoController extends Controller
         return view('teachers.index');
     }
 
+    
+
     public function create()
     {
         $schools     = School::all();
