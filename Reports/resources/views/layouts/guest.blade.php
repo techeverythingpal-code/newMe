@@ -27,8 +27,8 @@
                     <div class="absolute top-1/3 left-1/4 w-16 h-16 rounded-full bg-white/15"></div>
 
                     <div class="relative z-10">
-                        <!--div class="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center text-3xl mb-6">
-                            📃
+                        <!-- class="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center text-3xl mb-6">
+                            🎓
                         </div-->
                         <h1 class="text-2xl sm:text-3xl font-bold mb-2">تقرير الأداء السنوي</h1>
                         <p class="text-blue-100 font-semibold mb-4">نظام تقييم المعلمين</p>
