@@ -1,54 +1,66 @@
 <x-guest-layout>
-    <!-- Session Status -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">تسجيل الدخول</h2>
+        <p class="text-sm text-gray-500 mt-1">أدخل بياناتك للوصول إلى لوحة التحكم</p>
+    </div>
+
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
 
-       <!-- Username -->
-<div>
-    <x-input-label for="login" :value="__('اسم المستخدم أو البريد الإلكتروني')" />
-    <x-text-input id="login"
-        class="block mt-1 w-full"
-        type="text"
-        name="login"
-        :value="old('login')"
-        required
-        autofocus
-        autocomplete="username" />
-    <x-input-error :messages="$errors->get('login')" class="mt-2" />
-</div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        {{-- Username --}}
+        <div>
+            <label for="login" class="block text-sm font-bold text-gray-700 mb-1.5">اسم المستخدم أو البريد الإلكتروني</label>
+            <div class="relative">
+                <span class="absolute inset-y-0 right-3 flex items-center text-gray-400">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                </span>
+                <input id="login" type="text" name="login" value="{{ old('login') }}" required autofocus autocomplete="username"
+                    class="block w-full rounded-lg border-gray-300 pr-10 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            <x-input-error :messages="$errors->get('login')" class="mt-1.5" />
         </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+        {{-- Password --}}
+        <div x-data="{ show: false }">
+            <label for="password" class="block text-sm font-bold text-gray-700 mb-1.5">كلمة المرور</label>
+            <div class="relative">
+                <span class="absolute inset-y-0 right-3 flex items-center text-gray-400">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>
+                </span>
+                <input :type="show ? 'text' : 'password'" id="password" name="password" required autocomplete="current-password"
+                    class="block w-full rounded-lg border-gray-300 pr-10 pl-16 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
+                <button type="button" @click="show = !show"
+                    class="absolute inset-y-0 left-3 flex items-center text-xs font-bold text-blue-600 hover:text-blue-800">
+                    <span x-text="show ? 'إخفاء' : 'إظهار'"></span>
+                </button>
+            </div>
+            <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
+        </div>
+
+        {{-- Remember + Forgot password --}}
+        <div class="flex items-center justify-between">
+            <label for="remember_me" class="inline-flex items-center gap-2 text-sm text-gray-600">
+                <input id="remember_me" type="checkbox" name="remember"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                تذكرني
             </label>
-        </div>
 
-        <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
+                <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-800 font-semibold">
+                    نسيت كلمة المرور؟
                 </a>
             @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
         </div>
+
+        <button type="submit"
+            class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-lg transition">
+            تسجيل الدخول
+        </button>
     </form>
 </x-guest-layout>
