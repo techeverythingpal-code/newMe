@@ -17,7 +17,14 @@ class TeacherInfoController extends Controller
         return view('teachers.index');
     }
 
-    
+    /**
+     * Where a supervisor (not an admin) should land after create/update/delete.
+     * Admins keep going to the teachers list; supervisors go to their dashboard.
+     */
+    private function postActionRoute(): string
+    {
+        return Auth::guard('admin')->check() ? 'teachers.index' : 'dashboard';
+    }
 
     public function create()
     {
@@ -64,7 +71,7 @@ class TeacherInfoController extends Controller
         'score21' => 0, 'score22' => 0, 'total' => 0,
     ]);
 
-    return redirect()->route('teachers.index')
+    return redirect()->route($this->postActionRoute())
         ->with('success', 'تم إضافة المعلم بنجاح');
 }
 
@@ -149,7 +156,7 @@ class TeacherInfoController extends Controller
 
         $teacher->update($validated);
 
-        return redirect()->route('teachers.index')
+        return redirect()->route($this->postActionRoute())
             ->with('success', 'تم تعديل بيانات المعلم بنجاح');
     }
 
@@ -159,7 +166,7 @@ class TeacherInfoController extends Controller
         $teacher->grades()->delete();
         $teacher->delete();
 
-        return redirect()->route('teachers.index')
+        return redirect()->route($this->postActionRoute())
             ->with('success', 'تم حذف المعلم بنجاح');
     }
 }
