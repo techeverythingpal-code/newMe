@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <a href="{{ route('teachers.index') }}"
+            <a href="{{ auth()->guard('admin')->check() ? route('teachers.index') : route('dashboard') }}"
                 class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-5 rounded-lg transition">
                 ← العودة
             </a>
@@ -160,7 +160,7 @@
                             class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition">
                             حفظ التعديلات
                         </button>
-                        <a href="{{ route('teachers.index') }}"
+                        <a href="{{ auth()->guard('admin')->check() ? route('teachers.index') : route('dashboard') }}"
                             class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg transition">
                             إلغاء
                         </a>
