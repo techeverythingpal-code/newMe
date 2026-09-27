@@ -22,7 +22,7 @@
 }
 
 .view-toggle-btn.bg-white {
-    color: #2563eb;
+    color: #45408E;
 }
 </style>
 
@@ -33,28 +33,28 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 
                 <button type="button" id="cardAllTeachers"
-                    class="stat-card bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
+                    class="stat-card bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
                     <div class="text-4xl mb-2">👨‍🏫</div>
                     <div class="text-3xl font-bold">{{ $totalTeachers }}</div>
                     <div class="text-sm opacity-80 mt-1">إجمالي المعلمين</div>
                 </button>
 
                 <button type="button" id="cardAvgTotal"
-                    class="stat-card bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
+                    class="stat-card bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
                     <div class="text-4xl mb-2">📊</div>
                     <div class="text-3xl font-bold">{{ number_format($avgTotal, 1) }}</div>
                     <div class="text-sm opacity-80 mt-1">متوسط الدرجات</div>
                 </button>
 
                 <button type="button" id="cardHighestScore"
-                    class="stat-card bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
+                    class="stat-card bg-gradient-to-br from-brand-400 to-brand-600 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
                     <div class="text-4xl mb-2">🏆</div>
                     <div class="text-3xl font-bold">{{ $highestScore }}</div>
                     <div class="text-sm opacity-80 mt-1">أعلى درجة</div>
                 </button>
 
                 <button type="button" id="cardExcellent" data-min-score="85"
-                    class="stat-card bg-gradient-to-br from-green-500 to-green-700 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
+                    class="stat-card bg-gradient-to-br from-brand-700 to-brand-900 rounded-2xl p-5 text-white shadow-lg text-right hover:scale-[1.02] transition cursor-pointer">
                     <div class="text-4xl mb-2">⭐</div>
                     <div class="text-3xl font-bold">{{ $excellentCount }}</div>
                     <div class="text-sm opacity-80 mt-1">تقدير ممتاز</div>
@@ -82,11 +82,11 @@
                     </div>
                     <div class="flex gap-2">
                         <a href="{{ route('teachers.create') }}"
-                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
+                            class="bg-brand-500 hover:bg-brand-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
                             + إضافة معلم
                         </a>
                         <a href="{{ route('teachers.export') }}"
-                            class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
+                            class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
                             📥 تصدير Excel
                         </a>
                         <form action="{{ route('teacher-grades.reset-all') }}" method="POST"
@@ -122,19 +122,19 @@
         <option value="">-- اختر --</option>
     </select>
     <button type="button" id="printRangeBtn"
-        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
+        class="bg-brand-500 hover:bg-brand-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
         🖨️ طباعة النطاق
     </button>
     <button type="button" id="printAllBtn"
-        class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
+        class="bg-brand-700 hover:bg-brand-800 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
         🖨️ طباعة الكل
     </button>
     <button type="button" id="printSummaryBtn"
-        class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
+        class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
         📊 طباعة التقرير الموجز
     </button>
     <button type="button" id="printTeachersListBtn"
-        class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
+        class="bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
         🖨️ طباعة قائمة المعلمين
     </button>
 </div>
@@ -171,7 +171,7 @@
                 <div id="teachersTableWrap" class="hidden overflow-x-auto">
                     <table class="w-full text-right text-sm">
                         <thead>
-                            <tr class="bg-blue-50 text-blue-700 border-b border-blue-100">
+                            <tr class="bg-brand-50 text-brand-700 border-b border-brand-100">
                                 <th class="px-4 py-3">#</th>
                                 <th class="px-4 py-3">رقم المعلم</th>
                                 <th class="px-4 py-3">اسم المعلم</th>
@@ -310,10 +310,10 @@
         body { font-family: 'Tahoma','Arial',sans-serif; color:#111; background:#f3f4f6; margin:0; padding:20px; }
         .toolbar { max-width:800px; margin:0 auto 14px; display:flex; justify-content:flex-end; gap:8px; }
         .toolbar button {
-            background:#2563eb; color:#fff; border:none; padding:8px 18px;
+            background:#5651AB; color:#fff; border:none; padding:8px 18px;
             border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;
         }
-        .toolbar button:hover { background:#1d4ed8; }
+        .toolbar button:hover { background:#45408E; }
         .summary-report-page { max-width: 800px; margin: 0 auto 20px; padding: 20px; background:#fff; }
         .summary-report-header { text-align: center; margin-bottom: 16px; }
         .summary-report-header p { font-size: 13px; margin: 2px 0; }
@@ -422,10 +422,10 @@
         body { font-family: 'Tahoma','Arial',sans-serif; color:#111; background:#f3f4f6; margin:0; padding:20px; }
         .toolbar { max-width:1000px; margin:0 auto 14px; display:flex; justify-content:flex-end; gap:8px; }
         .toolbar button {
-            background:#2563eb; color:#fff; border:none; padding:8px 18px;
+            background:#5651AB; color:#fff; border:none; padding:8px 18px;
             border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;
         }
-        .toolbar button:hover { background:#1d4ed8; }
+        .toolbar button:hover { background:#45408E; }
         .print-report-container { max-width: 1000px; margin: 0 auto 20px; padding: 20px; background:#fff; }
         .report-header { text-align: center; margin-bottom: 16px; }
         .report-title-text { font-size: 13px; margin: 2px 0; }
@@ -502,7 +502,7 @@
         }
 
         function updateViewToggleUI() {
-            const activeClasses   = ['bg-white', 'shadow', 'text-blue-600'];
+            const activeClasses   = ['bg-white', 'shadow', 'text-brand-600'];
             const inactiveClasses = ['text-gray-500'];
 
             viewCardsBtn.classList.remove(...activeClasses, ...inactiveClasses);
@@ -627,13 +627,13 @@
 
             pageItems.forEach((t, index) => {
                 const card = document.createElement('div');
-                card.className = 'relative bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition p-4 flex flex-col gap-3' + (t.total >= 85 ? ' ring-2 ring-yellow-300' : '');
+                card.className = 'relative bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition p-4 flex flex-col gap-3' + (t.total >= 85 ? ' ring-2 ring-brand-300' : '');
                 card.innerHTML = `
                     ${t.total >= 85 ? '<div class="absolute -top-2 -right-2 text-2xl drop-shadow">⭐</div>' : ''}
                     <div class="flex items-start justify-between">
                         <span class="text-xs text-gray-400">#${start + index + 1}</span>
                         <div class="flex gap-1">
-                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
+                            <span class="bg-brand-100 text-brand-700 px-3 py-1 rounded-full text-xs font-bold">
                                 ${t.total} / 100
                             </span>
                             <span class="${assessmentColorClasses[t.assessment.color] || assessmentColorClasses.gray} px-3 py-1 rounded-full text-xs font-bold">
@@ -650,21 +650,21 @@
                     <div class="flex flex-wrap gap-2 pt-2 border-t border-gray-100">
                         ${t.total >= 85 ? `
                         <a href="${routes.justification(t.id)}"
-                            class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                            class="bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             📝 نموذج التبرير
                         </a>` : ''}
-                        <button type="button" class="note-toggle-btn bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                        <button type="button" class="note-toggle-btn bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             🗒️ إضافة ملاحظات المشرف
                         </button>
                         <button type="button" onclick="window.open(routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()), '_blank')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             🖨️ طباعة
                         </button>
                         <a href="${routes.show(t.id)}"
-                            class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                            class="bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             👁️ عرض
                         </a>
                         <a href="${routes.edit(t.id)}"
-                            class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                            class="bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                             ✏️ تعديل
                         </a>
                         <form action="${routes.resetScores(t.id)}" method="POST"
@@ -688,12 +688,12 @@
                     </div>
 
                     <div class="note-box hidden mt-2 pt-2 border-t border-gray-100">
-                        <textarea class="note-textarea w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-yellow-300" rows="2" maxlength="250" placeholder="اكتب ملاحظة...">${escapeHtml(t.supervisor_note)}</textarea>
+                        <textarea class="note-textarea w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-brand-300" rows="2" maxlength="250" placeholder="اكتب ملاحظة...">${escapeHtml(t.supervisor_note)}</textarea>
                     <div class="flex justify-between items-center mt-1">
                         <span class="note-counter text-xs text-gray-400">0/180</span>
                         <div class="flex items-center gap-2">
                             <span class="note-status text-xs text-gray-400"></span>
-                            <button type="button" class="note-save-btn bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
+                            <button type="button" class="note-save-btn bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                                 حفظ الملاحظة
                             </button>
                         </div>
@@ -748,28 +748,28 @@
 
             pageItems.forEach((t, index) => {
                 const row = document.createElement('tr');
-                row.className = 'border-b border-gray-100 hover:bg-blue-50 transition' + (t.total >= 85 ? ' bg-yellow-50/40' : '');
+                row.className = 'border-b border-gray-100 hover:bg-blue-50 transition' + (t.total >= 85 ? ' bg-brand-50/40' : '');
                 row.innerHTML = `
                     <td class="px-4 py-3 text-gray-400">${start + index + 1}</td>
-                    <td class="px-4 py-3 font-bold text-blue-600">${escapeHtml(String(t.id))}</td>
+                    <td class="px-4 py-3 font-bold text-brand-600">${escapeHtml(String(t.id))}</td>
                     <td class="px-4 py-3 font-medium text-gray-800">${escapeHtml(t.name)}</td>
                     <td class="px-4 py-3 text-gray-600">${escapeHtml(t.school)}</td>
                     <td class="px-4 py-3 text-gray-600">${escapeHtml(t.major)}</td>
                     <td class="px-4 py-3 text-gray-600">${escapeHtml(t.qualify)}</td>
                     <td class="px-4 py-3 text-gray-600">${escapeHtml(t.date)}</td>
                     <td class="px-4 py-3">
-                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold" dir="ltr" style="display:inline-block">
+                        <span class="bg-brand-100 text-brand-700 px-3 py-1 rounded-full text-xs font-bold" dir="ltr" style="display:inline-block">
                             ${t.total} / 100
                         </span>
                     </td>
                     <td class="px-4 py-3">
                         <div class="flex gap-1.5 justify-end items-center flex-nowrap">
                             <a href="${routes.show(t.id)}" title="عرض"
-                                class="bg-green-100 hover:bg-green-200 text-green-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                class="bg-brand-100 hover:bg-brand-200 text-brand-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
                                 👁️
                             </a>
                             <a href="${routes.edit(t.id)}" title="تعديل"
-                                class="bg-blue-100 hover:bg-blue-200 text-blue-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                                class="bg-brand-100 hover:bg-brand-200 text-brand-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
                                 ✏️
                             </a>
                             <button type="button" title="طباعة" onclick="window.open(routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()), '_blank')"
