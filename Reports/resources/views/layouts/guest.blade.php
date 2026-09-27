@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'newMe') }}</title>
+        <title>{{ config('app.name', 'تقرير الأداء') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -28,7 +28,7 @@
 
                     <div class="relative z-10">
                         <!--div class="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center text-3xl mb-6">
-                            🎓
+                            📃
                         </div-->
                         <h1 class="text-2xl sm:text-3xl font-bold mb-2">تقرير الأداء السنوي</h1>
                         <p class="text-blue-100 font-semibold mb-4">نظام تقييم المعلمين</p>
