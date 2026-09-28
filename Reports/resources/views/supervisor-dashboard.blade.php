@@ -272,6 +272,7 @@
             scoreGroups:    @json($scoreGroups),
             supervisorName: @json(Auth::guard('web')->user()->SuperVisor_Name ?? ''),
             highestScore:   @json($highestScore),
+            csrf:           @json(csrf_token()),
             urls: {
                 teachers:    @json(url('teachers')),
                 reportsBulk: @json(route('teachers.reports.print')),
