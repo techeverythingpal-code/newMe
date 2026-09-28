@@ -265,20 +265,18 @@
     </div>
 
     <script>
-    window.__SUPERVISOR_DASHBOARD__ = {
-        teachers:       @json($teachersData),
-        scoreCriteria:  @json($scoreCriteria),
-        scoreGroups:    @json($scoreGroups),
-        supervisorName: @json(Auth::guard('web')->user()->SuperVisor_Name ?? ''),
-        highestScore:   @json($highestScore),
-        urls: {
-            teachers:    @json(url('teachers')),
-            reportsBulk: @json(route('teachers.reports.print')),
-        },
-    };
+        // Data only — all behavior lives in resources/js/pages/supervisor-dashboard.js
+        window.__SUPERVISOR_DASHBOARD__ = {
+            teachers:       @json($teachersData),
+            scoreCriteria:  @json($scoreCriteria),
+            scoreGroups:    @json($scoreGroups),
+            supervisorName: @json(Auth::guard('web')->user()->SuperVisor_Name ?? ''),
+            highestScore:   @json($highestScore),
+            urls: {
+                teachers:    @json(url('teachers')),
+                reportsBulk: @json(route('teachers.reports.print')),
+            },
+        };
     </script>
-
-@vite('resources/js/pages/supervisor-dashboard.js')
-
-        
+    @vite('resources/js/pages/supervisor-dashboard.js')
 </x-app-layout>
