@@ -14,13 +14,6 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // 'main' (default), 'manage' or 'reports' — the last two are supervisor-only sections
-        $section = $request->route('section') ?? 'main';
-
-        if ($section !== 'main' && Auth::guard('admin')->check()) {
-            return redirect()->route('dashboard');
-        }
-
         // Regular supervisor → show their own dashboard
         if (! Auth::guard('admin')->check()) {
             $user = Auth::guard('web')->user();
@@ -75,8 +68,7 @@ class DashboardController extends Controller
                 'schools',
                 'teachersData',
                 'scoreCriteria',
-                'scoreGroups',
-                'section'
+                'scoreGroups'
             ));
         }
 

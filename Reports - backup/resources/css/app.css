@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Brand color palette — the single place to change the app's colors.
+ * Each value is a space-separated "R G B" triplet (no commas, no #) so
+ * Tailwind can apply opacity modifiers like bg-brand-500/50.
+ *
+ * brand-500 is your requested #5651AB. The rest of the scale (tints
+ * and shades) was generated around it to keep the same hue/feel.
+ */
+:root {
+    --color-brand-50:  246 246 249;
+    --color-brand-100: 233 233 241;
+    --color-brand-200: 207 206 228;
+    --color-brand-300: 170 167 210;
+    --color-brand-400: 127 123 193;
+    --color-brand-500: 86 81 171;   /* #5651AB */
+    --color-brand-600: 69 64 142;
+    --color-brand-700: 57 53 117;
+    --color-brand-800: 46 43 91;
+    --color-brand-900: 35 33 66;
+}
