@@ -42,7 +42,7 @@
     <div class="py-6" dir="rtl">
         <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8">
 
-            {{-- ===== Section: main dashboard (stats, filters, teachers list) ===== --}}
+            {{-- ===== Section: main dashboard (profile, print range, grade summary) ===== --}}
             <div id="dashMain" class="space-y-6 {{ $section === 'main' ? '' : 'hidden' }}">
 
             {{-- Row 1: profile card + academic year / range print --}}
@@ -115,6 +115,70 @@
                 </div>
             </div>
 
+            {{-- Row 2: grade summary --}}
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+                {{-- Grade summary card --}}
+                <div class="bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl shadow-sm p-6 text-white xl:sticky xl:top-6">
+                    <h3 class="text-lg font-bold leading-snug">ملخص التقديرات</h3>
+                    <p class="text-sm text-white/70 mt-1">توزيع المعلمين حسب التقدير</p>
+
+                    <ul class="mt-5 space-y-3 text-sm">
+                        <li class="flex items-center justify-between">
+                            <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>ممتاز (85 فأكثر)</span>
+                            <span id="sumA" class="font-bold">0</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>جيد جداً (75 - 84)</span>
+                            <span id="sumB" class="font-bold">0</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>جيد (65 - 74)</span>
+                            <span id="sumC" class="font-bold">0</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>متوسط (55 - 64)</span>
+                            <span id="sumD" class="font-bold">0</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>مقبول (54 فما دون)</span>
+                            <span id="sumF" class="font-bold">0</span>
+                        </li>
+                    </ul>
+
+                    <div class="mt-5 pt-4 border-t border-white/20 flex items-center justify-between font-bold">
+                        <span>الإجمالي</span>
+                        <span id="sumTotal">0</span>
+                    </div>
+                </div>
+            </div>
+
+            </div>{{-- /dashMain --}}
+
+            {{-- ===== Section: teachers management ===== --}}
+            <div id="dashManage" class="space-y-6 {{ $section === 'manage' ? '' : 'hidden' }}">
+                <div class="bg-white rounded-2xl shadow-sm p-6">
+                    <h3 class="font-bold text-gray-800 mb-4">إدارة المعلمين</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <a href="{{ route('teachers.create') }}"
+                            class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50 transition">
+                            <span class="text-2xl">➕</span><span>إضافة معلم</span>
+                        </a>
+                        <a href="{{ route('teachers.export') }}"
+                            class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50 transition">
+                            <span class="text-2xl">📥</span><span>تصدير Excel</span>
+                        </a>
+                        <form action="{{ route('teacher-grades.reset-all') }}" method="POST"
+                            onsubmit="return confirm('هل أنت متأكد من حذف درجات جميع معلميك؟ لا يمكن التراجع عن هذا الإجراء.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="w-full flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-medium text-red-700 hover:bg-red-100 transition text-right">
+                                <span class="text-2xl">🗑️</span><span>حذف كل الدرجات</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
             {{-- Row 2: stat tiles (also work as filters) --}}
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
 
@@ -156,141 +220,76 @@
 
             </div>
 
-            {{-- Row 3: teachers list + grade summary --}}
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-
-                {{-- Teachers card --}}
-                <div class="xl:col-span-2 bg-white rounded-2xl shadow-sm p-6">
-                    <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-                        <h3 class="text-lg font-bold text-gray-800">المعلمون</h3>
-                        <div class="flex bg-gray-100 rounded-lg p-1">
-                            <button type="button" id="viewCardsBtn"
-                                class="view-toggle-btn px-3 py-1.5 rounded-md text-sm font-bold transition">
-                                🔲 بطاقات
-                            </button>
-                            <button type="button" id="viewTableBtn"
-                                class="view-toggle-btn px-3 py-1.5 rounded-md text-sm font-bold transition">
-                                🗂️ قائمة
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- Filters (instant, client-side — no page reload) --}}
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
-                        <input type="text" id="searchInput"
-                            placeholder="بحث (اسم، تخصص، مؤهل...)"
-                            class="rounded-xl border-gray-200 bg-gray-50 px-3 py-2 text-sm md:col-span-2 focus:border-brand-500 focus:ring-brand-500">
-
-                        <select id="schoolFilter" class="rounded-xl border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:border-brand-500 focus:ring-brand-500">
-                            <option value="">كل المدارس</option>
-                            @foreach($schools as $school)
-                                <option value="{{ $school->School_ID }}">{{ $school->SchoolName }}</option>
-                            @endforeach
-                        </select>
-
-                        {{-- Hidden — driven internally by the stat tiles, not user-editable --}}
-                        <input type="hidden" id="minScoreFilter">
-                        <input type="hidden" id="maxScoreFilter">
-
-                        <button id="resetFilters" type="button"
-                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-xl text-sm transition">
-                            إعادة تعيين
+            {{-- Teachers list (cards / table view) --}}
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                    <h3 class="text-lg font-bold text-gray-800">المعلمون</h3>
+                    <div class="flex bg-gray-100 rounded-lg p-1">
+                        <button type="button" id="viewCardsBtn"
+                            class="view-toggle-btn px-3 py-1.5 rounded-md text-sm font-bold transition">
+                            🔲 بطاقات
+                        </button>
+                        <button type="button" id="viewTableBtn"
+                            class="view-toggle-btn px-3 py-1.5 rounded-md text-sm font-bold transition">
+                            🗂️ قائمة
                         </button>
                     </div>
-
-                    <div id="teachersCardGrid" class="relative pr-9 space-y-4">
-                        {{-- Cards are rendered by JavaScript --}}
-                    </div>
-
-                    <div id="teachersTableWrap" class="hidden overflow-x-auto">
-                        <table class="w-full text-right text-sm">
-                            <thead>
-                                <tr class="bg-brand-50 text-brand-700 border-b border-brand-100">
-                                    <th class="px-4 py-3">#</th>
-                                    <th class="px-4 py-3">رقم المعلم</th>
-                                    <th class="px-4 py-3">اسم المعلم</th>
-                                    <th class="px-4 py-3">المدرسة</th>
-                                    <th class="px-4 py-3">التخصص</th>
-                                    <th class="px-4 py-3">المؤهل</th>
-                                    <th class="px-4 py-3">تاريخ التعيين</th>
-                                    <th class="px-4 py-3">المجموع</th>
-                                    <th class="px-4 py-3">الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="teachersTableBody">
-                                {{-- Rows are rendered by JavaScript --}}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div id="emptyState" class="hidden p-5 text-center text-gray-400">
-                        لا يوجد معلمون مطابقون لهذا البحث
-                    </div>
-
-                    <div id="paginationControls" class="mt-5 flex items-center justify-between text-sm text-gray-600"></div>
                 </div>
 
-                {{-- Grade summary card --}}
-                <div class="bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl shadow-sm p-6 text-white xl:sticky xl:top-6">
-                    <h3 class="text-lg font-bold leading-snug">ملخص التقديرات</h3>
-                    <p class="text-sm text-white/70 mt-1">توزيع المعلمين حسب التقدير</p>
+                {{-- Filters (instant, client-side — no page reload) --}}
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
+                    <input type="text" id="searchInput"
+                        placeholder="بحث (اسم، تخصص، مؤهل...)"
+                        class="rounded-xl border-gray-200 bg-gray-50 px-3 py-2 text-sm md:col-span-2 focus:border-brand-500 focus:ring-brand-500">
 
-                    <ul class="mt-5 space-y-3 text-sm">
-                        <li class="flex items-center justify-between">
-                            <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>ممتاز (85 فأكثر)</span>
-                            <span id="sumA" class="font-bold">0</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>جيد جداً (75 - 84)</span>
-                            <span id="sumB" class="font-bold">0</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>جيد (65 - 74)</span>
-                            <span id="sumC" class="font-bold">0</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>متوسط (55 - 64)</span>
-                            <span id="sumD" class="font-bold">0</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>مقبول (54 فما دون)</span>
-                            <span id="sumF" class="font-bold">0</span>
-                        </li>
-                    </ul>
+                    <select id="schoolFilter" class="rounded-xl border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:border-brand-500 focus:ring-brand-500">
+                        <option value="">كل المدارس</option>
+                        @foreach($schools as $school)
+                            <option value="{{ $school->School_ID }}">{{ $school->SchoolName }}</option>
+                        @endforeach
+                    </select>
 
-                    <div class="mt-5 pt-4 border-t border-white/20 flex items-center justify-between font-bold">
-                        <span>الإجمالي</span>
-                        <span id="sumTotal">0</span>
-                    </div>
+                    {{-- Hidden — driven internally by the stat tiles, not user-editable --}}
+                    <input type="hidden" id="minScoreFilter">
+                    <input type="hidden" id="maxScoreFilter">
+
+                    <button id="resetFilters" type="button"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-xl text-sm transition">
+                        إعادة تعيين
+                    </button>
                 </div>
+
+                <div id="teachersCardGrid" class="relative pr-9 space-y-4">
+                    {{-- Cards are rendered by JavaScript --}}
+                </div>
+
+                <div id="teachersTableWrap" class="hidden overflow-x-auto">
+                    <table class="w-full text-right text-sm">
+                        <thead>
+                            <tr class="bg-brand-50 text-brand-700 border-b border-brand-100">
+                                <th class="px-4 py-3">#</th>
+                                <th class="px-4 py-3">رقم المعلم</th>
+                                <th class="px-4 py-3">اسم المعلم</th>
+                                <th class="px-4 py-3">المدرسة</th>
+                                <th class="px-4 py-3">التخصص</th>
+                                <th class="px-4 py-3">المؤهل</th>
+                                <th class="px-4 py-3">تاريخ التعيين</th>
+                                <th class="px-4 py-3">المجموع</th>
+                                <th class="px-4 py-3">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teachersTableBody">
+                            {{-- Rows are rendered by JavaScript --}}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="emptyState" class="hidden p-5 text-center text-gray-400">
+                    لا يوجد معلمون مطابقون لهذا البحث
+                </div>
+
+                <div id="paginationControls" class="mt-5 flex items-center justify-between text-sm text-gray-600"></div>
             </div>
-
-            </div>{{-- /dashMain --}}
-
-            {{-- ===== Section: teachers management ===== --}}
-            <div id="dashManage" class="{{ $section === 'manage' ? '' : 'hidden' }}">
-                <div class="bg-white rounded-2xl shadow-sm p-6">
-                    <h3 class="font-bold text-gray-800 mb-4">إدارة المعلمين</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                        <a href="{{ route('teachers.create') }}"
-                            class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50 transition">
-                            <span class="text-2xl">➕</span><span>إضافة معلم</span>
-                        </a>
-                        <a href="{{ route('teachers.export') }}"
-                            class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50 transition">
-                            <span class="text-2xl">📥</span><span>تصدير Excel</span>
-                        </a>
-                        <form action="{{ route('teacher-grades.reset-all') }}" method="POST"
-                            onsubmit="return confirm('هل أنت متأكد من حذف درجات جميع معلميك؟ لا يمكن التراجع عن هذا الإجراء.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="w-full flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-medium text-red-700 hover:bg-red-100 transition text-right">
-                                <span class="text-2xl">🗑️</span><span>حذف كل الدرجات</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
             </div>
 
             {{-- ===== Section: reports & printing (handled by the page's script via "dashboard-action") ===== --}}
