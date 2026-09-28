@@ -65,7 +65,7 @@
             {{-- My Teachers Table --}}
             <div class="bg-white rounded-2xl shadow p-5">
                <div class="flex justify-between items-center mb-4">
-                    
+
                     <div class="flex items-center gap-3">
                     <h3 class="font-semibold text-gray-700">عرض بيانات المعلمين : </h3>
                         <div class="flex bg-gray-100 rounded-lg p-1">
@@ -78,31 +78,12 @@
                                 🗂️ قائمة
                             </button>
                         </div>
-                        
+
                     </div>
-                    <div class="flex gap-2">
-                        <a href="{{ route('teachers.create') }}"
-                            class="bg-brand-500 hover:bg-brand-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
-                            + إضافة معلم
-                        </a>
-                        <a href="{{ route('teachers.export') }}"
-                            class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
-                            📥 تصدير Excel
-                        </a>
-                        <form action="{{ route('teacher-grades.reset-all') }}" method="POST"
-                            onsubmit="return confirm('هل أنت متأكد من حذف درجات جميع معلميك؟ لا يمكن التراجع عن هذا الإجراء.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
-                                🗑️ حذف كل الدرجات
-                            </button>
-                        </form>
-                    </div>
-                
+
                 </div>
 
-                {{-- Academic year + bulk print --}}
+                {{-- Academic year + range print (other actions live in the sidebar) --}}
                 <div class="flex flex-wrap items-center gap-3 mb-4 bg-gray-50 rounded-lg p-4">
     <span class="text-sm font-bold text-gray-600">العام الدراسي:</span>
     <select id="academicYearSelect" class="rtl-select border border-gray-300 rounded-lg px-3 py-2 text-sm min-w-[120px]">
@@ -125,18 +106,6 @@
         class="bg-brand-500 hover:bg-brand-600 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
         🖨️ طباعة النطاق
     </button>
-    <button type="button" id="printAllBtn"
-        class="bg-brand-700 hover:bg-brand-800 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
-        🖨️ طباعة الكل
-    </button>
-    <button type="button" id="printSummaryBtn"
-        class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
-        📊 طباعة التقرير الموجز
-    </button>
-    <button type="button" id="printTeachersListBtn"
-        class="bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-5 rounded-lg text-sm transition">
-        🖨️ طباعة قائمة المعلمين
-    </button>
 </div>
 
                 {{-- Filters (instant, client-side — no page reload) --}}
@@ -156,12 +125,12 @@
     <input type="hidden" id="minScoreFilter">
     <input type="hidden" id="maxScoreFilter">
 
-    
+
         <button id="resetFilters" type="button"
             class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg text-sm transition">
             إعادة تعيين
         </button>
-    
+
 </div>
 
                 <div id="teachersCardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -276,11 +245,13 @@
             window.open(routes.reportsBulk(ids), '_blank');
         });
 
-        document.getElementById('printAllBtn').addEventListener('click', () => {
-            window.open(routes.reportsBulk([]), '_blank');
-        });
+        // ---- Report actions (triggered from the sidebar buttons) ----
 
-        document.getElementById('printSummaryBtn').addEventListener('click', () => {
+        function printAll() {
+            window.open(routes.reportsBulk([]), '_blank');
+        }
+
+        function printSummary() {
             const summary = { scoreA: 0, scoreB: 0, scoreC: 0, scoreD: 0, scoreF: 0 };
 
             allTeachers.forEach(t => {
@@ -384,9 +355,9 @@
             const win = window.open('', '_blank');
             win.document.write(html);
             win.document.close();
-        });
+        }
 
-        document.getElementById('printTeachersListBtn').addEventListener('click', () => {
+        function printList() {
             const directorateName = allTeachers[0]?.directorate || '';
             const academicYear     = getAcademicYear();
             const supervisorName   = window.currentSupervisorName || '';
@@ -479,6 +450,13 @@
             const win = window.open('', '_blank');
             win.document.write(html);
             win.document.close();
+        }
+
+        // The sidebar buttons dispatch "dashboard-action" events; run the matching function
+        const dashboardActions = { printAll, printSummary, printList };
+        window.addEventListener('dashboard-action', (e) => {
+            const action = dashboardActions[e.detail];
+            if (action) action();
         });
 
         const searchInput    = document.getElementById('searchInput');

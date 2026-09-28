@@ -20,6 +20,12 @@
     }
 
     $links[] = ['route' => 'teacher-grades.sheet', 'active' => 'teacher-grades.sheet', 'icon' => '📊', 'label' => 'جدول الدرجات'];
+
+    // Supervisor-only action groups, shown on the dashboard page
+    $showDashboardActions = ! $isAdmin && request()->routeIs('dashboard');
+
+    $itemClass   = 'w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-r-full text-white/80 hover:bg-white/10 hover:text-white transition text-right';
+    $dangerClass = 'w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-r-full text-red-200 hover:bg-red-500/30 hover:text-white transition text-right';
 @endphp
 
 <aside :class="sidebarOpen ? 'translate-x-0' : 'translate-x-full'"
@@ -28,7 +34,7 @@
     <div class="h-full lg:h-screen lg:sticky lg:top-0 flex flex-col overflow-y-auto">
 
         {{-- Logo --}}
-        <div class="flex items-center justify-between px-5 h-20">
+        <div class="flex items-center justify-between px-5 h-20 shrink-0">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2 font-bold text-lg">
                 <span class="text-2xl">📋</span>
                 <span>{{ config('app.name') }}</span>
@@ -54,10 +60,52 @@
                     <span>{{ $link['label'] }}</span>
                 </a>
             @endforeach
+
+            @if($showDashboardActions)
+                {{-- Group 1: teachers management --}}
+                <div class="pt-5">
+                    <div class="px-4 pb-1 text-xs font-bold text-white/50">إدارة المعلمين</div>
+                    <div class="space-y-1">
+                        <a href="{{ route('teachers.create') }}" class="{{ $itemClass }}">
+                            <span class="text-lg">➕</span><span>إضافة معلم</span>
+                        </a>
+                        <a href="{{ route('teachers.export') }}" class="{{ $itemClass }}">
+                            <span class="text-lg">📥</span><span>تصدير Excel</span>
+                        </a>
+                        <form action="{{ route('teacher-grades.reset-all') }}" method="POST"
+                            onsubmit="return confirm('هل أنت متأكد من حذف درجات جميع معلميك؟ لا يمكن التراجع عن هذا الإجراء.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="{{ $dangerClass }}">
+                                <span class="text-lg">🗑️</span><span>حذف كل الدرجات</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Group 2: reports & printing (handled by the dashboard page's script) --}}
+                <div class="pt-5">
+                    <div class="px-4 pb-1 text-xs font-bold text-white/50">التقارير والطباعة</div>
+                    <div class="space-y-1">
+                        <button type="button" class="{{ $itemClass }}"
+                            @click="$dispatch('dashboard-action', 'printAll'); sidebarOpen = false">
+                            <span class="text-lg">🖨️</span><span>طباعة الكل</span>
+                        </button>
+                        <button type="button" class="{{ $itemClass }}"
+                            @click="$dispatch('dashboard-action', 'printSummary'); sidebarOpen = false">
+                            <span class="text-lg">📊</span><span>التقرير الموجز</span>
+                        </button>
+                        <button type="button" class="{{ $itemClass }}"
+                            @click="$dispatch('dashboard-action', 'printList'); sidebarOpen = false">
+                            <span class="text-lg">📄</span><span>قائمة المعلمين</span>
+                        </button>
+                    </div>
+                </div>
+            @endif
         </nav>
 
         {{-- User block --}}
-        <div class="px-4 pb-5 pt-4 border-t border-white/15">
+        <div class="px-4 pb-5 pt-4 mt-4 border-t border-white/15 shrink-0">
             <div class="flex items-center gap-3 mb-3">
                 <span class="w-10 h-10 shrink-0 rounded-full bg-white/20 flex items-center justify-center font-bold">
                     {{ mb_substr($userName ?? '', 0, 1) }}
