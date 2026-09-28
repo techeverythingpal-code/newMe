@@ -19,10 +19,16 @@
         $links[] = ['route' => 'teachers.index',     'active' => 'teachers.*',     'icon' => '🧑‍🏫', 'label' => 'المعلمون'];
     }
     if (! $isAdmin) {
-        $links[] = ['route' => 'teacher-grades.sheet', 'active' => 'teacher-grades.sheet', 'icon' => '📊', 'label' => 'جدول الدرجات'];
-        $links[] = ['route' => 'dashboard.manage',     'active' => 'dashboard.manage',     'icon' => '🧑‍🏫', 'label' => 'إدارة المعلمين'];
-        $links[] = ['route' => 'dashboard.reports',    'active' => 'dashboard.reports',    'icon' => '🖨️', 'label' => 'التقارير والطباعة'];
-    }
+    $links[] = ['route' => 'teacher-grades.sheet', 'active' => 'teacher-grades.sheet', 'icon' => '📊', 'label' => 'جدول الدرجات'];
+}
+
+    
+
+    // Supervisor-only action groups, shown on the dashboard page
+    $showDashboardActions = ! $isAdmin && request()->routeIs('dashboard');
+
+    $itemClass   = 'w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-r-full text-white/80 hover:bg-white/10 hover:text-white transition text-right';
+    $dangerClass = 'w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-r-full text-red-200 hover:bg-red-500/30 hover:text-white transition text-right';
 @endphp
 
 <aside :class="sidebarOpen ? 'translate-x-0' : 'translate-x-full'"
@@ -57,6 +63,48 @@
                     <span>{{ $link['label'] }}</span>
                 </a>
             @endforeach
+
+            @if($showDashboardActions)
+                {{-- Group 1: teachers management --}}
+                <div class="pt-5">
+                    <div class="px-4 pb-1 text-xs font-bold text-white/50">إدارة المعلمين</div>
+                    <div class="space-y-1">
+                        <a href="{{ route('teachers.create') }}" class="{{ $itemClass }}">
+                            <span class="text-lg">➕</span><span>إضافة معلم</span>
+                        </a>
+                        <a href="{{ route('teachers.export') }}" class="{{ $itemClass }}">
+                            <span class="text-lg">📥</span><span>تصدير Excel</span>
+                        </a>
+                        <form action="{{ route('teacher-grades.reset-all') }}" method="POST"
+                            onsubmit="return confirm('هل أنت متأكد من حذف درجات جميع معلميك؟ لا يمكن التراجع عن هذا الإجراء.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="{{ $dangerClass }}">
+                                <span class="text-lg">🗑️</span><span>حذف كل الدرجات</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Group 2: reports & printing (handled by the dashboard page's script) --}}
+                <div class="pt-5">
+                    <div class="px-4 pb-1 text-xs font-bold text-white/50">التقارير والطباعة</div>
+                    <div class="space-y-1">
+                        <button type="button" class="{{ $itemClass }}"
+                            @click="$dispatch('dashboard-action', 'printAll'); sidebarOpen = false">
+                            <span class="text-lg">🖨️</span><span>طباعة الكل</span>
+                        </button>
+                        <button type="button" class="{{ $itemClass }}"
+                            @click="$dispatch('dashboard-action', 'printSummary'); sidebarOpen = false">
+                            <span class="text-lg">📊</span><span>التقرير الموجز</span>
+                        </button>
+                        <button type="button" class="{{ $itemClass }}"
+                            @click="$dispatch('dashboard-action', 'printList'); sidebarOpen = false">
+                            <span class="text-lg">📄</span><span>قائمة المعلمين</span>
+                        </button>
+                    </div>
+                </div>
+            @endif
         </nav>
 
         {{-- User block --}}

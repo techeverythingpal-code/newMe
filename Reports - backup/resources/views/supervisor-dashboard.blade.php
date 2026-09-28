@@ -1,8 +1,7 @@
 <x-app-layout>
-    @php $section = $section ?? 'main'; @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight text-right">
-            {{ $section === 'manage' ? 'إدارة المعلمين' : ($section === 'reports' ? 'التقارير والطباعة' : 'لوحة التحكم') }}
+            لوحة التحكم
         </h2>
     </x-slot>
 
@@ -40,10 +39,7 @@
 </style>
 
     <div class="py-6" dir="rtl">
-        <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8">
-
-            {{-- ===== Section: main dashboard (stats, filters, teachers list) ===== --}}
-            <div id="dashMain" class="space-y-6 {{ $section === 'main' ? '' : 'hidden' }}">
+        <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Row 1: profile card + academic year / range print --}}
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -261,58 +257,6 @@
                     <div class="mt-5 pt-4 border-t border-white/20 flex items-center justify-between font-bold">
                         <span>الإجمالي</span>
                         <span id="sumTotal">0</span>
-                    </div>
-                </div>
-            </div>
-
-            </div>{{-- /dashMain --}}
-
-            {{-- ===== Section: teachers management ===== --}}
-            <div id="dashManage" class="{{ $section === 'manage' ? '' : 'hidden' }}">
-                <div class="bg-white rounded-2xl shadow-sm p-6">
-                    <h3 class="font-bold text-gray-800 mb-4">إدارة المعلمين</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                        <a href="{{ route('teachers.create') }}"
-                            class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50 transition">
-                            <span class="text-2xl">➕</span><span>إضافة معلم</span>
-                        </a>
-                        <a href="{{ route('teachers.export') }}"
-                            class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50 transition">
-                            <span class="text-2xl">📥</span><span>تصدير Excel</span>
-                        </a>
-                        <form action="{{ route('teacher-grades.reset-all') }}" method="POST"
-                            onsubmit="return confirm('هل أنت متأكد من حذف درجات جميع معلميك؟ لا يمكن التراجع عن هذا الإجراء.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="w-full flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-medium text-red-700 hover:bg-red-100 transition text-right">
-                                <span class="text-2xl">🗑️</span><span>حذف كل الدرجات</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            {{-- ===== Section: reports & printing (handled by the page's script via "dashboard-action") ===== --}}
-            <div id="dashReports" class="{{ $section === 'reports' ? '' : 'hidden' }}">
-                <div class="bg-white rounded-2xl shadow-sm p-6">
-                    <h3 class="font-bold text-gray-800 mb-4">التقارير والطباعة</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                        <button type="button"
-                            onclick="window.dispatchEvent(new CustomEvent('dashboard-action', { detail: 'printAll' }))"
-                            class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50 transition text-right">
-                            <span class="text-2xl">🖨️</span><span>طباعة الكل</span>
-                        </button>
-                        <button type="button"
-                            onclick="window.dispatchEvent(new CustomEvent('dashboard-action', { detail: 'printSummary' }))"
-                            class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50 transition text-right">
-                            <span class="text-2xl">📊</span><span>التقرير الموجز</span>
-                        </button>
-                        <button type="button"
-                            onclick="window.dispatchEvent(new CustomEvent('dashboard-action', { detail: 'printList' }))"
-                            class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50 transition text-right">
-                            <span class="text-2xl">📄</span><span>قائمة المعلمين</span>
-                        </button>
                     </div>
                 </div>
             </div>

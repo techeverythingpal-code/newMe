@@ -30,9 +30,6 @@ Route::middleware(['auth:admin,web', 'admin'])->group(function () {
 Route::middleware(['auth:admin,web'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/teachers-data', [DashboardController::class, 'teachersData'])->name('dashboard.teachers-data');
-    // Supervisor-only sections of the dashboard (same controller/view, different section)
-    Route::get('/dashboard/teachers-management', [DashboardController::class, 'index'])->defaults('section', 'manage')->name('dashboard.manage');
-    Route::get('/dashboard/reports', [DashboardController::class, 'index'])->defaults('section', 'reports')->name('dashboard.reports');
 
     Route::get('teachers/export', [ExcelController::class, 'exportTeachers'])->name('teachers.export');
     Route::post('teachers/import', [ExcelController::class, 'importTeachers'])->name('teachers.import');
