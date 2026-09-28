@@ -1,192 +1,89 @@
-<nav x-data="{ open: false }" class="bg-gradient-to-l from-indigo-600 to-purple-600 shadow-lg sticky top-0 z-50" dir="rtl">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex items-center">
-                <!-- Logo -->
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 font-bold text-lg text-white">
-                    <span class="text-2xl">📋</span>
-                    <span class="hidden sm:inline">نظام تقارير المعلمين</span>
-                </a>
+{{-- Mobile backdrop --}}
+<div x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false"
+    class="fixed inset-0 z-40 bg-black/40 lg:hidden" style="display: none;"></div>
 
-                <!-- Navigation Links -->
-                <div class="hidden sm:flex sm:items-center sm:gap-1 sm:me-8 sm:ms-10">
-                    <a href="{{ route('dashboard') }}"
-                        class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
-                            {{ request()->routeIs('dashboard')
-                                ? 'bg-white/20 text-white'
-                                : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
-                        <span>🏠</span> لوحة التحكم
-                    </a>
+@php
+    $isAdmin  = Auth::guard('admin')->check();
+    $userName = $isAdmin
+        ? Auth::guard('admin')->user()->name
+        : Auth::guard('web')->user()->SuperVisor_Name;
 
-                    @if(Auth::guard('admin')->check())
-                        <a href="{{ route('directorates.index') }}"
-                            class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
-                                {{ request()->routeIs('directorates.*')
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
-                            <span>🏢</span> المديريات
-                        </a>
-                        <a href="{{ route('schools.index') }}"
-                            class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
-                                {{ request()->routeIs('schools.*')
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
-                            <span>🏫</span> المدارس
-                        </a>
-                        <a href="{{ route('supervisors.index') }}"
-                            class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
-                                {{ request()->routeIs('supervisors.*')
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
-                            <span>👤</span> المشرفون
-                        </a>
-                        <a href="{{ route('teachers.index') }}"
-                            class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
-                                {{ request()->routeIs('teachers.*')
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
-                            <span>🧑‍🏫</span> المعلمون
-                        </a>
-                        <a href="{{ route('teacher-grades.sheet') }}"
-                            class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
-                                {{ request()->routeIs('teacher-grades.sheet')
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
-                            <span>📊</span> جدول الدرجات
-                        </a>
-                    @else
-                        
-                        <a href="{{ route('teacher-grades.sheet') }}"
-                            class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
-                                {{ request()->routeIs('teacher-grades.sheet')
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-indigo-100 hover:bg-white/10 hover:text-white' }}">
-                            <span>📊</span> جدول الدرجات
-                        </a>
-                    @endif
-                </div>
-            </div>
+    $links = [
+        ['route' => 'dashboard', 'active' => 'dashboard', 'icon' => '🏠', 'label' => 'لوحة التحكم'],
+    ];
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-white/10 transition">
-                            <span class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-sm">
-                                👋
-                            </span>
-                            <span>
-                                @if(Auth::guard('admin')->check())
-                                    {{ Auth::guard('admin')->user()->name }}
-                                @else
-                                    {{ Auth::guard('web')->user()->SuperVisor_Name }}
-                                @endif
-                            </span>
-                            <svg class="fill-current h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </x-slot>
+    if ($isAdmin) {
+        $links[] = ['route' => 'directorates.index', 'active' => 'directorates.*', 'icon' => '🏢', 'label' => 'المديريات'];
+        $links[] = ['route' => 'schools.index',      'active' => 'schools.*',      'icon' => '🏫', 'label' => 'المدارس'];
+        $links[] = ['route' => 'supervisors.index',  'active' => 'supervisors.*',  'icon' => '👤', 'label' => 'المشرفون'];
+        $links[] = ['route' => 'teachers.index',     'active' => 'teachers.*',     'icon' => '🧑‍🏫', 'label' => 'المعلمون'];
+    }
 
-                    <x-slot name="content">
-                        @if(! Auth::guard('admin')->check())
-                            <x-dropdown-link :href="route('profile.edit')">
-                                الملف الشخصي
-                            </x-dropdown-link>
-                        @endif
+    $links[] = ['route' => 'teacher-grades.sheet', 'active' => 'teacher-grades.sheet', 'icon' => '📊', 'label' => 'جدول الدرجات'];
+@endphp
 
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                تسجيل الخروج
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
+<aside :class="sidebarOpen ? 'translate-x-0' : 'translate-x-full'"
+    class="fixed inset-y-0 right-0 z-50 w-64 bg-brand-500 text-white transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0 lg:shrink-0">
 
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white/10 focus:outline-none transition">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
+    <div class="h-full lg:h-screen lg:sticky lg:top-0 flex flex-col overflow-y-auto">
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-indigo-700">
-        <div class="pt-2 pb-3 space-y-1 px-3">
-            <a href="{{ route('dashboard') }}"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
-                🏠 لوحة التحكم
+        {{-- Logo --}}
+        <div class="flex items-center justify-between px-5 h-20">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2 font-bold text-lg">
+                <span class="text-2xl">📋</span>
+                <span>{{ config('app.name') }}</span>
             </a>
-
-            @if(Auth::guard('admin')->check())
-                <a href="{{ route('directorates.index') }}"
-                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('directorates.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
-                    🏢 المديريات
-                </a>
-                <a href="{{ route('schools.index') }}"
-                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('schools.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
-                    🏫 المدارس
-                </a>
-                <a href="{{ route('supervisors.index') }}"
-                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('supervisors.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
-                    👤 المشرفون
-                </a>
-                <a href="{{ route('teachers.index') }}"
-                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('teachers.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
-                    🧑‍🏫 المعلمون
-                </a>
-
-                <a href="{{ route('teacher-grades.sheet') }}"
-                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('teacher-grades.sheet') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
-                    📊 جدول الدرجات
-                </a>
-            @else
-                
-
-                <a href="{{ route('teacher-grades.sheet') }}"
-                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('teacher-grades.sheet') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
-                    📊 جدول الدرجات
-                </a>
-
-
-            @endif
+            <button type="button" @click="sidebarOpen = false"
+                class="lg:hidden p-1 rounded-md hover:bg-white/10 focus:outline-none" aria-label="إغلاق">
+                <svg class="h-5 w-5" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-3 border-t border-white/20">
-            <div class="px-4">
-                <div class="font-medium text-base text-white">
-                    @if(Auth::guard('admin')->check())
-                        {{ Auth::guard('admin')->user()->name }}
-                    @else
-                        {{ Auth::guard('web')->user()->SuperVisor_Name }}
-                    @endif
+        {{-- Links: the active item is a light pill that merges into the page background --}}
+        <nav class="flex-1 pr-3 space-y-1 mt-2">
+            @foreach($links as $link)
+                @php $active = request()->routeIs($link['active']); @endphp
+                <a href="{{ route($link['route']) }}"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-r-full transition
+                        {{ $active
+                            ? 'bg-brand-100 text-brand-700 font-bold'
+                            : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
+                    <span class="text-lg">{{ $link['icon'] }}</span>
+                    <span>{{ $link['label'] }}</span>
+                </a>
+            @endforeach
+        </nav>
+
+        {{-- User block --}}
+        <div class="px-4 pb-5 pt-4 border-t border-white/15">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="w-10 h-10 shrink-0 rounded-full bg-white/20 flex items-center justify-center font-bold">
+                    {{ mb_substr($userName ?? '', 0, 1) }}
+                </span>
+                <div class="min-w-0">
+                    <div class="text-sm font-bold truncate">{{ $userName }}</div>
+                    <div class="text-xs text-white/60">{{ $isAdmin ? 'مدير النظام' : 'مشرف' }}</div>
                 </div>
             </div>
 
-            <div class="mt-3 space-y-1 px-3">
-                @if(! Auth::guard('admin')->check())
-                    <a href="{{ route('profile.edit') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-indigo-100 hover:bg-white/10">
-                        الملف الشخصي
+            <div class="space-y-1">
+                @if(! $isAdmin)
+                    <a href="{{ route('profile.edit') }}"
+                        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white/80 hover:bg-white/10 hover:text-white transition">
+                        <span>⚙️</span> الملف الشخصي
                     </a>
                 @endif
 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full text-right flex items-center px-3 py-2 rounded-lg text-sm font-medium text-indigo-100 hover:bg-white/10">
-                        تسجيل الخروج
+                    <button type="submit"
+                        class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white/80 hover:bg-white/10 hover:text-white transition text-right">
+                        <span>🚪</span> تسجيل الخروج
                     </button>
                 </form>
             </div>
         </div>
     </div>
-</nav>
+</aside>
