@@ -1,5 +1,10 @@
+/**
+ * Supervisor dashboard — teachers list, filters, cards/table views, printing.
+ * Server data is provided by the Blade view through window.__SUPERVISOR_DASHBOARD__.
+ */
 const cfg = window.__SUPERVISOR_DASHBOARD__;
 
+// All teacher data is loaded once from the server — filtering happens in the browser
 const allTeachers   = cfg.teachers;
 const scoreCriteria = cfg.scoreCriteria;
 const scoreGroups   = cfg.scoreGroups;
@@ -23,7 +28,12 @@ const routes = {
     destroy:        id => `${T}/${id}`,
     resetScores:    id => `${T}/${id}/grades/reset`,
 };
-// Academic year selector — saved per-browser so it persists across visits
+
+// Inline onclick handlers inside the rendered HTML call these as globals
+window.routes = routes;
+window.getAcademicYear = getAcademicYear;
+
+        // Academic year selector — saved per-browser so it persists across visits
         const academicYearSelect = document.getElementById('academicYearSelect');
         const savedYear = localStorage.getItem('academicYear');
         if (savedYear) academicYearSelect.value = savedYear;
@@ -697,4 +707,3 @@ const routes = {
         renderSummaryCard();
 
         renderTable();
-   
