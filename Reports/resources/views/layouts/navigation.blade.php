@@ -18,6 +18,9 @@
         $links[] = ['route' => 'supervisors.index',  'active' => 'supervisors.*',  'icon' => '👤', 'label' => 'المشرفون'];
         $links[] = ['route' => 'teachers.index',     'active' => 'teachers.*',     'icon' => '🧑‍🏫', 'label' => 'المعلمون'];
     }
+    if (! $isAdmin) {
+        $links[] = ['route' => 'teachers.index',     'active' => 'teachers.*',     'icon' => '🧑‍🏫', 'label' => 'المعلمون'];
+    }
 
     $links[] = ['route' => 'teacher-grades.sheet', 'active' => 'teacher-grades.sheet', 'icon' => '📊', 'label' => 'جدول الدرجات'];
 
