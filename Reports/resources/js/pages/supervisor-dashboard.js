@@ -14,6 +14,11 @@ window.scoreCriteriaData     = scoreCriteria;
 window.scoreGroupsData       = scoreGroups;
 window.currentSupervisorName = cfg.supervisorName;
 
+// Replaces Blade's @csrf + @method('DELETE'), which don't run inside a JS file
+const deleteFields =
+    `<input type="hidden" name="_token" value="${cfg.csrf}">` +
+    `<input type="hidden" name="_method" value="DELETE">`;
+
 const PAGE_SIZE = 9;
 let currentPage = 1;
 let viewMode = localStorage.getItem('teachersViewMode') || 'cards';
@@ -510,16 +515,14 @@ window.getAcademicYear = getAcademicYear;
                         </a>
                         <form action="${routes.resetScores(t.id)}" method="POST"
                             onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
-                            @csrf
-                            @method('DELETE')
+                            ${deleteFields}
                             <button type="submit" class="${actionBtnWarn}">
                                 🗑️ حذف الدرجات
                             </button>
                         </form>
                         <form action="${routes.destroy(t.id)}" method="POST"
                             onsubmit="return confirm('هل أنت متأكد؟')">
-                            @csrf
-                            @method('DELETE')
+                            ${deleteFields}
                             <button type="submit" class="${actionBtnDanger}">
                                 🗑️ حذف
                             </button>
@@ -622,8 +625,7 @@ window.getAcademicYear = getAcademicYear;
                             </button>
                             <form action="${routes.resetScores(t.id)}" method="POST"
                                 onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
-                                @csrf
-                                @method('DELETE')
+                                ${deleteFields}
                                 <button type="submit" title="حذف الدرجات"
                                     class="bg-orange-100 hover:bg-orange-200 text-orange-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
                                     🗑️
@@ -631,8 +633,7 @@ window.getAcademicYear = getAcademicYear;
                             </form>
                             <form action="${routes.destroy(t.id)}" method="POST"
                                 onsubmit="return confirm('هل أنت متأكد؟')">
-                                @csrf
-                                @method('DELETE')
+                                ${deleteFields}
                                 <button type="submit" title="حذف"
                                     class="bg-red-100 hover:bg-red-200 text-red-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
                                     ❌
