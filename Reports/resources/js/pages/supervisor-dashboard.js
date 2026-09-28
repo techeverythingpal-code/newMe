@@ -117,6 +117,45 @@ window.getAcademicYear = getAcademicYear;
             document.getElementById('sumD').textContent = s.scoreD;
             document.getElementById('sumF').textContent = s.scoreF;
             document.getElementById('sumTotal').textContent = allTeachers.length;
+            renderGradeChart(s);
+        }
+
+        // Bar chart of the grade distribution (plain HTML/CSS — no chart library)
+        function renderGradeChart(s) {
+            const chart = document.getElementById('gradeChart');
+            if (!chart) return;
+
+            const total = allTeachers.length;
+            if (!total) {
+                chart.innerHTML = '<p class="w-full text-center text-gray-400 py-10">لا توجد بيانات لعرضها</p>';
+                return;
+            }
+
+            // Same bands and colors as the assessment badges on the teacher cards
+            const bars = [
+                { label: 'ممتاز',       count: s.scoreA, color: 'bg-green-500'  },
+                { label: 'جيد جداً',     count: s.scoreB, color: 'bg-blue-500'   },
+                { label: 'جيد',         count: s.scoreC, color: 'bg-yellow-400' },
+                { label: 'متوسط',       count: s.scoreD, color: 'bg-orange-400' },
+                { label: 'ضعيف/مقبول', count: s.scoreF, color: 'bg-red-400'    },
+            ];
+            const max = Math.max(...bars.map(b => b.count), 1);
+
+            chart.innerHTML = bars.map(b => {
+                const pct    = Math.round((b.count / total) * 100);
+                const height = b.count ? Math.max((b.count / max) * 100, 6) : 0;
+                return `
+                    <div class="flex-1 min-w-0 flex flex-col items-center gap-2">
+                        <div class="text-sm font-bold text-gray-700">${b.count}</div>
+                        <div class="w-full h-44 flex items-end">
+                            <div class="w-full rounded-t-lg ${b.color} transition-all" style="height: ${height}%"></div>
+                        </div>
+                        <div class="w-full border-t border-gray-200 pt-2 text-center">
+                            <div class="text-xs font-medium text-gray-600">${b.label}</div>
+                            <div class="text-xs text-gray-400" dir="ltr">${pct}%</div>
+                        </div>
+                    </div>`;
+            }).join('');
         }
 
         // ---- Report actions (triggered from the sidebar buttons) ----

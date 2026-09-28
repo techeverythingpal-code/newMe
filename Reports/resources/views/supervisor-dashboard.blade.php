@@ -115,10 +115,49 @@
                 </div>
             </div>
 
-            {{-- Row 2: grade summary --}}
+            {{-- Row 2: shortcuts to the main pages --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="{{ route('dashboard.manage') }}"
+                    class="group bg-white rounded-2xl shadow-sm p-5 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition">
+                    <span class="w-14 h-14 shrink-0 rounded-2xl bg-brand-100 flex items-center justify-center text-3xl">🧑‍🏫</span>
+                    <span class="flex-1 min-w-0">
+                        <span class="block font-bold text-gray-800">إدارة المعلمين</span>
+                        <span class="block text-sm text-gray-500 mt-0.5">عرض المعلمين، إضافة، تصدير وحذف الدرجات</span>
+                    </span>
+                    <span class="text-gray-300 group-hover:text-brand-500 transition text-xl">‹</span>
+                </a>
+                <a href="{{ route('dashboard.reports') }}"
+                    class="group bg-white rounded-2xl shadow-sm p-5 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition">
+                    <span class="w-14 h-14 shrink-0 rounded-2xl bg-violet-100 flex items-center justify-center text-3xl">🖨️</span>
+                    <span class="flex-1 min-w-0">
+                        <span class="block font-bold text-gray-800">التقارير والطباعة</span>
+                        <span class="block text-sm text-gray-500 mt-0.5">طباعة التقارير والتقرير الموجز وقائمة المعلمين</span>
+                    </span>
+                    <span class="text-gray-300 group-hover:text-brand-500 transition text-xl">‹</span>
+                </a>
+                <a href="{{ route('teacher-grades.sheet') }}"
+                    class="group bg-white rounded-2xl shadow-sm p-5 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition">
+                    <span class="w-14 h-14 shrink-0 rounded-2xl bg-rose-100 flex items-center justify-center text-3xl">📊</span>
+                    <span class="flex-1 min-w-0">
+                        <span class="block font-bold text-gray-800">جدول الدرجات</span>
+                        <span class="block text-sm text-gray-500 mt-0.5">عرض وتعديل درجات المعلمين</span>
+                    </span>
+                    <span class="text-gray-300 group-hover:text-brand-500 transition text-xl">‹</span>
+                </a>
+            </div>
+
+            {{-- Row 3: grade distribution chart + grade summary --}}
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+
+                {{-- Grade distribution chart (drawn by JavaScript) --}}
+                <div class="xl:col-span-2 bg-white rounded-2xl shadow-sm p-6">
+                    <h3 class="text-lg font-bold text-gray-800">توزيع المعلمين حسب التقدير</h3>
+                    <p class="text-sm text-gray-500 mt-1 mb-6">عدد المعلمين في كل تقدير ونسبتهم من الإجمالي</p>
+                    <div id="gradeChart" class="flex items-stretch gap-3 sm:gap-6"></div>
+                </div>
+
                 {{-- Grade summary card --}}
-                <div class="bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl shadow-sm p-6 text-white xl:sticky xl:top-6">
+                <div class="bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl shadow-sm p-6 text-white">
                     <h3 class="text-lg font-bold leading-snug">ملخص التقديرات</h3>
                     <p class="text-sm text-white/70 mt-1">توزيع المعلمين حسب التقدير</p>
 
@@ -167,15 +206,6 @@
                             class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50 transition">
                             <span class="text-2xl">📥</span><span>تصدير Excel</span>
                         </a>
-                        <form action="{{ route('teacher-grades.reset-all') }}" method="POST"
-                            onsubmit="return confirm('هل أنت متأكد من حذف درجات جميع معلميك؟ لا يمكن التراجع عن هذا الإجراء.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="w-full flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-medium text-red-700 hover:bg-red-100 transition text-right">
-                                <span class="text-2xl">🗑️</span><span>حذف كل الدرجات</span>
-                            </button>
-                        </form>
                     </div>
                 </div>
 

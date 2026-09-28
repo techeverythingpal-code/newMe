@@ -11,6 +11,12 @@
     <div class="py-8" dir="rtl">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
 
+            @if (session('success'))
+                <div class="mb-3 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm font-medium text-green-700">
+                    ✅ {{ session('success') }}
+                </div>
+            @endif
+
             <div class="mb-3 flex items-center gap-3 text-sm">
                 <span id="save-indicator" class="hidden items-center gap-2 text-blue-600 font-semibold">
                     <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
@@ -21,6 +27,19 @@
                 </span>
                 <span id="saved-indicator" class="hidden text-green-600 font-semibold">✓ تم الحفظ</span>
                 <span id="error-indicator" class="hidden text-red-600 font-semibold">⚠ حدث خطأ في الحفظ</span>
+
+                {{-- Supervisors only: clears every grade of their own teachers --}}
+                @if(! Auth::guard('admin')->check())
+                    <form action="{{ route('teacher-grades.reset-all') }}" method="POST" class="mr-auto"
+                        onsubmit="return confirm('هل أنت متأكد من حذف درجات جميع معلميك؟ لا يمكن التراجع عن هذا الإجراء.')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100 transition">
+                            <span>🗑️</span><span>حذف كل الدرجات</span>
+                        </button>
+                    </form>
+                @endif
             </div>
 
             <div class="bg-white shadow-sm rounded-2xl overflow-hidden">
