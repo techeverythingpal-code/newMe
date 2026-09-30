@@ -633,15 +633,21 @@ function renderCards(pageItems, start) {
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-CSRF-TOKEN': cfg.csrf,
                     },
                     body: JSON.stringify({ supervisor_note: noteText.value }),
                 });
-                if (!res.ok) throw new Error();
+                if (!res.ok) {
+                    // Log the real reason (visible in DevTools > Console) instead of hiding it
+                    const body = await res.text();
+                    console.error('Save note failed:', res.status, body);
+                    throw new Error('HTTP ' + res.status);
+                }
                 noteStatus.textContent = '✓ تم الحفظ';
                 t.supervisor_note = noteText.value;
                 setTimeout(() => noteStatus.textContent = '', 1500);
-            } catch {
+            } catch (err) {
+                console.error(err);
                 noteStatus.textContent = '⚠ خطأ في الحفظ';
             }
         });
