@@ -9,14 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('teacher_infos', function (Blueprint $table) {
-            $table->string('academic_year')->nullable();
+            if (! Schema::hasColumn('teacher_infos', 'supervisor_note')) {
+                $table->string('supervisor_note', 255)->nullable();
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('teacher_infos', function (Blueprint $table) {
-            $table->dropColumn('academic_year');
+            if (Schema::hasColumn('teacher_infos', 'supervisor_note')) {
+                $table->dropColumn('supervisor_note');
+            }
         });
     }
 };
