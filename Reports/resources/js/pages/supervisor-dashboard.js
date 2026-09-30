@@ -539,8 +539,6 @@ function renderCards(pageItems, start) {
         const card = document.createElement('div');
         card.className = 'relative rounded-2xl p-4 hover:shadow-md transition ' + tone;
         card.innerHTML = `
-            <div class="absolute -right-9 top-6 w-4 h-4 rounded-full border-4 border-brand-500 ${t.total >= 85 ? 'bg-brand-500' : 'bg-white'}"></div>
-
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
                     <div class="font-bold text-gray-800 text-base">${escapeHtml(t.name)}${t.total >= 85 ? ' ⭐' : ''}</div>
@@ -646,10 +644,10 @@ function renderCards(pageItems, start) {
                 noteStatus.textContent = '✓ تم الحفظ';
                 t.supervisor_note = noteText.value;
                 // Show the confirmation briefly, then close the note box
-setTimeout(() => {
-    noteStatus.textContent = '';
-    noteBox.classList.add('hidden');
-}, 700);
+                setTimeout(() => {
+                    noteStatus.textContent = '';
+                    noteBox.classList.add('hidden');
+                }, 700);
             } catch (err) {
                 console.error(err);
                 noteStatus.textContent = '⚠ خطأ في الحفظ';

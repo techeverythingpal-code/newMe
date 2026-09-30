@@ -26,17 +26,6 @@
     color: #45408E;
 }
 
-/* Vertical timeline line behind the teacher cards */
-#teachersCardGrid::before {
-    content: '';
-    position: absolute;
-    right: 7px;
-    top: 1.5rem;
-    bottom: 1.5rem;
-    width: 2px;
-    border-radius: 2px;
-    background: #AAA7D2;
-}
 </style>
 
     <div class="py-6" dir="rtl">
@@ -289,7 +278,7 @@
                     </button>
                 </div>
 
-                <div id="teachersCardGrid" class="relative pr-9 space-y-4">
+                <div id="teachersCardGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
                     {{-- Cards are rendered by JavaScript --}}
                 </div>
 
