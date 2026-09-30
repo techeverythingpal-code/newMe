@@ -38,144 +38,187 @@ const routes = {
 window.routes = routes;
 window.getAcademicYear = getAcademicYear;
 
-        // Academic year selector — saved per-browser so it persists across visits
-        const academicYearSelect = document.getElementById('academicYearSelect');
-        const savedYear = localStorage.getItem('academicYear');
-        if (savedYear) academicYearSelect.value = savedYear;
+// ---- Report viewer modal (used by every print action instead of a new tab) ----
 
-        academicYearSelect.addEventListener('change', () => {
-            localStorage.setItem('academicYear', academicYearSelect.value);
-        });
+function showReportModal({ url, html } = {}) {
+    const modal  = document.getElementById('reportModal');
+    const iframe = document.getElementById('reportModalIframe');
+    if (!modal || !iframe) return;
 
-        function getAcademicYear() {
-            return academicYearSelect.value;
-        }
+    // Reset first so a fresh report always replaces whatever was shown before
+    iframe.removeAttribute('src');
+    iframe.removeAttribute('srcdoc');
 
-        routes.reportsBulk = (ids) => {
-            const base = cfg.urls.reportsBulk;
-            const yearParam = 'academic_year=' + encodeURIComponent(getAcademicYear());
-            if (!ids || ids.length === 0) return base + '?' + yearParam;
-            const idsParam = ids.map(id => 'ids[]=' + encodeURIComponent(id)).join('&');
-            return base + '?' + idsParam + '&' + yearParam;
-        };
+    if (url) {
+        iframe.src = url;
+    } else if (html) {
+        iframe.srcdoc = html;
+    }
 
-        const rangeFromSelect = document.getElementById('rangeFromSelect');
-        const rangeToSelect   = document.getElementById('rangeToSelect');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
 
-        allTeachers.forEach((t, idx) => {
-            const label = (idx + 1) + ' - ' + t.name;
+function closeReportModal() {
+    const modal  = document.getElementById('reportModal');
+    const iframe = document.getElementById('reportModalIframe');
+    if (!modal || !iframe) return;
 
-            const opt1 = document.createElement('option');
-            opt1.value = idx;
-            opt1.textContent = label;
-            rangeFromSelect.appendChild(opt1);
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    iframe.removeAttribute('src');
+    iframe.removeAttribute('srcdoc');
+}
 
-            const opt2 = document.createElement('option');
-            opt2.value = idx;
-            opt2.textContent = label;
-            rangeToSelect.appendChild(opt2);
-        });
+function printReportModal() {
+    const iframe = document.getElementById('reportModalIframe');
+    if (!iframe || !iframe.contentWindow) return;
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+}
 
-        document.getElementById('printRangeBtn').addEventListener('click', () => {
-            const fromIdx = rangeFromSelect.value;
-            const toIdx   = rangeToSelect.value;
+window.showReportModal  = showReportModal;
+window.closeReportModal = closeReportModal;
+window.printReportModal = printReportModal;
 
-            if (fromIdx === '' || toIdx === '') {
-                alert('يرجى اختيار نطاق المعلمين أولاً');
-                return;
-            }
+// Academic year selector — saved per-browser so it persists across visits
+const academicYearSelect = document.getElementById('academicYearSelect');
+const savedYear = localStorage.getItem('academicYear');
+if (savedYear) academicYearSelect.value = savedYear;
 
-            const start = Math.min(Number(fromIdx), Number(toIdx));
-            const end   = Math.max(Number(fromIdx), Number(toIdx));
-            const ids   = allTeachers.slice(start, end + 1).map(t => t.id);
+academicYearSelect.addEventListener('change', () => {
+    localStorage.setItem('academicYear', academicYearSelect.value);
+});
 
-            window.open(routes.reportsBulk(ids), '_blank');
-        });
+function getAcademicYear() {
+    return academicYearSelect.value;
+}
 
-        // ---- Grade distribution (used by the summary card and the summary report) ----
+routes.reportsBulk = (ids) => {
+    const base = cfg.urls.reportsBulk;
+    const yearParam = 'academic_year=' + encodeURIComponent(getAcademicYear());
+    if (!ids || ids.length === 0) return base + '?' + yearParam;
+    const idsParam = ids.map(id => 'ids[]=' + encodeURIComponent(id)).join('&');
+    return base + '?' + idsParam + '&' + yearParam;
+};
 
-        function computeSummary() {
-            const summary = { scoreA: 0, scoreB: 0, scoreC: 0, scoreD: 0, scoreF: 0 };
+const rangeFromSelect = document.getElementById('rangeFromSelect');
+const rangeToSelect   = document.getElementById('rangeToSelect');
 
-            allTeachers.forEach(t => {
-                const total = t.total ?? 0;
-                if (total >= 85) summary.scoreA++;
-                else if (total >= 75) summary.scoreB++;
-                else if (total >= 65) summary.scoreC++;
-                else if (total >= 55) summary.scoreD++;
-                else summary.scoreF++;
-            });
+allTeachers.forEach((t, idx) => {
+    const label = (idx + 1) + ' - ' + t.name;
 
-            return summary;
-        }
+    const opt1 = document.createElement('option');
+    opt1.value = idx;
+    opt1.textContent = label;
+    rangeFromSelect.appendChild(opt1);
 
-        function renderSummaryCard() {
-            const s = computeSummary();
-            document.getElementById('sumA').textContent = s.scoreA;
-            document.getElementById('sumB').textContent = s.scoreB;
-            document.getElementById('sumC').textContent = s.scoreC;
-            document.getElementById('sumD').textContent = s.scoreD;
-            document.getElementById('sumF').textContent = s.scoreF;
-            document.getElementById('sumTotal').textContent = allTeachers.length;
-            renderGradeChart(s);
-        }
+    const opt2 = document.createElement('option');
+    opt2.value = idx;
+    opt2.textContent = label;
+    rangeToSelect.appendChild(opt2);
+});
 
-        // Bar chart of the grade distribution (plain HTML/CSS — no chart library)
-        function renderGradeChart(s) {
-            const chart = document.getElementById('gradeChart');
-            if (!chart) return;
+document.getElementById('printRangeBtn').addEventListener('click', () => {
+    const fromIdx = rangeFromSelect.value;
+    const toIdx   = rangeToSelect.value;
 
-            const total = allTeachers.length;
-            if (!total) {
-                chart.innerHTML = '<p class="w-full text-center text-gray-400 py-10">لا توجد بيانات لعرضها</p>';
-                return;
-            }
+    if (fromIdx === '' || toIdx === '') {
+        alert('يرجى اختيار نطاق المعلمين أولاً');
+        return;
+    }
 
-            // Same bands and colors as the assessment badges on the teacher cards
-            const bars = [
-                { label: 'ممتاز',       count: s.scoreA, color: 'bg-green-500'  },
-                { label: 'جيد جداً',     count: s.scoreB, color: 'bg-blue-500'   },
-                { label: 'جيد',         count: s.scoreC, color: 'bg-yellow-400' },
-                { label: 'متوسط',       count: s.scoreD, color: 'bg-orange-400' },
-                { label: 'ضعيف/مقبول', count: s.scoreF, color: 'bg-red-400'    },
-            ];
-            const max = Math.max(...bars.map(b => b.count), 1);
+    const start = Math.min(Number(fromIdx), Number(toIdx));
+    const end   = Math.max(Number(fromIdx), Number(toIdx));
+    const ids   = allTeachers.slice(start, end + 1).map(t => t.id);
 
-            chart.innerHTML = bars.map(b => {
-                const pct    = Math.round((b.count / total) * 100);
-                const height = b.count ? Math.max((b.count / max) * 100, 6) : 0;
-                return `
-                    <div class="flex-1 min-w-0 flex flex-col items-center gap-2">
-                        <div class="text-sm font-bold text-gray-700">${b.count}</div>
-                        <div class="w-full h-44 flex items-end">
-                            <div class="w-full rounded-t-lg ${b.color} transition-all" style="height: ${height}%"></div>
-                        </div>
-                        <div class="w-full border-t border-gray-200 pt-2 text-center">
-                            <div class="text-xs font-medium text-gray-600">${b.label}</div>
-                            <div class="text-xs text-gray-400" dir="ltr">${pct}%</div>
-                        </div>
-                    </div>`;
-            }).join('');
-        }
+    showReportModal({ url: routes.reportsBulk(ids) });
+});
 
-        // ---- Report actions (triggered from the sidebar buttons) ----
+// ---- Grade distribution (used by the summary card and the summary report) ----
 
-        function printAll() {
-            window.open(routes.reportsBulk([]), '_blank');
-        }
+function computeSummary() {
+    const summary = { scoreA: 0, scoreB: 0, scoreC: 0, scoreD: 0, scoreF: 0 };
 
-        function printSummary() {
-            const summary = computeSummary();
+    allTeachers.forEach(t => {
+        const total = t.total ?? 0;
+        if (total >= 85) summary.scoreA++;
+        else if (total >= 75) summary.scoreB++;
+        else if (total >= 65) summary.scoreC++;
+        else if (total >= 55) summary.scoreD++;
+        else summary.scoreF++;
+    });
 
-            const totalTeachersCount = allTeachers.length;
-            const directorateName    = allTeachers[0]?.directorate || '';
-            const academicYear       = getAcademicYear();
-            const supervisorName     = window.currentSupervisorName || '';
-            const dateStr = new Date().toLocaleDateString('ar-EG', {
-                year: 'numeric', month: 'long', day: 'numeric',
-            });
+    return summary;
+}
 
-            const html = `<!DOCTYPE html>
+function renderSummaryCard() {
+    const s = computeSummary();
+    document.getElementById('sumA').textContent = s.scoreA;
+    document.getElementById('sumB').textContent = s.scoreB;
+    document.getElementById('sumC').textContent = s.scoreC;
+    document.getElementById('sumD').textContent = s.scoreD;
+    document.getElementById('sumF').textContent = s.scoreF;
+    document.getElementById('sumTotal').textContent = allTeachers.length;
+    renderGradeChart(s);
+}
+
+// Bar chart of the grade distribution (plain HTML/CSS — no chart library)
+function renderGradeChart(s) {
+    const chart = document.getElementById('gradeChart');
+    if (!chart) return;
+
+    const total = allTeachers.length;
+    if (!total) {
+        chart.innerHTML = '<p class="w-full text-center text-gray-400 py-10">لا توجد بيانات لعرضها</p>';
+        return;
+    }
+
+    // Same bands and colors as the assessment badges on the teacher cards
+    const bars = [
+        { label: 'ممتاز',       count: s.scoreA, color: 'bg-green-500'  },
+        { label: 'جيد جداً',     count: s.scoreB, color: 'bg-blue-500'   },
+        { label: 'جيد',         count: s.scoreC, color: 'bg-yellow-400' },
+        { label: 'متوسط',       count: s.scoreD, color: 'bg-orange-400' },
+        { label: 'ضعيف/مقبول', count: s.scoreF, color: 'bg-red-400'    },
+    ];
+    const max = Math.max(...bars.map(b => b.count), 1);
+
+    chart.innerHTML = bars.map(b => {
+        const pct    = Math.round((b.count / total) * 100);
+        const height = b.count ? Math.max((b.count / max) * 100, 6) : 0;
+        return `
+            <div class="flex-1 min-w-0 flex flex-col items-center gap-2">
+                <div class="text-sm font-bold text-gray-700">${b.count}</div>
+                <div class="w-full h-44 flex items-end">
+                    <div class="w-full rounded-t-lg ${b.color} transition-all" style="height: ${height}%"></div>
+                </div>
+                <div class="w-full border-t border-gray-200 pt-2 text-center">
+                    <div class="text-xs font-medium text-gray-600">${b.label}</div>
+                    <div class="text-xs text-gray-400" dir="ltr">${pct}%</div>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+// ---- Report actions (triggered from the sidebar buttons) ----
+
+function printAll() {
+    showReportModal({ url: routes.reportsBulk([]) });
+}
+
+function printSummary() {
+    const summary = computeSummary();
+
+    const totalTeachersCount = allTeachers.length;
+    const directorateName    = allTeachers[0]?.directorate || '';
+    const academicYear       = getAcademicYear();
+    const supervisorName     = window.currentSupervisorName || '';
+    const dateStr = new Date().toLocaleDateString('ar-EG', {
+        year: 'numeric', month: 'long', day: 'numeric',
+    });
+
+    const html = `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8">
@@ -183,12 +226,6 @@ window.getAcademicYear = getAcademicYear;
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Tahoma','Arial',sans-serif; color:#111; background:#f3f4f6; margin:0; padding:20px; }
-        .toolbar { max-width:800px; margin:0 auto 14px; display:flex; justify-content:flex-end; gap:8px; }
-        .toolbar button {
-            background:#5651AB; color:#fff; border:none; padding:8px 18px;
-            border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;
-        }
-        .toolbar button:hover { background:#45408E; }
         .summary-report-page { max-width: 800px; margin: 0 auto 20px; padding: 20px; background:#fff; }
         .summary-report-header { text-align: center; margin-bottom: 16px; }
         .summary-report-header p { font-size: 13px; margin: 2px 0; }
@@ -202,14 +239,10 @@ window.getAcademicYear = getAcademicYear;
         @media print {
             @page { size: A4 portrait; margin: 0.5cm; }
             body { padding: 0; background: #fff; }
-            .toolbar { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="toolbar">
-        <button onclick="window.print()">🖨️ طباعة التقرير</button>
-    </div>
     <div class="summary-report-page">
         <div class="summary-report-header">
             <p>مديرية التربية والتعليم / ${escapeHtml(directorateName)}</p>
@@ -256,38 +289,36 @@ window.getAcademicYear = getAcademicYear;
 </body>
 </html>`;
 
-            const win = window.open('', '_blank');
-            win.document.write(html);
-            win.document.close();
-        }
+    showReportModal({ html });
+}
 
-        function printList() {
-            const directorateName = allTeachers[0]?.directorate || '';
-            const academicYear     = getAcademicYear();
-            const supervisorName   = window.currentSupervisorName || '';
-            const dateStr = new Date().toLocaleDateString('ar-EG', {
-                year: 'numeric', month: 'long', day: 'numeric',
-            });
+function printList() {
+    const directorateName = allTeachers[0]?.directorate || '';
+    const academicYear     = getAcademicYear();
+    const supervisorName   = window.currentSupervisorName || '';
+    const dateStr = new Date().toLocaleDateString('ar-EG', {
+        year: 'numeric', month: 'long', day: 'numeric',
+    });
 
-            const columns = [
-                { key: 'name',    label: 'اسم المعلم' },
-                { key: 'school',  label: 'المدرسة' },
-                { key: 'major',   label: 'التخصص' },
-                { key: 'qualify', label: 'المؤهل' },
-                { key: 'date',    label: 'تاريخ التعيين' },
-            ];
+    const columns = [
+        { key: 'name',    label: 'اسم المعلم' },
+        { key: 'school',  label: 'المدرسة' },
+        { key: 'major',   label: 'التخصص' },
+        { key: 'qualify', label: 'المؤهل' },
+        { key: 'date',    label: 'تاريخ التعيين' },
+    ];
 
-            let rowsHTML = '';
-            allTeachers.forEach((t, index) => {
-                rowsHTML += `<tr>
-                    <td>${index + 1}</td>
-                    ${columns.map(c => `<td>${escapeHtml(t[c.key])}</td>`).join('')}
-                    <td>${t.total}</td>
-                    <td>${escapeHtml(t.assessment?.label || '')}</td>
-                </tr>`;
-            });
+    let rowsHTML = '';
+    allTeachers.forEach((t, index) => {
+        rowsHTML += `<tr>
+            <td>${index + 1}</td>
+            ${columns.map(c => `<td>${escapeHtml(t[c.key])}</td>`).join('')}
+            <td>${t.total}</td>
+            <td>${escapeHtml(t.assessment?.label || '')}</td>
+        </tr>`;
+    });
 
-            const html = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8">
@@ -295,12 +326,6 @@ window.getAcademicYear = getAcademicYear;
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Tahoma','Arial',sans-serif; color:#111; background:#f3f4f6; margin:0; padding:20px; }
-        .toolbar { max-width:1000px; margin:0 auto 14px; display:flex; justify-content:flex-end; gap:8px; }
-        .toolbar button {
-            background:#5651AB; color:#fff; border:none; padding:8px 18px;
-            border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;
-        }
-        .toolbar button:hover { background:#45408E; }
         .print-report-container { max-width: 1000px; margin: 0 auto 20px; padding: 20px; background:#fff; }
         .report-header { text-align: center; margin-bottom: 16px; }
         .report-title-text { font-size: 13px; margin: 2px 0; }
@@ -313,14 +338,10 @@ window.getAcademicYear = getAcademicYear;
         @media print {
             @page { size: A4 landscape; margin: 0.5cm; }
             body { padding: 0; background: #fff; }
-            .toolbar { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="toolbar">
-        <button onclick="window.print()">🖨️ طباعة القائمة</button>
-    </div>
     <div class="print-report-container">
         <header class="report-header">
             <div class="report-title-text">مديرية التربية والتعليم - ${escapeHtml(directorateName)}</div>
@@ -351,399 +372,397 @@ window.getAcademicYear = getAcademicYear;
 </body>
 </html>`;
 
-            const win = window.open('', '_blank');
-            win.document.write(html);
-            win.document.close();
+    showReportModal({ html });
+}
+
+// The sidebar buttons dispatch "dashboard-action" events; run the matching function
+const dashboardActions = { printAll, printSummary, printList };
+window.addEventListener('dashboard-action', (e) => {
+    const action = dashboardActions[e.detail];
+    if (action) action();
+});
+
+const searchInput    = document.getElementById('searchInput');
+const schoolFilter   = document.getElementById('schoolFilter');
+const minScoreFilter = document.getElementById('minScoreFilter');
+const maxScoreFilter = document.getElementById('maxScoreFilter');
+const resetBtn       = document.getElementById('resetFilters');
+const cardGrid       = document.getElementById('teachersCardGrid');
+const tableWrap      = document.getElementById('teachersTableWrap');
+const tableBody      = document.getElementById('teachersTableBody');
+const viewCardsBtn   = document.getElementById('viewCardsBtn');
+const viewTableBtn   = document.getElementById('viewTableBtn');
+const emptyState     = document.getElementById('emptyState');
+const paginationEl   = document.getElementById('paginationControls');
+
+const statCards      = document.querySelectorAll('.stat-card');
+
+function setActiveCard(card) {
+    statCards.forEach(c => c.classList.remove('ring-2', 'ring-brand-500'));
+    if (card) card.classList.add('ring-2', 'ring-brand-500');
+}
+
+function updateViewToggleUI() {
+    const activeClasses   = ['bg-white', 'shadow', 'text-brand-600'];
+    const inactiveClasses = ['text-gray-500'];
+
+    viewCardsBtn.classList.remove(...activeClasses, ...inactiveClasses);
+    viewTableBtn.classList.remove(...activeClasses, ...inactiveClasses);
+
+    (viewMode === 'cards' ? viewCardsBtn : viewTableBtn).classList.add(...activeClasses);
+    (viewMode === 'cards' ? viewTableBtn : viewCardsBtn).classList.add(...inactiveClasses);
+
+    cardGrid.classList.toggle('hidden', viewMode !== 'cards');
+    tableWrap.classList.toggle('hidden', viewMode !== 'table');
+}
+
+viewCardsBtn.addEventListener('click', () => {
+    viewMode = 'cards';
+    localStorage.setItem('teachersViewMode', viewMode);
+    updateViewToggleUI();
+    renderTable();
+});
+
+viewTableBtn.addEventListener('click', () => {
+    viewMode = 'table';
+    localStorage.setItem('teachersViewMode', viewMode);
+    updateViewToggleUI();
+    renderTable();
+});
+
+updateViewToggleUI();
+
+function scrollToList() {
+    document.getElementById('teachersCardGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+document.getElementById('cardAllTeachers').addEventListener('click', () => {
+    searchInput.value = '';
+    schoolFilter.value = '';
+    minScoreFilter.value = '';
+    maxScoreFilter.value = '';
+    currentPage = 1;
+    renderTable();
+    setActiveCard(document.getElementById('cardAllTeachers'));
+    scrollToList();
+});
+
+document.getElementById('cardAvgTotal').addEventListener('click', () => {
+    setActiveCard(document.getElementById('cardAvgTotal'));
+    scrollToList();
+});
+
+document.getElementById('cardHighestScore').addEventListener('click', () => {
+    minScoreFilter.value = cfg.highestScore;
+    maxScoreFilter.value = '';
+    currentPage = 1;
+    renderTable();
+    setActiveCard(document.getElementById('cardHighestScore'));
+    scrollToList();
+});
+
+document.getElementById('cardExcellent').addEventListener('click', (e) => {
+    const min = e.currentTarget.dataset.minScore;
+    minScoreFilter.value = min;
+    maxScoreFilter.value = '';
+    currentPage = 1;
+    renderTable();
+    setActiveCard(document.getElementById('cardExcellent'));
+    scrollToList();
+});
+
+function getFiltered() {
+    const search    = searchInput.value.trim().toLowerCase();
+    const schoolId  = schoolFilter.value;
+    const minScore  = minScoreFilter.value !== '' ? parseFloat(minScoreFilter.value) : null;
+    const maxScore  = maxScoreFilter.value !== '' ? parseFloat(maxScoreFilter.value) : null;
+
+    return allTeachers.filter(t => {
+        if (search) {
+            const haystack = [t.name, t.major, t.qualify].join(' ').toLowerCase();
+            if (!haystack.includes(search)) return false;
         }
+        if (schoolId && String(t.school_id) !== String(schoolId)) return false;
+        if (minScore !== null && t.total < minScore) return false;
+        if (maxScore !== null && t.total > maxScore) return false;
+        return true;
+    });
+}
 
-        // The sidebar buttons dispatch "dashboard-action" events; run the matching function
-        const dashboardActions = { printAll, printSummary, printList };
-        window.addEventListener('dashboard-action', (e) => {
-            const action = dashboardActions[e.detail];
-            if (action) action();
-        });
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
+}
 
-        const searchInput    = document.getElementById('searchInput');
-        const schoolFilter   = document.getElementById('schoolFilter');
-        const minScoreFilter = document.getElementById('minScoreFilter');
-        const maxScoreFilter = document.getElementById('maxScoreFilter');
-        const resetBtn       = document.getElementById('resetFilters');
-        const cardGrid       = document.getElementById('teachersCardGrid');
-        const tableWrap      = document.getElementById('teachersTableWrap');
-        const tableBody      = document.getElementById('teachersTableBody');
-        const viewCardsBtn   = document.getElementById('viewCardsBtn');
-        const viewTableBtn   = document.getElementById('viewTableBtn');
-        const emptyState     = document.getElementById('emptyState');
-        const paginationEl   = document.getElementById('paginationControls');
+const assessmentColorClasses = {
+    green:  'bg-green-100 text-green-700',
+    blue:   'bg-blue-100 text-blue-700',
+    yellow: 'bg-yellow-100 text-yellow-700',
+    orange: 'bg-orange-100 text-orange-700',
+    red:    'bg-red-100 text-red-700',
+    gray:   'bg-gray-100 text-gray-500',
+};
 
-        const statCards      = document.querySelectorAll('.stat-card');
+// Soft pastel tones for the teacher cards (cycled by position)
+const cardTones = ['bg-brand-100/70', 'bg-violet-100/60', 'bg-rose-100/60'];
 
-        function setActiveCard(card) {
-            statCards.forEach(c => c.classList.remove('ring-2', 'ring-brand-500'));
-            if (card) card.classList.add('ring-2', 'ring-brand-500');
-        }
+// Action buttons on the pastel cards: white pills, text color keeps the meaning
+const actionBtn       = 'bg-white/80 hover:bg-white text-brand-700 font-bold py-1 px-3 rounded-lg text-xs transition';
+const actionBtnWarn   = 'bg-white/80 hover:bg-orange-100 text-orange-600 font-bold py-1 px-3 rounded-lg text-xs transition';
+const actionBtnDanger = 'bg-white/80 hover:bg-red-100 text-red-600 font-bold py-1 px-3 rounded-lg text-xs transition';
 
-        function updateViewToggleUI() {
-            const activeClasses   = ['bg-white', 'shadow', 'text-brand-600'];
-            const inactiveClasses = ['text-gray-500'];
+function renderTable() {
+    const filtered = getFiltered();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
 
-            viewCardsBtn.classList.remove(...activeClasses, ...inactiveClasses);
-            viewTableBtn.classList.remove(...activeClasses, ...inactiveClasses);
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = filtered.slice(start, start + PAGE_SIZE);
 
-            (viewMode === 'cards' ? viewCardsBtn : viewTableBtn).classList.add(...activeClasses);
-            (viewMode === 'cards' ? viewTableBtn : viewCardsBtn).classList.add(...inactiveClasses);
+    emptyState.classList.toggle('hidden', pageItems.length > 0);
 
-            cardGrid.classList.toggle('hidden', viewMode !== 'cards');
-            tableWrap.classList.toggle('hidden', viewMode !== 'table');
-        }
+    if (viewMode === 'cards') {
+        renderCards(pageItems, start);
+    } else {
+        renderRows(pageItems, start);
+    }
 
-        viewCardsBtn.addEventListener('click', () => {
-            viewMode = 'cards';
-            localStorage.setItem('teachersViewMode', viewMode);
-            updateViewToggleUI();
-            renderTable();
-        });
+    renderPagination(totalPages, filtered.length);
+}
 
-        viewTableBtn.addEventListener('click', () => {
-            viewMode = 'table';
-            localStorage.setItem('teachersViewMode', viewMode);
-            updateViewToggleUI();
-            renderTable();
-        });
+function renderCards(pageItems, start) {
+    cardGrid.innerHTML = '';
 
-        updateViewToggleUI();
+    pageItems.forEach((t, index) => {
+        const tone = cardTones[(start + index) % cardTones.length];
+        const card = document.createElement('div');
+        card.className = 'relative rounded-2xl p-4 hover:shadow-md transition ' + tone;
+        card.innerHTML = `
+            <div class="absolute -right-9 top-6 w-4 h-4 rounded-full border-4 border-brand-500 ${t.total >= 85 ? 'bg-brand-500' : 'bg-white'}"></div>
 
-        function scrollToList() {
-            document.getElementById('teachersCardGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        document.getElementById('cardAllTeachers').addEventListener('click', () => {
-            searchInput.value = '';
-            schoolFilter.value = '';
-            minScoreFilter.value = '';
-            maxScoreFilter.value = '';
-            currentPage = 1;
-            renderTable();
-            setActiveCard(document.getElementById('cardAllTeachers'));
-            scrollToList();
-        });
-
-        document.getElementById('cardAvgTotal').addEventListener('click', () => {
-            setActiveCard(document.getElementById('cardAvgTotal'));
-            scrollToList();
-        });
-
-        document.getElementById('cardHighestScore').addEventListener('click', () => {
-            minScoreFilter.value = cfg.highestScore;
-            maxScoreFilter.value = '';
-            currentPage = 1;
-            renderTable();
-            setActiveCard(document.getElementById('cardHighestScore'));
-            scrollToList();
-        });
-
-        document.getElementById('cardExcellent').addEventListener('click', (e) => {
-            const min = e.currentTarget.dataset.minScore;
-            minScoreFilter.value = min;
-            maxScoreFilter.value = '';
-            currentPage = 1;
-            renderTable();
-            setActiveCard(document.getElementById('cardExcellent'));
-            scrollToList();
-        });
-
-        function getFiltered() {
-            const search    = searchInput.value.trim().toLowerCase();
-            const schoolId  = schoolFilter.value;
-            const minScore  = minScoreFilter.value !== '' ? parseFloat(minScoreFilter.value) : null;
-            const maxScore  = maxScoreFilter.value !== '' ? parseFloat(maxScoreFilter.value) : null;
-
-            return allTeachers.filter(t => {
-                if (search) {
-                    const haystack = [t.name, t.major, t.qualify].join(' ').toLowerCase();
-                    if (!haystack.includes(search)) return false;
-                }
-                if (schoolId && String(t.school_id) !== String(schoolId)) return false;
-                if (minScore !== null && t.total < minScore) return false;
-                if (maxScore !== null && t.total > maxScore) return false;
-                return true;
-            });
-        }
-
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str ?? '';
-            return div.innerHTML;
-        }
-
-        const assessmentColorClasses = {
-            green:  'bg-green-100 text-green-700',
-            blue:   'bg-blue-100 text-blue-700',
-            yellow: 'bg-yellow-100 text-yellow-700',
-            orange: 'bg-orange-100 text-orange-700',
-            red:    'bg-red-100 text-red-700',
-            gray:   'bg-gray-100 text-gray-500',
-        };
-
-        // Soft pastel tones for the teacher cards (cycled by position)
-        const cardTones = ['bg-brand-100/70', 'bg-violet-100/60', 'bg-rose-100/60'];
-
-        // Action buttons on the pastel cards: white pills, text color keeps the meaning
-        const actionBtn       = 'bg-white/80 hover:bg-white text-brand-700 font-bold py-1 px-3 rounded-lg text-xs transition';
-        const actionBtnWarn   = 'bg-white/80 hover:bg-orange-100 text-orange-600 font-bold py-1 px-3 rounded-lg text-xs transition';
-        const actionBtnDanger = 'bg-white/80 hover:bg-red-100 text-red-600 font-bold py-1 px-3 rounded-lg text-xs transition';
-
-        function renderTable() {
-            const filtered = getFiltered();
-            const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-            if (currentPage > totalPages) currentPage = totalPages;
-
-            const start = (currentPage - 1) * PAGE_SIZE;
-            const pageItems = filtered.slice(start, start + PAGE_SIZE);
-
-            emptyState.classList.toggle('hidden', pageItems.length > 0);
-
-            if (viewMode === 'cards') {
-                renderCards(pageItems, start);
-            } else {
-                renderRows(pageItems, start);
-            }
-
-            renderPagination(totalPages, filtered.length);
-        }
-
-        function renderCards(pageItems, start) {
-            cardGrid.innerHTML = '';
-
-            pageItems.forEach((t, index) => {
-                const tone = cardTones[(start + index) % cardTones.length];
-                const card = document.createElement('div');
-                card.className = 'relative rounded-2xl p-4 hover:shadow-md transition ' + tone;
-                card.innerHTML = `
-                    <div class="absolute -right-9 top-6 w-4 h-4 rounded-full border-4 border-brand-500 ${t.total >= 85 ? 'bg-brand-500' : 'bg-white'}"></div>
-
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0">
-                            <div class="font-bold text-gray-800 text-base">${escapeHtml(t.name)}${t.total >= 85 ? ' ⭐' : ''}</div>
-                            <div class="text-sm text-gray-500 mt-1">🏫 ${escapeHtml(t.school)}</div>
-                            <div class="text-xs text-gray-400 mt-1">🎓 ${escapeHtml(t.major)} · #${start + index + 1}</div>
-                        </div>
-                        <div class="flex flex-col items-end gap-2 shrink-0">
-                            <span class="${assessmentColorClasses[t.assessment.color] || assessmentColorClasses.gray} px-3 py-1 rounded-full text-xs font-bold">
-                                ${escapeHtml(t.assessment.label)}
-                            </span>
-                            <span class="bg-white/80 text-brand-700 px-3 py-1 rounded-full text-xs font-bold" dir="ltr">
-                                ${t.total} / 100
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-2 pt-3 mt-3 border-t border-white/70">
-                        ${t.total >= 85 ? `
-                        <a href="${routes.justification(t.id)}" class="${actionBtn}">
-                            📝 نموذج التبرير
-                        </a>` : ''}
-                        <button type="button" class="note-toggle-btn ${actionBtn}">
-                            🗒️ ملاحظات المشرف
-                        </button>
-                        <button type="button" onclick="window.open(routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()), '_blank')" class="${actionBtn}">
-                            🖨️ طباعة
-                        </button>
-                        <a href="${routes.edit(t.id)}" class="${actionBtn}">
-                            ✏️ تعديل
-                        </a>
-                        <form action="${routes.resetScores(t.id)}" method="POST"
-                            onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
-                            ${deleteFields}
-                            <button type="submit" class="${actionBtnWarn}">
-                                🗑️ حذف الدرجات
-                            </button>
-                        </form>
-                        <form action="${routes.destroy(t.id)}" method="POST"
-                            onsubmit="return confirm('هل أنت متأكد؟')">
-                            ${deleteFields}
-                            <button type="submit" class="${actionBtnDanger}">
-                                🗑️ حذف
-                            </button>
-                        </form>
-                        <a href="${routes.show(t.id)}" title="عرض"
-                            class="mr-auto w-9 h-9 rounded-full bg-brand-500 hover:bg-brand-600 text-white flex items-center justify-center transition">
-                            ←
-                        </a>
-                    </div>
-
-                    <div class="note-box hidden mt-3 pt-3 border-t border-white/70">
-                        <textarea class="note-textarea w-full text-xs border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-brand-300" rows="2" maxlength="250" placeholder="اكتب ملاحظة...">${escapeHtml(t.supervisor_note)}</textarea>
-                        <div class="flex justify-between items-center mt-1">
-                            <span class="note-counter text-xs text-gray-400">0/250</span>
-                            <div class="flex items-center gap-2">
-                                <span class="note-status text-xs text-gray-400"></span>
-                                <button type="button" class="note-save-btn ${actionBtn}">
-                                    حفظ الملاحظة
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                cardGrid.appendChild(card);
-
-                const noteBox    = card.querySelector('.note-box');
-                const noteToggle = card.querySelector('.note-toggle-btn');
-                const noteSave   = card.querySelector('.note-save-btn');
-                const noteText   = card.querySelector('.note-textarea');
-                const noteStatus = card.querySelector('.note-status');
-                const noteCounter = card.querySelector('.note-counter');
-
-                function updateNoteCounter() {
-                    const len = noteText.value.length;
-                    noteCounter.textContent = len + '/250';
-                    noteCounter.classList.toggle('text-red-500', len >= 250);
-                    noteCounter.classList.toggle('text-gray-400', len < 250);
-                }
-
-                updateNoteCounter();
-                noteText.addEventListener('input', updateNoteCounter);
-
-                noteToggle.addEventListener('click', () => noteBox.classList.toggle('hidden'));
-
-                noteSave.addEventListener('click', async () => {
-                    noteStatus.textContent = 'جاري الحفظ...';
-                    try {
-                        const res = await fetch(routes.supervisorNote(t.id), {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            },
-                            body: JSON.stringify({ supervisor_note: noteText.value }),
-                        });
-                        if (!res.ok) throw new Error();
-                        noteStatus.textContent = '✓ تم الحفظ';
-                        t.supervisor_note = noteText.value;
-                        setTimeout(() => noteStatus.textContent = '', 1500);
-                    } catch {
-                        noteStatus.textContent = '⚠ خطأ في الحفظ';
-                    }
-                });
-            });
-        }
-
-        function renderRows(pageItems, start) {
-            tableBody.innerHTML = '';
-
-            pageItems.forEach((t, index) => {
-                const row = document.createElement('tr');
-                row.className = 'border-b border-gray-100 hover:bg-brand-50 transition' + (t.total >= 85 ? ' bg-brand-50/40' : '');
-                row.innerHTML = `
-                    <td class="px-4 py-3 text-gray-400">${start + index + 1}</td>
-                    <td class="px-4 py-3 font-bold text-brand-600">${escapeHtml(String(t.id))}</td>
-                    <td class="px-4 py-3 font-medium text-gray-800">${escapeHtml(t.name)}</td>
-                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.school)}</td>
-                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.major)}</td>
-                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.qualify)}</td>
-                    <td class="px-4 py-3 text-gray-600">${escapeHtml(t.date)}</td>
-                    <td class="px-4 py-3">
-                        <span class="bg-brand-100 text-brand-700 px-3 py-1 rounded-full text-xs font-bold" dir="ltr" style="display:inline-block">
-                            ${t.total} / 100
-                        </span>
-                    </td>
-                    <td class="px-4 py-3">
-                        <div class="flex gap-1.5 justify-end items-center flex-nowrap">
-                            <a href="${routes.show(t.id)}" title="عرض"
-                                class="bg-brand-100 hover:bg-brand-200 text-brand-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
-                                👁️
-                            </a>
-                            <a href="${routes.edit(t.id)}" title="تعديل"
-                                class="bg-brand-100 hover:bg-brand-200 text-brand-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
-                                ✏️
-                            </a>
-                            <button type="button" title="طباعة" onclick="window.open(routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()), '_blank')"
-                                class="bg-gray-100 hover:bg-gray-200 text-gray-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
-                                🖨️
-                            </button>
-                            <form action="${routes.resetScores(t.id)}" method="POST"
-                                onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
-                                ${deleteFields}
-                                <button type="submit" title="حذف الدرجات"
-                                    class="bg-orange-100 hover:bg-orange-200 text-orange-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
-                                    🗑️
-                                </button>
-                            </form>
-                            <form action="${routes.destroy(t.id)}" method="POST"
-                                onsubmit="return confirm('هل أنت متأكد؟')">
-                                ${deleteFields}
-                                <button type="submit" title="حذف"
-                                    class="bg-red-100 hover:bg-red-200 text-red-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
-                                    ❌
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-
-        function renderPagination(totalPages, totalCount) {
-            if (totalCount === 0) {
-                paginationEl.innerHTML = '';
-                return;
-            }
-
-            paginationEl.innerHTML = `
-                <span>إجمالي النتائج: ${totalCount}</span>
-                <div class="flex gap-1">
-                    <button data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}
-                        class="page-btn px-3 py-1 rounded-lg border border-gray-300 ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}">
-                        السابق
-                    </button>
-                    <span class="px-2 py-1">صفحة ${currentPage} من ${totalPages}</span>
-                    <button data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}
-                        class="page-btn px-3 py-1 rounded-lg border border-gray-300 ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}">
-                        التالي
-                    </button>
+            <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                    <div class="font-bold text-gray-800 text-base">${escapeHtml(t.name)}${t.total >= 85 ? ' ⭐' : ''}</div>
+                    <div class="text-sm text-gray-500 mt-1">🏫 ${escapeHtml(t.school)}</div>
+                    <div class="text-xs text-gray-400 mt-1">🎓 ${escapeHtml(t.major)} · #${start + index + 1}</div>
                 </div>
-            `;
+                <div class="flex flex-col items-end gap-2 shrink-0">
+                    <span class="${assessmentColorClasses[t.assessment.color] || assessmentColorClasses.gray} px-3 py-1 rounded-full text-xs font-bold">
+                        ${escapeHtml(t.assessment.label)}
+                    </span>
+                    <span class="bg-white/80 text-brand-700 px-3 py-1 rounded-full text-xs font-bold" dir="ltr">
+                        ${t.total} / 100
+                    </span>
+                </div>
+            </div>
 
-            paginationEl.querySelectorAll('.page-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const page = parseInt(btn.dataset.page);
-                    if (page >= 1 && page <= totalPages) {
-                        currentPage = page;
-                        renderTable();
-                    }
+            <div class="flex flex-wrap items-center gap-2 pt-3 mt-3 border-t border-white/70">
+                ${t.total >= 85 ? `
+                <a href="${routes.justification(t.id)}" class="${actionBtn}">
+                    📝 نموذج التبرير
+                </a>` : ''}
+                <button type="button" class="note-toggle-btn ${actionBtn}">
+                    🗒️ ملاحظات المشرف
+                </button>
+                <button type="button" onclick="showReportModal({ url: routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()) })" class="${actionBtn}">
+                    🖨️ طباعة
+                </button>
+                <a href="${routes.edit(t.id)}" class="${actionBtn}">
+                    ✏️ تعديل
+                </a>
+                <form action="${routes.resetScores(t.id)}" method="POST"
+                    onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
+                    ${deleteFields}
+                    <button type="submit" class="${actionBtnWarn}">
+                        🗑️ حذف الدرجات
+                    </button>
+                </form>
+                <form action="${routes.destroy(t.id)}" method="POST"
+                    onsubmit="return confirm('هل أنت متأكد؟')">
+                    ${deleteFields}
+                    <button type="submit" class="${actionBtnDanger}">
+                        🗑️ حذف
+                    </button>
+                </form>
+                <a href="${routes.show(t.id)}" title="عرض"
+                    class="mr-auto w-9 h-9 rounded-full bg-brand-500 hover:bg-brand-600 text-white flex items-center justify-center transition">
+                    ←
+                </a>
+            </div>
+
+            <div class="note-box hidden mt-3 pt-3 border-t border-white/70">
+                <textarea class="note-textarea w-full text-xs border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-brand-300" rows="2" maxlength="250" placeholder="اكتب ملاحظة...">${escapeHtml(t.supervisor_note)}</textarea>
+                <div class="flex justify-between items-center mt-1">
+                    <span class="note-counter text-xs text-gray-400">0/250</span>
+                    <div class="flex items-center gap-2">
+                        <span class="note-status text-xs text-gray-400"></span>
+                        <button type="button" class="note-save-btn ${actionBtn}">
+                            حفظ الملاحظة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        cardGrid.appendChild(card);
+
+        const noteBox    = card.querySelector('.note-box');
+        const noteToggle = card.querySelector('.note-toggle-btn');
+        const noteSave   = card.querySelector('.note-save-btn');
+        const noteText   = card.querySelector('.note-textarea');
+        const noteStatus = card.querySelector('.note-status');
+        const noteCounter = card.querySelector('.note-counter');
+
+        function updateNoteCounter() {
+            const len = noteText.value.length;
+            noteCounter.textContent = len + '/250';
+            noteCounter.classList.toggle('text-red-500', len >= 250);
+            noteCounter.classList.toggle('text-gray-400', len < 250);
+        }
+
+        updateNoteCounter();
+        noteText.addEventListener('input', updateNoteCounter);
+
+        noteToggle.addEventListener('click', () => noteBox.classList.toggle('hidden'));
+
+        noteSave.addEventListener('click', async () => {
+            noteStatus.textContent = 'جاري الحفظ...';
+            try {
+                const res = await fetch(routes.supervisorNote(t.id), {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    body: JSON.stringify({ supervisor_note: noteText.value }),
                 });
-            });
-        }
-
-        function applyFilters() {
-            currentPage = 1;
-            renderTable();
-        }
-
-        searchInput.addEventListener('input', applyFilters);
-        schoolFilter.addEventListener('change', applyFilters);
-        minScoreFilter.addEventListener('input', applyFilters);
-        maxScoreFilter.addEventListener('input', applyFilters);
-
-        resetBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            schoolFilter.value = '';
-            minScoreFilter.value = '';
-            maxScoreFilter.value = '';
-            applyFilters();
+                if (!res.ok) throw new Error();
+                noteStatus.textContent = '✓ تم الحفظ';
+                t.supervisor_note = noteText.value;
+                setTimeout(() => noteStatus.textContent = '', 1500);
+            } catch {
+                noteStatus.textContent = '⚠ خطأ في الحفظ';
+            }
         });
+    });
+}
 
-        // Profile card + summary card (filled from the data already on the page)
-        function updateProfileYear() {
-            document.getElementById('profileYear').textContent = getAcademicYear();
-        }
+function renderRows(pageItems, start) {
+    tableBody.innerHTML = '';
 
-        document.getElementById('profileDirectorate').textContent = allTeachers[0]?.directorate || '—';
-        document.getElementById('profileSchools').textContent = new Set(allTeachers.map(t => t.school_id)).size;
-        updateProfileYear();
-        academicYearSelect.addEventListener('change', updateProfileYear);
-        renderSummaryCard();
+    pageItems.forEach((t, index) => {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-gray-100 hover:bg-brand-50 transition' + (t.total >= 85 ? ' bg-brand-50/40' : '');
+        row.innerHTML = `
+            <td class="px-4 py-3 text-gray-400">${start + index + 1}</td>
+            <td class="px-4 py-3 font-bold text-brand-600">${escapeHtml(String(t.id))}</td>
+            <td class="px-4 py-3 font-medium text-gray-800">${escapeHtml(t.name)}</td>
+            <td class="px-4 py-3 text-gray-600">${escapeHtml(t.school)}</td>
+            <td class="px-4 py-3 text-gray-600">${escapeHtml(t.major)}</td>
+            <td class="px-4 py-3 text-gray-600">${escapeHtml(t.qualify)}</td>
+            <td class="px-4 py-3 text-gray-600">${escapeHtml(t.date)}</td>
+            <td class="px-4 py-3">
+                <span class="bg-brand-100 text-brand-700 px-3 py-1 rounded-full text-xs font-bold" dir="ltr" style="display:inline-block">
+                    ${t.total} / 100
+                </span>
+            </td>
+            <td class="px-4 py-3">
+                <div class="flex gap-1.5 justify-end items-center flex-nowrap">
+                    <a href="${routes.show(t.id)}" title="عرض"
+                        class="bg-brand-100 hover:bg-brand-200 text-brand-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                        👁️
+                    </a>
+                    <a href="${routes.edit(t.id)}" title="تعديل"
+                        class="bg-brand-100 hover:bg-brand-200 text-brand-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                        ✏️
+                    </a>
+                    <button type="button" title="طباعة" onclick="showReportModal({ url: routes.report(${t.id}) + '?academic_year=' + encodeURIComponent(getAcademicYear()) })"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                        🖨️
+                    </button>
+                    <form action="${routes.resetScores(t.id)}" method="POST"
+                        onsubmit="return confirm('هل أنت متأكد من حذف درجات هذا المعلم؟')">
+                        ${deleteFields}
+                        <button type="submit" title="حذف الدرجات"
+                            class="bg-orange-100 hover:bg-orange-200 text-orange-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                            🗑️
+                        </button>
+                    </form>
+                    <form action="${routes.destroy(t.id)}" method="POST"
+                        onsubmit="return confirm('هل أنت متأكد؟')">
+                        ${deleteFields}
+                        <button type="submit" title="حذف"
+                            class="bg-red-100 hover:bg-red-200 text-red-700 w-7 h-7 flex items-center justify-center rounded-lg text-xs transition">
+                            ❌
+                        </button>
+                    </form>
+                </div>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
 
-        renderTable();
+function renderPagination(totalPages, totalCount) {
+    if (totalCount === 0) {
+        paginationEl.innerHTML = '';
+        return;
+    }
+
+    paginationEl.innerHTML = `
+        <span>إجمالي النتائج: ${totalCount}</span>
+        <div class="flex gap-1">
+            <button data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}
+                class="page-btn px-3 py-1 rounded-lg border border-gray-300 ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}">
+                السابق
+            </button>
+            <span class="px-2 py-1">صفحة ${currentPage} من ${totalPages}</span>
+            <button data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}
+                class="page-btn px-3 py-1 rounded-lg border border-gray-300 ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100'}">
+                التالي
+            </button>
+        </div>
+    `;
+
+    paginationEl.querySelectorAll('.page-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const page = parseInt(btn.dataset.page);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderTable();
+            }
+        });
+    });
+}
+
+function applyFilters() {
+    currentPage = 1;
+    renderTable();
+}
+
+searchInput.addEventListener('input', applyFilters);
+schoolFilter.addEventListener('change', applyFilters);
+minScoreFilter.addEventListener('input', applyFilters);
+maxScoreFilter.addEventListener('input', applyFilters);
+
+resetBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    schoolFilter.value = '';
+    minScoreFilter.value = '';
+    maxScoreFilter.value = '';
+    applyFilters();
+});
+
+// Profile card + summary card (filled from the data already on the page)
+function updateProfileYear() {
+    document.getElementById('profileYear').textContent = getAcademicYear();
+}
+
+document.getElementById('profileDirectorate').textContent = allTeachers[0]?.directorate || '—';
+document.getElementById('profileSchools').textContent = new Set(allTeachers.map(t => t.school_id)).size;
+updateProfileYear();
+academicYearSelect.addEventListener('change', updateProfileYear);
+renderSummaryCard();
+
+renderTable();
