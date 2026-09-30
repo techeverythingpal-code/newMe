@@ -645,7 +645,11 @@ function renderCards(pageItems, start) {
                 }
                 noteStatus.textContent = '✓ تم الحفظ';
                 t.supervisor_note = noteText.value;
-                setTimeout(() => noteStatus.textContent = '', 1500);
+                // Show the confirmation briefly, then close the note box
+setTimeout(() => {
+    noteStatus.textContent = '';
+    noteBox.classList.add('hidden');
+}, 700);
             } catch (err) {
                 console.error(err);
                 noteStatus.textContent = '⚠ خطأ في الحفظ';
