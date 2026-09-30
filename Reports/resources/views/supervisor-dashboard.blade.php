@@ -349,6 +349,26 @@
         </div>
     </div>
 
+    {{-- Report viewer modal — every "print" action opens the report here instead of a new tab --}}
+    <div id="reportModal" class="hidden fixed inset-0 z-[60] bg-black/50 items-center justify-center p-4" dir="rtl">
+        <div class="bg-white w-full max-w-5xl h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50 shrink-0">
+                <span class="font-bold text-gray-700">معاينة التقرير</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="printReportModal()"
+                        class="bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-1.5 px-4 rounded-lg transition">
+                        🖨️ طباعة
+                    </button>
+                    <button type="button" onclick="closeReportModal()"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-bold py-1.5 px-4 rounded-lg transition">
+                        ✕ إغلاق
+                    </button>
+                </div>
+            </div>
+            <iframe id="reportModalIframe" class="flex-1 w-full border-0"></iframe>
+        </div>
+    </div>
+
     <script>
         // Data only — all behavior lives in resources/js/pages/supervisor-dashboard.js
         window.__SUPERVISOR_DASHBOARD__ = {

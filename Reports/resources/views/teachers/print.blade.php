@@ -6,12 +6,6 @@
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Tahoma','Arial',sans-serif; color:#111; background:#f3f4f6; margin:0; padding:20px; }
-        .toolbar { max-width:800px; margin:0 auto 14px; display:flex; justify-content:flex-end; gap:8px; }
-        .toolbar button {
-            background:#2563eb; color:#fff; border:none; padding:8px 18px;
-            border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;
-        }
-        .toolbar button:hover { background:#1d4ed8; }
         .report-page { max-width: 800px; margin: 0 auto 20px; padding: 20px; background:#fff; }
         .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; margin-top:10px; }
         .header-block { font-size: 13px; line-height: 1.6; }
@@ -63,16 +57,11 @@
         @media print {
             @page { size: A4 portrait; margin: 0.5cm; }
             body { padding: 0; background: #fff; }
-            .toolbar { display: none; }
             .academic-year-input { border: none !important; background: transparent !important; }
         }
     </style>
 </head>
 <body>
-
-    <div class="toolbar">
-        <button onclick="window.print()">🖨️ طباعة التقرير</button>
-    </div>
 
     @include('teachers.partials.report-body', ['teacher' => $teacher, 'criteria' => $criteria, 'groups' => $groups, 'academicYear' => $academicYear])
 
