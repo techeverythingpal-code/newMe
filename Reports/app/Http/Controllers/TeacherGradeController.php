@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class TeacherGradeController extends Controller
 {
     // Shared criteria definition: field => [label, max score]
-    
+
     public static function scoreGroups(): array
     {
         // [group label => number of consecutive criteria it covers]
@@ -48,7 +48,7 @@ class TeacherGradeController extends Controller
         return $ones[$onesPart] . ' و' . $tens[$tensPart];
     }
 
-    
+
     public static function scoreCriteria(): array
     {
         return [
@@ -86,6 +86,24 @@ class TeacherGradeController extends Controller
         return $rules;
     }
 
+    /**
+     * Admins may access any teacher. A supervisor may only access
+     * teachers assigned to them; anything else is a 403.
+     */
+    private function authorizeTeacherAccess(TeacherInfo $teacher): void
+    {
+        if (Auth::guard('admin')->check()) {
+            return;
+        }
+
+        $supervisor = Auth::guard('web')->user();
+
+        if (! $supervisor
+            || (int) $teacher->supervisor_id !== (int) $supervisor->SuperVisor_id) {
+            abort(403);
+        }
+    }
+
     // Excel-like grid: all teachers (scoped to supervisor) with grades, editable inline
     public function sheet()
     {
@@ -105,18 +123,11 @@ class TeacherGradeController extends Controller
 
         return view('grades.sheet', compact('teachers', 'scores'));
     }
-    
-   
-
-    
 
     // Auto-save one teacher's row from the sheet (AJAX)
     public function quickUpdate(Request $request, TeacherInfo $teacher)
     {
-        if (! Auth::guard('admin')->check()
-            && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
-            abort(403);
-        }
+        $this->authorizeTeacherAccess($teacher);
 
         $validated = $request->validate($this->scoreValidationRules());
         $validated['total'] = array_sum($validated);
@@ -131,6 +142,8 @@ class TeacherGradeController extends Controller
 
     public function edit(TeacherInfo $teacher)
     {
+        $this->authorizeTeacherAccess($teacher);
+
         $grades = $teacher->grades;
         $scores = self::scoreCriteria();
         return view('grades.edit', compact('teacher', 'grades', 'scores'));
@@ -138,6 +151,8 @@ class TeacherGradeController extends Controller
 
     public function update(Request $request, TeacherInfo $teacher)
     {
+        $this->authorizeTeacherAccess($teacher);
+
         $validated = $request->validate($this->scoreValidationRules());
 
         // Calculate total automatically
@@ -149,54 +164,53 @@ class TeacherGradeController extends Controller
             ->with('success', 'تم حفظ الدرجات بنجاح');
     }
 
-   public function report(Request $request, TeacherInfo $teacher)
-{
-    if (! Auth::guard('admin')->check()
-        && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
-        abort(403);
+    public function report(Request $request, TeacherInfo $teacher)
+    {
+        $this->authorizeTeacherAccess($teacher);
+
+        $teacher->load(['school.directorate', 'supervisor', 'grades']);
+
+        return view('teachers.print', [
+            'teacher'      => $teacher,
+            'criteria'     => self::scoreCriteria(),
+            'groups'       => self::scoreGroups(),
+            'academicYear' => $request->query('academic_year', '2026/2027'),
+        ]);
     }
 
-    $teacher->load(['school.directorate', 'supervisor', 'grades']);
+    // Prints a chosen set of teachers (?ids[]=1&ids[]=2...), or everyone in scope if no ids given
+    public function reportBulk(Request $request)
+    {
+        // Accept a list or a single value; keep only valid positive numbers.
+        $ids = array_values(array_filter(
+            array_map('intval', (array) $request->query('ids', []))
+        ));
 
-    return view('teachers.print', [
-        'teacher'      => $teacher,
-        'criteria'     => self::scoreCriteria(),
-        'groups'       => self::scoreGroups(),
-        'academicYear' => $request->query('academic_year', '2026/2027'),
-    ]);
-}
+        if (! Auth::guard('admin')->check()) {
+            $query = TeacherInfo::where('supervisor_id', Auth::guard('web')->user()->SuperVisor_id);
+        } else {
+            $query = TeacherInfo::query();
+        }
 
-// Prints a chosen set of teachers (?ids[]=1&ids[]=2...), or everyone in scope if no ids given
-public function reportBulk(Request $request)
-{
-    $ids = $request->query('ids', []);
+        if (! empty($ids)) {
+            $query->whereIn('Teacher_id', $ids);
+        }
 
-    if (! Auth::guard('admin')->check()) {
-        $query = TeacherInfo::where('supervisor_id', Auth::guard('web')->user()->SuperVisor_id);
-    } else {
-        $query = TeacherInfo::query();
+        $teachers = $query->with(['school.directorate', 'supervisor', 'grades'])
+            ->orderBy('Teacher_Name')
+            ->get();
+
+        if ($teachers->isEmpty()) {
+            abort(404, 'لا يوجد معلمون مطابقون');
+        }
+
+        return view('teachers.print-bulk', [
+            'teachers'     => $teachers,
+            'criteria'     => self::scoreCriteria(),
+            'groups'       => self::scoreGroups(),
+            'academicYear' => $request->query('academic_year', '2026/2027'),
+        ]);
     }
-
-    if (!empty($ids)) {
-        $query->whereIn('Teacher_id', $ids);
-    }
-
-    $teachers = $query->with(['school.directorate', 'supervisor', 'grades'])
-        ->orderBy('Teacher_Name')
-        ->get();
-
-    if ($teachers->isEmpty()) {
-        abort(404, 'لا يوجد معلمون مطابقون');
-    }
-
-    return view('teachers.print-bulk', [
-        'teachers'     => $teachers,
-        'criteria'     => self::scoreCriteria(),
-        'groups'       => self::scoreGroups(),
-        'academicYear' => $request->query('academic_year', '2026/2027'),
-    ]);
-}
-
 
     private function zeroedScores(): array
     {
@@ -213,10 +227,7 @@ public function reportBulk(Request $request)
     public function resetSingle(TeacherInfo $teacher)
     {
         // Supervisors may only reset their own teachers
-        if (! Auth::guard('admin')->check()
-            && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
-            abort(403);
-        }
+        $this->authorizeTeacherAccess($teacher);
 
         $teacher->grades()->update($this->zeroedScores());
 
@@ -226,7 +237,12 @@ public function reportBulk(Request $request)
     // Reset scores for ALL teachers belonging to the current supervisor
     public function resetAllForSupervisor()
     {
+        // This action is only for a supervisor's own teachers.
         $user = Auth::guard('web')->user();
+
+        if (! $user) {
+            abort(403);
+        }
 
         $teacherIds = TeacherInfo::where('supervisor_id', $user->SuperVisor_id)
             ->pluck('Teacher_id');
