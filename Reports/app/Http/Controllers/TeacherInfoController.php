@@ -42,53 +42,64 @@ class TeacherInfoController extends Controller
     }
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'Teacher_id'      => 'required|integer|unique:teacher_infos,Teacher_id',
-        'Teacher_Name'    => 'required|string|max:255',
-        'supervisor_id'   => 'required|integer|exists:super_visors,SuperVisor_id',
-        'school_id'       => 'required|integer|exists:schools,School_ID',
-        'date'            => 'required|date',
-        'teacher_qualify' => 'required|string|max:255',
-        'academic_year' => 'nullable|string|max:20',
-        'teacher_major'   => 'required|string|max:255',
-    ]);
+    {
+        $validated = $request->validate([
+            'Teacher_id'      => 'required|integer|unique:teacher_infos,Teacher_id',
+            'Teacher_Name'    => 'required|string|max:255',
+            'supervisor_id'   => 'required|integer|exists:super_visors,SuperVisor_id',
+            'school_id'       => 'required|integer|exists:schools,School_ID',
+            'date'            => 'required|date',
+            'teacher_qualify' => 'required|string|max:255',
+            'academic_year'   => 'nullable|string|max:20',
+            'teacher_major'   => 'required|string|max:255',
+        ]);
 
-    // If regular supervisor, force assign to themselves
-    if (! Auth::guard('admin')->check()) {
-        $validated['supervisor_id'] = Auth::guard('web')->user()->SuperVisor_id;
+        // If regular supervisor, force assign to themselves
+        if (! Auth::guard('admin')->check()) {
+            $validated['supervisor_id'] = Auth::guard('web')->user()->SuperVisor_id;
+        }
+
+        TeacherInfo::create($validated);
+
+        TeacherGrade::create([
+            'teacher_id' => $validated['Teacher_id'],
+            'score1' => 0, 'score2' => 0, 'score3' => 0, 'score4' => 0,
+            'score5' => 0, 'score6' => 0, 'score7' => 0, 'score8' => 0,
+            'score9' => 0, 'score10' => 0, 'score11' => 0, 'score12' => 0,
+            'score13' => 0, 'score14' => 0, 'score15' => 0, 'score16' => 0,
+            'score17' => 0, 'score18' => 0, 'score19' => 0, 'score20' => 0,
+            'score21' => 0, 'score22' => 0, 'total' => 0,
+        ]);
+
+        return redirect()->route($this->postActionRoute())
+            ->with('success', 'تم إضافة المعلم بنجاح');
     }
 
-    TeacherInfo::create($validated);
+    /**
+     * Admins may access any teacher. A supervisor may only access
+     * teachers assigned to them; anything else is a 403.
+     */
+    private function authorizeTeacherAccess(TeacherInfo $teacher): void
+    {
+        if (Auth::guard('admin')->check()) {
+            return;
+        }
 
-    TeacherGrade::create([
-        'teacher_id' => $validated['Teacher_id'],
-        'score1' => 0, 'score2' => 0, 'score3' => 0, 'score4' => 0,
-        'score5' => 0, 'score6' => 0, 'score7' => 0, 'score8' => 0,
-        'score9' => 0, 'score10' => 0, 'score11' => 0, 'score12' => 0,
-        'score13' => 0, 'score14' => 0, 'score15' => 0, 'score16' => 0,
-        'score17' => 0, 'score18' => 0, 'score19' => 0, 'score20' => 0,
-        'score21' => 0, 'score22' => 0, 'total' => 0,
-    ]);
+        $supervisor = Auth::guard('web')->user();
 
-    return redirect()->route($this->postActionRoute())
-        ->with('success', 'تم إضافة المعلم بنجاح');
-}
+        if (! $supervisor
+            || (int) $teacher->supervisor_id !== (int) $supervisor->SuperVisor_id) {
+            abort(403);
+        }
+    }
 
     public function show(TeacherInfo $teacher)
     {
+        $this->authorizeTeacherAccess($teacher);
 
-     $teacher->load(['school', 'supervisor', 'grades']);
+        $teacher->load(['school', 'supervisor', 'grades']);
         $scores = \App\Http\Controllers\TeacherGradeController::scoreCriteria();
         return view('teachers.show', compact('teacher', 'scores'));
-    }
-
-    private function authorizeTeacherAccess(TeacherInfo $teacher): void
-    {
-        if (! Auth::guard('admin')->check()
-            && $teacher->supervisor_id !== Auth::guard('web')->user()->SuperVisor_id) {
-            abort(403);
-        }
     }
 
     public function justification(TeacherInfo $teacher)
@@ -121,13 +132,12 @@ class TeacherInfoController extends Controller
             ->with('success', 'تم حفظ نموذج التبرير بنجاح');
     }
 
-
     public function updateSupervisorNote(Request $request, TeacherInfo $teacher)
     {
         $this->authorizeTeacherAccess($teacher);
 
         $validated = $request->validate([
-    'supervisor_note' => 'nullable|string|max:250',
+            'supervisor_note' => 'nullable|string|max:250',
         ]);
 
         $teacher->update($validated);
@@ -137,22 +147,41 @@ class TeacherInfoController extends Controller
 
     public function edit(TeacherInfo $teacher)
     {
-        $schools     = School::all();
-        $supervisors = SuperVisor::all();
+        $this->authorizeTeacherAccess($teacher);
+
+        $schools = School::all();
+
+        // Admin can pick any supervisor; a supervisor only ever sees themselves.
+        if (Auth::guard('admin')->check()) {
+            $supervisors = SuperVisor::all();
+        } else {
+            $supervisors = SuperVisor::where(
+                'SuperVisor_id',
+                Auth::guard('web')->user()->SuperVisor_id
+            )->get();
+        }
+
         return view('teachers.edit', compact('teacher', 'schools', 'supervisors'));
     }
 
     public function update(Request $request, TeacherInfo $teacher)
     {
+        $this->authorizeTeacherAccess($teacher);
+
         $validated = $request->validate([
             'Teacher_Name'    => 'required|string|max:255',
             'supervisor_id'   => 'required|integer|exists:super_visors,SuperVisor_id',
             'school_id'       => 'required|integer|exists:schools,School_ID',
             'date'            => 'required|date',
             'teacher_qualify' => 'required|string|max:255',
-            'academic_year' => 'nullable|string|max:20',
+            'academic_year'   => 'nullable|string|max:20',
             'teacher_major'   => 'required|string|max:255',
         ]);
+
+        // A supervisor can never reassign a teacher to someone else.
+        if (! Auth::guard('admin')->check()) {
+            $validated['supervisor_id'] = Auth::guard('web')->user()->SuperVisor_id;
+        }
 
         $teacher->update($validated);
 
@@ -162,6 +191,8 @@ class TeacherInfoController extends Controller
 
     public function destroy(TeacherInfo $teacher)
     {
+        $this->authorizeTeacherAccess($teacher);
+
         // Delete grades first then teacher
         $teacher->grades()->delete();
         $teacher->delete();
