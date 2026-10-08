@@ -112,7 +112,7 @@ class ExcelController extends Controller
 
     public function importSchools(Request $request)
     {
-         set_time_limit(240);
+        set_time_limit(240);
 
         $rows = $this->readSpreadsheet($request);
 
@@ -120,11 +120,11 @@ class ExcelController extends Controller
             return back()->with('error', 'الملف فارغ أو لا يحتوي على بيانات صالحة.');
         }
 
-         $idsInFile = array_filter(array_map(fn ($r) => $r['School_ID'] ?? null, $rows));
+        $idsInFile = array_filter(array_map(fn ($r) => $r['School_ID'] ?? null, $rows));
 
-    $existingIds = School::whereIn('School_ID', $idsInFile)
-        ->pluck('School_ID')
-        ->flip();
+        $existingIds = School::whereIn('School_ID', $idsInFile)
+            ->pluck('School_ID')
+            ->flip();
 
         $errors = [];
         $toInsert = [];
@@ -140,10 +140,10 @@ class ExcelController extends Controller
                 continue;
             }
 
-             if ($schoolId && isset($existingIds[$schoolId])) {
-            $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} موجودة بالفعل.";
-            continue;
-        }
+            if ($schoolId && isset($existingIds[$schoolId])) {
+                $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} موجودة بالفعل.";
+                continue;
+            }
 
             if (!$this->directorateExists($directorateId)) {
                 $errors[] = "السطر {$excelRow}: المديرية برقم {$directorateId} غير موجودة.";
@@ -204,9 +204,9 @@ class ExcelController extends Controller
 
         $idsInFile = array_filter(array_map(fn ($r) => $r['SuperVisor_id'] ?? null, $rows));
 
-    $existingIds = SuperVisor::whereIn('SuperVisor_id', $idsInFile)
-        ->pluck('SuperVisor_id')
-        ->flip();
+        $existingIds = SuperVisor::whereIn('SuperVisor_id', $idsInFile)
+            ->pluck('SuperVisor_id')
+            ->flip();
 
         $errors = [];
         $toInsert = [];
@@ -243,9 +243,9 @@ class ExcelController extends Controller
             }
 
             if ($id && isset($existingIds[$id])) {
-            $errors[] = "السطر {$excelRow}: المشرف برقم {$id} موجود بالفعل.";
-            continue;
-        }
+                $errors[] = "السطر {$excelRow}: المشرف برقم {$id} موجود بالفعل.";
+                continue;
+            }
 
             $data = [
                 'SuperVisor_Name' => $name,
@@ -253,6 +253,9 @@ class ExcelController extends Controller
                 'directorate_id' => $directorateId,
                 'role' => $role,
                 'password' => $tempPassword,
+                // Imported accounts share a temporary password, so each
+                // supervisor must choose their own at first login.
+                'must_change_password' => true,
             ];
 
             if ($id) {
@@ -274,7 +277,7 @@ class ExcelController extends Controller
 
         return redirect()->route('supervisors.index')->with(
             'success',
-            count($toInsert) . ' مشرف تم استيراده بنجاح. ⚠️ تم تعيين كلمة مرور مؤقتة، يرجى تحديثها لكل مشرف جديد.'
+            count($toInsert) . ' مشرف تم استيراده بنجاح. تم تعيين كلمة مرور مؤقتة، وسيُطلب من كل مشرف تغييرها عند أول تسجيل دخول.'
         );
     }
 
@@ -338,9 +341,9 @@ class ExcelController extends Controller
 
         $idsInFile = array_filter(array_map(fn ($r) => $r['Teacher_id'] ?? null, $rows));
 
-    $existingIds = TeacherInfo::whereIn('Teacher_id', $idsInFile)
-        ->pluck('Teacher_id')
-        ->flip();
+        $existingIds = TeacherInfo::whereIn('Teacher_id', $idsInFile)
+            ->pluck('Teacher_id')
+            ->flip();
 
         $errors = [];
         $toInsert = [];
@@ -390,9 +393,9 @@ class ExcelController extends Controller
             }
 
             if ($teacherId && isset($existingIds[$teacherId])) {
-            $errors[] = "السطر {$excelRow}: المعلم برقم {$teacherId} موجود بالفعل.";
-            continue;
-        }
+                $errors[] = "السطر {$excelRow}: المعلم برقم {$teacherId} موجود بالفعل.";
+                continue;
+            }
 
             if (!isset($validSchoolIds[$schoolId])) {
                 $errors[] = "السطر {$excelRow}: المدرسة برقم {$schoolId} غير موجودة.";

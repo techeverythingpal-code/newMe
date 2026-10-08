@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\ForcePasswordChangeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DirectorateController;
@@ -12,6 +13,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
+});
+
+// Forced password change (supervisors still on a temporary password).
+// Deliberately NOT behind 'password.changed', or they could never reach it.
+Route::middleware('auth:web')->group(function () {
+    Route::get('/password/change', [ForcePasswordChangeController::class, 'edit'])->name('password.force.edit');
+    Route::put('/password/change', [ForcePasswordChangeController::class, 'update'])->name('password.force.update');
 });
 
 // Admin only
@@ -27,7 +35,7 @@ Route::middleware(['auth:admin,web', 'admin'])->group(function () {
 });
 
 // Admin + Supervisor
-Route::middleware(['auth:admin,web'])->group(function () {
+Route::middleware(['auth:admin,web', 'password.changed'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/teachers-data', [DashboardController::class, 'teachersData'])->name('dashboard.teachers-data');
     // Supervisor-only sections of the dashboard (same controller/view, different section)
@@ -43,12 +51,12 @@ Route::middleware(['auth:admin,web'])->group(function () {
     Route::resource('teachers', TeacherInfoController::class);
     Route::patch('teachers/{teacher}/grades/quick', [TeacherGradeController::class, 'quickUpdate'])->name('teacher-grades.quick-update');
     Route::get('teachers/{teacher}/grades/edit', [TeacherGradeController::class, 'edit'])->name('teacher-grades.edit');
-    
-    
+
+
     Route::get('teachers/{teacher}/justification', [TeacherInfoController::class, 'justification'])->name('teachers.justification');
     Route::post('teachers/{teacher}/justification', [TeacherInfoController::class, 'storeJustification'])->name('teachers.justification.store');
     Route::patch('teachers/{teacher}/supervisor-note', [TeacherInfoController::class, 'updateSupervisorNote'])->name('teachers.supervisor-note.update');
-    
+
     Route::patch('teachers/{teacher}/grades', [TeacherGradeController::class, 'update'])->name('teacher-grades.update');
     Route::delete('teachers/{teacher}/grades/reset', [TeacherGradeController::class, 'resetSingle'])->name('teacher-grades.reset-single');
     Route::delete('teachers-grades/reset-all', [TeacherGradeController::class, 'resetAllForSupervisor'])->name('teacher-grades.reset-all');

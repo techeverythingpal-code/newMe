@@ -8,14 +8,12 @@ use App\Models\TeacherInfo;
 
 class SuperVisor extends Authenticatable
 {
-    
-
-use Notifiable;
+    use Notifiable;
 
     protected $table = 'super_visors';
-    protected $primaryKey = 'SuperVisor_id';   // 👈 here
-    public $incrementing = false;                // 👈 here
-    protected $keyType = 'int';                  // 👈 here
+    protected $primaryKey = 'SuperVisor_id';
+    public $incrementing = false;
+    protected $keyType = 'int';
 
     protected $fillable = [
         'SuperVisor_id',
@@ -24,12 +22,20 @@ use Notifiable;
         'directorate_id',
         'role',
         'password',
+        'must_change_password',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'must_change_password' => 'boolean',
+        ];
+    }
 
     public function teachers()
     {
