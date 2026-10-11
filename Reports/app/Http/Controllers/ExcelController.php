@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -26,7 +27,27 @@ class ExcelController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         $sheet->fromArray($headers, null, 'A1');
-        $sheet->fromArray($rows, null, 'A2');
+
+        // Write data cells one by one so that any text starting with "="
+        // is stored as plain text and never becomes an Excel formula
+        // (formula injection through a teacher/school/supervisor name).
+        $rowNumber = 2;
+        foreach ($rows as $row) {
+            $colNumber = 1;
+            foreach ($row as $value) {
+                if ($value !== null) {
+                    $cell = $sheet->getCell([$colNumber, $rowNumber]);
+
+                    if (is_string($value) && str_starts_with($value, '=')) {
+                        $cell->setValueExplicit($value, DataType::TYPE_STRING);
+                    } else {
+                        $cell->setValue($value);
+                    }
+                }
+                $colNumber++;
+            }
+            $rowNumber++;
+        }
 
         $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->getFont()->setBold(true);
 
