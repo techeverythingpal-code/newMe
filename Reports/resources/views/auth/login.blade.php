@@ -18,7 +18,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                     </svg>
                 </span>
-                <input id="login" type="text" name="login" value="{{ old('login') }}" required autofocus autocomplete="username"
+                <input id="login" type="text" name="login" value="{{ old('login') }}" required autofocus autocomplete="off"
                     class="block w-full rounded-lg border-gray-300 pr-10 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
             </div>
             <x-input-error :messages="$errors->get('login')" class="mt-1.5" />
@@ -33,7 +33,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                     </svg>
                 </span>
-                <input :type="show ? 'text' : 'password'" id="password" name="password" required autocomplete="current-password"
+                <input :type="show ? 'text' : 'password'" id="password" name="password" required autocomplete="new-password"
                     class="block w-full rounded-lg border-gray-300 pr-10 pl-16 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
                 <button type="button" @click="show = !show"
                     class="absolute inset-y-0 left-3 flex items-center text-xs font-bold text-blue-600 hover:text-blue-800">
