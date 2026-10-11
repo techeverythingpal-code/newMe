@@ -136,6 +136,17 @@
             const dataUrl            = "{{ route('dashboard.teachers-data') }}";
             const csrfToken          = document.querySelector('meta[name="csrf-token"]').content;
 
+            // Turn any value into safe text before putting it inside HTML.
+            // Without this, a name like <img onerror=...> would run as code.
+            function esc(value) {
+                return String(value ?? '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
             function assessmentBadge(assessment) {
                 const colors = {
                     green: 'bg-green-100 text-green-700',
@@ -146,7 +157,7 @@
                     gray: 'bg-gray-100 text-gray-700',
                 };
                 const cls = colors[assessment?.color] || colors.gray;
-                return `<span class="${cls} px-3 py-1 rounded-full text-xs font-bold">${assessment?.label ?? '—'}</span>`;
+                return `<span class="${cls} px-3 py-1 rounded-full text-xs font-bold">${esc(assessment?.label ?? '—')}</span>`;
             }
 
             function renderRows(teachers, offset) {
@@ -168,25 +179,25 @@
                 tbody.innerHTML = teachers.map((t, i) => `
                     <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
                         <td class="px-6 py-4 text-gray-400">${offset + i + 1}</td>
-                        <td class="px-6 py-4 font-bold text-blue-600">${t.id}</td>
-                        <td class="px-6 py-4 font-medium text-gray-800">${t.name}</td>
-                        <td class="px-6 py-4 text-gray-600">${t.school}</td>
-                        <td class="px-6 py-4 text-gray-600">${t.supervisor}</td>
-                        <td class="px-6 py-4 text-gray-600">${t.major ?? ''}</td>
-                        <td class="px-6 py-4 text-gray-600">${t.qualify ?? ''}</td>
-                        <td class="px-6 py-4 text-gray-600">${t.date ?? ''}</td>
+                        <td class="px-6 py-4 font-bold text-blue-600">${esc(t.id)}</td>
+                        <td class="px-6 py-4 font-medium text-gray-800">${esc(t.name)}</td>
+                        <td class="px-6 py-4 text-gray-600">${esc(t.school)}</td>
+                        <td class="px-6 py-4 text-gray-600">${esc(t.supervisor)}</td>
+                        <td class="px-6 py-4 text-gray-600">${esc(t.major)}</td>
+                        <td class="px-6 py-4 text-gray-600">${esc(t.qualify)}</td>
+                        <td class="px-6 py-4 text-gray-600">${esc(t.date)}</td>
                         <td class="px-6 py-4">${assessmentBadge(t.assessment)}</td>
                         <td class="px-6 py-4">
                             <div class="flex gap-2 justify-end">
-                                <a href="${showUrlTemplate.replace('__ID__', t.id)}"
+                                <a href="${esc(showUrlTemplate.replace('__ID__', encodeURIComponent(t.id)))}"
                                     class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                                     👁️ عرض
                                 </a>
-                                <a href="${editUrlTemplate.replace('__ID__', t.id)}"
+                                <a href="${esc(editUrlTemplate.replace('__ID__', encodeURIComponent(t.id)))}"
                                     class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                                     ✏️ تعديل
                                 </a>
-                                <button type="button" data-id="${t.id}"
+                                <button type="button" data-id="${esc(t.id)}"
                                     class="delete-teacher-btn bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                                     🗑️ حذف
                                 </button>
@@ -203,7 +214,7 @@
             function deleteTeacher(id) {
                 if (!confirm('هل أنت متأكد من حذف هذا المعلم؟')) return;
 
-                fetch(destroyUrlTemplate.replace('__ID__', id), {
+                fetch(destroyUrlTemplate.replace('__ID__', encodeURIComponent(id)), {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
