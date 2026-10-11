@@ -113,10 +113,10 @@
         new Chart(document.getElementById('schoolChart'), {
             type: 'bar',
             data: {
-                labels: {!! json_encode($teachersPerSchool->pluck('SchoolName')) !!},
+                labels: @json($teachersPerSchool->pluck('SchoolName')),
                 datasets: [{
                     label: 'عدد المعلمين',
-                    data: {!! json_encode($teachersPerSchool->pluck('teachers_count')) !!},
+                    data: @json($teachersPerSchool->pluck('teachers_count')),
                     backgroundColor: [
                         '#3b82f6','#10b981','#8b5cf6','#f59e0b','#ef4444'
                     ],
@@ -134,9 +134,9 @@
         new Chart(document.getElementById('supervisorChart'), {
             type: 'doughnut',
             data: {
-                labels: {!! json_encode($teachersPerSupervisor->pluck('SuperVisor_Name')) !!},
+                labels: @json($teachersPerSupervisor->pluck('SuperVisor_Name')),
                 datasets: [{
-                    data: {!! json_encode($teachersPerSupervisor->pluck('teachers_count')) !!},
+                    data: @json($teachersPerSupervisor->pluck('teachers_count')),
                     backgroundColor: [
                         '#3b82f6','#10b981','#8b5cf6','#f59e0b','#ef4444'
                     ],
