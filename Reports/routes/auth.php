@@ -52,7 +52,12 @@ Route::middleware('auth')->group(function () {
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
+});
 
+// Logout must work for BOTH logins (admin and supervisor). It used to sit in
+// the plain 'auth' group above, which only knows the supervisor login, so an
+// admin's logout was silently skipped and their session stayed alive.
+Route::middleware('auth:admin,web')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });
