@@ -70,8 +70,9 @@ class ExcelController extends Controller
 
     private function readSpreadsheet(Request $request, string $field = 'file'): array
     {
+        // max is in kilobytes: 5120 KB = 5 MB
         $request->validate([
-            $field => 'required|file|mimes:xlsx,xls,csv',
+            $field => 'required|file|mimes:xlsx,xls,csv|max:5120',
         ]);
 
         $path = $request->file($field)->getRealPath();
@@ -229,6 +230,13 @@ class ExcelController extends Controller
             ->pluck('SuperVisor_id')
             ->flip();
 
+        // Supervisors log in by name, so names must stay unique
+        // (same rule as the supervisors form). Compared ignoring case/spaces.
+        $existingNames = SuperVisor::pluck('SuperVisor_Name')
+            ->mapWithKeys(fn ($n) => [mb_strtolower(trim((string) $n)) => true])
+            ->all();
+        $namesInFile = [];
+
         $errors = [];
         $toInsert = [];
         $tempPassword = Hash::make('ChangeMe123');
@@ -267,6 +275,20 @@ class ExcelController extends Controller
                 $errors[] = "السطر {$excelRow}: المشرف برقم {$id} موجود بالفعل.";
                 continue;
             }
+
+            $nameKey = mb_strtolower(trim((string) $name));
+
+            if (isset($existingNames[$nameKey])) {
+                $errors[] = "السطر {$excelRow}: اسم المشرف \"{$name}\" موجود بالفعل.";
+                continue;
+            }
+
+            if (isset($namesInFile[$nameKey])) {
+                $errors[] = "السطر {$excelRow}: اسم المشرف \"{$name}\" مكرر في الملف (السطر {$namesInFile[$nameKey]}).";
+                continue;
+            }
+
+            $namesInFile[$nameKey] = $excelRow;
 
             $data = [
                 'SuperVisor_Name' => $name,
