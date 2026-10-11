@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin'            => \App\Http\Middleware\AdminMiddleware::class,
             'password.changed' => \App\Http\Middleware\EnsurePasswordChanged::class,
         ]);
+
+        // Security headers on every web response.
+        $middleware->appendToGroup('web', \App\Http\Middleware\SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
