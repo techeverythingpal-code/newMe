@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class SecurityHeaders
@@ -28,6 +29,13 @@ class SecurityHeaders
         // so local http://localhost development is not affected).
         if ($request->isSecure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=15552000');
+        }
+
+        // Pages shown to a logged-in user must not be kept in the browser's
+        // cache/history, so the Back button after logout cannot reveal them
+        // on a shared computer.
+        if (Auth::guard('admin')->check() || Auth::guard('web')->check()) {
+            $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         }
 
         return $response;
