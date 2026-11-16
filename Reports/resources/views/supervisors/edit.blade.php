@@ -90,13 +90,6 @@
                     </div>
 
                     <div class="mb-4">
-                        <input type="hidden" name="role" value="user">
-                        @error('role')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">
                             كلمة المرور الجديدة
                             <span class="text-gray-400 text-xs font-normal">(اتركها فارغة إذا لم تريد تغييرها)</span>
