@@ -235,6 +235,7 @@ class ExcelController extends Controller
             ->mapWithKeys(fn ($n) => [mb_strtolower(trim((string) $n)) => true])
             ->all();
         $namesInFile = [];
+        $idsSeenInFile = [];
 
         $errors = [];
         $toInsert = [];
@@ -256,6 +257,20 @@ class ExcelController extends Controller
                 continue;
             }
 
+            // The ID is entered by hand (same rule as the supervisors form);
+            // the database does not generate it.
+            if ($id === null || trim((string) $id) === '') {
+                $errors[] = "السطر {$excelRow}: يجب توفر SuperVisor_id.";
+                continue;
+            }
+
+            if (filter_var($id, FILTER_VALIDATE_INT) === false || (int) $id <= 0) {
+                $errors[] = "السطر {$excelRow}: قيمة SuperVisor_id يجب أن تكون رقمًا صحيحًا موجبًا.";
+                continue;
+            }
+
+            $id = (int) $id;
+
             if (!$directorateId) {
                 $errors[] = "السطر {$excelRow}: يجب توفر directorate_id.";
                 continue;
@@ -266,8 +281,13 @@ class ExcelController extends Controller
                 continue;
             }
 
-            if ($id && isset($existingIds[$id])) {
+            if (isset($existingIds[$id])) {
                 $errors[] = "السطر {$excelRow}: المشرف برقم {$id} موجود بالفعل.";
+                continue;
+            }
+
+            if (isset($idsSeenInFile[$id])) {
+                $errors[] = "السطر {$excelRow}: رقم المشرف {$id} مكرر في الملف (السطر {$idsSeenInFile[$id]}).";
                 continue;
             }
 
@@ -284,8 +304,10 @@ class ExcelController extends Controller
             }
 
             $namesInFile[$nameKey] = $excelRow;
+            $idsSeenInFile[$id] = $excelRow;
 
             $data = [
+                'SuperVisor_id' => $id,
                 'SuperVisor_Name' => $name,
                 'SuperVisor_Major' => $major,
                 'directorate_id' => $directorateId,
@@ -294,10 +316,6 @@ class ExcelController extends Controller
                 // supervisor must choose their own at first login.
                 'must_change_password' => true,
             ];
-
-            if ($id) {
-                $data['SuperVisor_id'] = $id;
-            }
 
             $toInsert[] = $data;
         }
