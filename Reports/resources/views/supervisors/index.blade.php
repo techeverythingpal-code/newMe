@@ -25,7 +25,7 @@
         <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h3 class="font-bold text-lg mb-3">⬆️ استيراد المشرفين من Excel</h3>
             <p class="text-sm text-gray-500 mb-4">
-              الأعمدة المطلوبة: <span class="font-mono">SuperVisor_Name, SuperVisor_Major, directorate_id, role</span><br>
+              الأعمدة المطلوبة: <span class="font-mono">SuperVisor_Name, SuperVisor_Major, directorate_id</span><br>
                <span class="text-gray-400">عمود اختياري: <span class="font-mono">SuperVisor_id</span> (إذا تُرك فارغًا سيتم توليده تلقائيًا)</span>
                 <br>
                 <span class="text-amber-600">⚠️ سيتم تعيين كلمة مرور مؤقتة لكل مشرف جديد، يجب تحديثها بعد الاستيراد.</span>
@@ -80,7 +80,6 @@
                             <th class="px-6 py-4">اسم المشرف</th>
                             <th class="px-6 py-4">التخصص</th>
                             <th class="px-6 py-4">المديرية</th>
-                            <th class="px-6 py-4">الصلاحية</th>
                             <th class="px-6 py-4">عدد المعلمين</th>
                             <th class="px-6 py-4">الإجراءات</th>
                         </tr>
@@ -98,17 +97,6 @@
                                 <td class="px-6 py-4 text-gray-600">{{ $supervisor->SuperVisor_Major }}</td>
                                 <td class="px-6 py-4 text-gray-600">
                                     {{ $supervisor->directorate->Directorate_Name ?? '—' }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    @if($supervisor->role === 'admin')
-                                        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">
-                                            مدير
-                                        </span>
-                                    @else
-                                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
-                                            مشرف
-                                        </span>
-                                    @endif
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">
