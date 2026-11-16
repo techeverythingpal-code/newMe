@@ -20,7 +20,6 @@ class SuperVisor extends Authenticatable
         'SuperVisor_Name',
         'SuperVisor_Major',
         'directorate_id',
-        'role',
         'password',
         'must_change_password',
     ];
