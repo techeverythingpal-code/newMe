@@ -25,11 +25,10 @@ erDiagram
     timestamp updated_at
   }
   super_visors {
-    bigint SuperVisor_id PK
+    bigint SuperVisor_id PK "entered manually"
     string SuperVisor_Name
     string SuperVisor_Major
     int directorate_id FK
-    enum role "admin | user"
     string password
     boolean must_change_password
     string remember_token
@@ -37,8 +36,7 @@ erDiagram
     timestamp updated_at
   }
   teacher_infos {
-    int id PK
-    int Teacher_id UK "target of all teacher foreign keys"
+    int Teacher_id PK "target of all teacher foreign keys"
     string Teacher_Name
     bigint supervisor_id FK
     int school_id FK
@@ -81,8 +79,9 @@ erDiagram
 
 ## Notes
 
-- `teacher_infos` has two identifiers: the auto-increment primary key `id`, and the unique `Teacher_id`, which every foreign key and the Eloquent model use.
+- `teacher_infos` is identified by `Teacher_id`, its primary key. The old auto-increment `id` column was dropped in November 2026.
 - `teacher_grades` and `teacher_justifications` are one-to-one with a teacher; their primary key `teacher_id` is also the foreign key to `teacher_infos.Teacher_id`.
 - `score1_to_score22` stands for 22 separate integer columns, `score1` through `score22`.
-- `users` is the default Laravel table and is not related to the other tables. Login runs through `super_visors`.
+- There are two kinds of login. Admins log in through `users` (the `admin` guard); supervisors log in through `super_visors` (the `web` guard). Admin rights come only from `users`; the old `super_visors.role` column was dropped in November 2026.
+- `users` has no foreign keys to the other tables.
 - Laravel framework tables (`sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`, `password_reset_tokens`) are omitted.
