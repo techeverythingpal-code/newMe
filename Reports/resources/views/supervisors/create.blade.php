@@ -87,11 +87,6 @@
                         @enderror
                     </div>
 
-                    <input type="hidden" name="role" value="user">
-                    @error('role')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">
                             كلمة المرور <span class="text-red-500">*</span>
