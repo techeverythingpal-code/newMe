@@ -64,7 +64,6 @@ class SuperVisorController extends Controller
             'SuperVisor_Name'  => 'required|string|max:255|unique:super_visors',
             'SuperVisor_Major' => 'required|string|max:255',
             'directorate_id'   => 'required|exists:directorates,Directorate_id',
-            'role'             => 'required|in:admin,user',
             'password'         => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
 
@@ -89,7 +88,6 @@ class SuperVisorController extends Controller
             'SuperVisor_Name'  => 'required|string|max:255|unique:super_visors,SuperVisor_Name,' . $supervisor->SuperVisor_id . ',SuperVisor_id',
             'SuperVisor_Major' => 'required|string|max:255',
             'directorate_id'   => 'required|exists:directorates,Directorate_id',
-            'role'             => 'required|in:admin,user',
         ]);
 
         // Only update password if provided

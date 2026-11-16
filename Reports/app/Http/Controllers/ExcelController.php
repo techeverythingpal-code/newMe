@@ -200,7 +200,7 @@ class ExcelController extends Controller
     {
         $supervisors = SuperVisor::orderBy('SuperVisor_id')->get();
 
-        $headers = ['SuperVisor_id', 'SuperVisor_Name', 'SuperVisor_Major', 'directorate_id', 'role'];
+        $headers = ['SuperVisor_id', 'SuperVisor_Name', 'SuperVisor_Major', 'directorate_id'];
 
         $rows = $supervisors->map(function ($s) {
             return [
@@ -208,7 +208,6 @@ class ExcelController extends Controller
                 $s->SuperVisor_Name,
                 $s->SuperVisor_Major,
                 $s->directorate_id,
-                $s->role,
             ];
         })->toArray();
 
@@ -248,16 +247,12 @@ class ExcelController extends Controller
             $id = $row['SuperVisor_id'] ?? null;
             $name = $row['SuperVisor_Name'] ?? null;
             $major = $row['SuperVisor_Major'] ?? null;
-            $role = $row['role'] ?? null;
             $directorateId = $row['directorate_id'] ?? null;
 
-            if (!$name || !$role) {
-                $errors[] = "السطر {$excelRow}: يجب توفر SuperVisor_Name و role.";
-                continue;
-            }
-
-            if (!in_array($role, ['admin', 'user'])) {
-                $errors[] = "السطر {$excelRow}: قيمة role غير صحيحة (admin أو user فقط).";
+            // Older files may still have a "role" column; it is ignored.
+            // Admin access comes only from the users table.
+            if (!$name) {
+                $errors[] = "السطر {$excelRow}: يجب توفر SuperVisor_Name.";
                 continue;
             }
 
@@ -294,7 +289,6 @@ class ExcelController extends Controller
                 'SuperVisor_Name' => $name,
                 'SuperVisor_Major' => $major,
                 'directorate_id' => $directorateId,
-                'role' => $role,
                 'password' => $tempPassword,
                 // Imported accounts share a temporary password, so each
                 // supervisor must choose their own at first login.
