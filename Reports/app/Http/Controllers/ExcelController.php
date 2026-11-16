@@ -257,6 +257,12 @@ class ExcelController extends Controller
                 continue;
             }
 
+            // Required here as in the supervisors form.
+            if ($major === null || trim((string) $major) === '') {
+                $errors[] = "السطر {$excelRow}: يجب توفر SuperVisor_Major.";
+                continue;
+            }
+
             // The ID is entered by hand (same rule as the supervisors form);
             // the database does not generate it.
             if ($id === null || trim((string) $id) === '') {
