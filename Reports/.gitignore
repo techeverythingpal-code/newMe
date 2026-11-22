@@ -30,3 +30,7 @@ Thumbs.db
 /*.csv
 /*.pdf
 /php artisan tinker*.txt
+
+# Tailwind standalone CLI (download per machine, don't commit)
+/tailwindcss.exe
+/tailwindcss
