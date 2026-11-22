@@ -11,8 +11,11 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- Styles (built by tailwindcss.exe into public/css/app.css) -->
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
+
+        <!-- Alpine.js (local copy in public/vendor) -->
+        <script src="{{ asset('vendor/alpine.min.js') }}" defer></script>
     </head>
     <body class="font-sans text-gray-900 antialiased" dir="rtl">
         <div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">

@@ -359,7 +359,7 @@
     </div>
 
     <script>
-        // Data only — all behavior lives in resources/js/pages/supervisor-dashboard.js
+        // Data only — all behavior lives in public/js/supervisor-dashboard.js
         window.__SUPERVISOR_DASHBOARD__ = {
             teachers:       @json($teachersData),
             scoreCriteria:  @json($scoreCriteria),
@@ -373,5 +373,5 @@
             },
         };
     </script>
-    @vite('resources/js/pages/supervisor-dashboard.js')
+    <script type="module" src="{{ asset('js/supervisor-dashboard.js') }}?v={{ filemtime(public_path('js/supervisor-dashboard.js')) }}"></script>
 </x-app-layout>
