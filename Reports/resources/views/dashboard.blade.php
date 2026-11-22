@@ -106,8 +106,8 @@
         </div>
     </div>
 
-    {{-- Chart.js --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {{-- Chart.js 4.5.1 (local copy in public/vendor) --}}
+    <script src="{{ asset('vendor/chart.umd.min.js') }}"></script>
     <script>
         // Teachers per School Chart
         new Chart(document.getElementById('schoolChart'), {
