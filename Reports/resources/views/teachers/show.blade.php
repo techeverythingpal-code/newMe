@@ -11,6 +11,13 @@
         </div>
     </x-slot>
 
+    @php
+        // Only the admin may open supervisor / directorate pages.
+        $isAdmin     = auth()->guard('admin')->check();
+        $supervisor  = $teacher->supervisor;
+        $directorate = $teacher->school->directorate ?? null;
+    @endphp
+
     <div class="py-8" dir="rtl">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
@@ -31,8 +38,26 @@
                         <span class="font-bold text-gray-800 mr-2">{{ $teacher->school->SchoolName ?? '-' }}</span>
                     </div>
                     <div>
+                        <span class="text-gray-500">المديرية:</span>
+                        @if ($directorate && $isAdmin)
+                            <a href="{{ route('directorates.show', $directorate->Directorate_id) }}"
+                                class="font-bold text-orange-600 hover:underline mr-2">
+                                {{ $directorate->Directorate_Name }}
+                            </a>
+                        @else
+                            <span class="font-bold text-gray-800 mr-2">{{ $directorate->Directorate_Name ?? '-' }}</span>
+                        @endif
+                    </div>
+                    <div>
                         <span class="text-gray-500">المشرف:</span>
-                        <span class="font-bold text-gray-800 mr-2">{{ $teacher->supervisor->SuperVisor_Name ?? '-' }}</span>
+                        @if ($supervisor && $isAdmin)
+                            <a href="{{ route('supervisors.show', $supervisor->SuperVisor_id) }}"
+                                class="font-bold text-purple-600 hover:underline mr-2">
+                                {{ $supervisor->SuperVisor_Name }}
+                            </a>
+                        @else
+                            <span class="font-bold text-gray-800 mr-2">{{ $supervisor->SuperVisor_Name ?? '-' }}</span>
+                        @endif
                     </div>
                     <div>
                         <span class="text-gray-500">التخصص:</span>
@@ -75,8 +100,6 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 text-sm">
-                   
-
                     @foreach($scores as $field => [$label, $max])
                         <div class="flex justify-between items-center bg-gray-50 rounded-lg px-3 py-2">
                             <span class="font-bold text-blue-600">

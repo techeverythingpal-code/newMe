@@ -26,9 +26,9 @@
                         <label class="block text-gray-700 font-bold mb-2">
                             رقم المديرية <span class="text-red-500">*</span>
                         </label>
-                        <input 
-                            type="number" 
-                            name="Directorate_id" 
+                        <input
+                            type="number"
+                            name="Directorate_id"
                             value="{{ old('Directorate_id') }}"
                             class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                             placeholder="مثال: 1001"
@@ -39,13 +39,13 @@
                         @enderror
                     </div>
                     {{-- Directorate Name --}}
-                    <div class="mb-6">
+                    <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">
                             اسم المديرية <span class="text-red-500">*</span>
                         </label>
-                        <input 
-                            type="text" 
-                            name="Directorate_Name" 
+                        <input
+                            type="text"
+                            name="Directorate_Name"
                             value="{{ old('Directorate_Name') }}"
                             class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                             placeholder="مثال: مديرية التربية والتعليم"
@@ -55,16 +55,88 @@
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    {{-- ===== Optional details ===== --}}
+                    <h3 class="text-gray-500 font-bold mt-6 mb-3 border-b pb-2">بيانات إضافية (اختيارية)</h3>
+
+                    {{-- Manager Name --}}
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">اسم مدير المديرية</label>
+                        <input
+                            type="text"
+                            name="manager_name"
+                            value="{{ old('manager_name') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                        >
+                        @error('manager_name')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    {{-- Address --}}
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">العنوان</label>
+                        <input
+                            type="text"
+                            name="address"
+                            value="{{ old('address') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                        >
+                        @error('address')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    {{-- Phone --}}
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">الهاتف</label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            dir="ltr"
+                            value="{{ old('phone') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-right"
+                            placeholder="09-2xxxxxx"
+                        >
+                        @error('phone')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    {{-- Email --}}
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">البريد الإلكتروني</label>
+                        <input
+                            type="email"
+                            name="email"
+                            dir="ltr"
+                            value="{{ old('email') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-right"
+                        >
+                        @error('email')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    {{-- Notes --}}
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-bold mb-2">معلومات / ملاحظات</label>
+                        <textarea
+                            name="notes"
+                            rows="4"
+                            class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                        >{{ old('notes') }}</textarea>
+                        @error('notes')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     {{-- Buttons --}}
                     <div class="flex gap-4">
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
                         >
                             حفظ المديرية
                         </button>
-                        <a 
-                            href="{{ route('directorates.index') }}" 
+                        <a
+                            href="{{ route('directorates.index') }}"
                             class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded"
                         >
                             إلغاء

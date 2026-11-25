@@ -29,13 +29,11 @@ class DashboardController extends Controller
                 ->where('supervisor_id', $user->SuperVisor_id)
                 ->orderBy('Teacher_Name')
                 ->get();
-                
+
             $totalTeachers   = $allTeachers->count();
             $avgTotal        = $allTeachers->avg(fn($t) => $t->grades->total ?? 0);
             $highestScore    = $allTeachers->max(fn($t) => $t->grades->total ?? 0);
             $excellentCount  = $allTeachers->filter(fn($t) => ($t->grades->total ?? 0) >= 85)->count();
-
-            
 
             $schools = School::whereIn('School_ID', $allTeachers->pluck('school_id'))->get();
 
@@ -120,7 +118,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * JSON endpoint for the admin teachers list page (resources/views/teachers/index.blade.php).
+     * JSON endpoint for the teachers list page (resources/views/teachers/index.blade.php).
      * Guard-filtered server-side: a supervisor calling this directly only ever
      * gets their own teachers back, never the full list.
      */
@@ -153,17 +151,19 @@ class DashboardController extends Controller
         $teachers = $query->orderBy('Teacher_Name')->paginate($perPage);
 
         $data = $teachers->getCollection()->map(fn ($t) => [
-            'id'            => $t->Teacher_id,
-            'name'          => $t->Teacher_Name,
-            'school'        => $t->school->SchoolName ?? '-',
-            'directorate'   => $t->school->directorate->Directorate_Name ?? '',
-            'supervisor'    => $t->supervisor->SuperVisor_Name ?? '-',
-            'major'         => $t->teacher_major,
-            'qualify'       => $t->teacher_qualify,
-            'date'          => $t->date ?? '',
-            'academic_year' => $t->academic_year ?? '',
-            'total'         => $t->grades->total ?? 0,
-            'assessment'    => $t->grades->assessment ?? ['label' => '—', 'color' => 'gray'],
+            'id'             => $t->Teacher_id,
+            'name'           => $t->Teacher_Name,
+            'school'         => $t->school->SchoolName ?? '-',
+            'directorate'    => $t->school->directorate->Directorate_Name ?? '',
+            'directorate_id' => $t->school->directorate->Directorate_id ?? null,
+            'supervisor'     => $t->supervisor->SuperVisor_Name ?? '-',
+            'supervisor_id'  => $t->supervisor->SuperVisor_id ?? null,
+            'major'          => $t->teacher_major,
+            'qualify'        => $t->teacher_qualify,
+            'date'           => $t->date ?? '',
+            'academic_year'  => $t->academic_year ?? '',
+            'total'          => $t->grades->total ?? 0,
+            'assessment'     => $t->grades->assessment ?? ['label' => '—', 'color' => 'gray'],
         ])->values();
 
         return response()->json([

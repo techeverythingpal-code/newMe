@@ -9,33 +9,33 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Count Cards --}}
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 
-    <a href="{{ route('teachers.index') }}" class="block bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
-        <div class="text-4xl mb-2">👨‍🏫</div>
-        <div class="text-3xl font-bold">{{ $totalTeachers }}</div>
-        <div class="text-sm opacity-80 mt-1">إجمالي المعلمين</div>
-    </a>
+                <a href="{{ route('teachers.index') }}" class="block bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
+                    <div class="text-4xl mb-2">👨‍🏫</div>
+                    <div class="text-3xl font-bold">{{ $totalTeachers }}</div>
+                    <div class="text-sm opacity-80 mt-1">إجمالي المعلمين</div>
+                </a>
 
-    <a href="{{ route('schools.index') }}" class="block bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
-        <div class="text-4xl mb-2">🏫</div>
-        <div class="text-3xl font-bold">{{ $totalSchools }}</div>
-        <div class="text-sm opacity-80 mt-1">المدارس</div>
-    </a>
+                <a href="{{ route('schools.index') }}" class="block bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
+                    <div class="text-4xl mb-2">🏫</div>
+                    <div class="text-3xl font-bold">{{ $totalSchools }}</div>
+                    <div class="text-sm opacity-80 mt-1">المدارس</div>
+                </a>
 
-    <a href="{{ route('supervisors.index') }}" class="block bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
-        <div class="text-4xl mb-2">👤</div>
-        <div class="text-3xl font-bold">{{ $totalSupervisors }}</div>
-        <div class="text-sm opacity-80 mt-1">المشرفون</div>
-    </a>
+                <a href="{{ route('supervisors.index') }}" class="block bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
+                    <div class="text-4xl mb-2">👤</div>
+                    <div class="text-3xl font-bold">{{ $totalSupervisors }}</div>
+                    <div class="text-sm opacity-80 mt-1">المشرفون</div>
+                </a>
 
-    <a href="{{ route('directorates.index') }}" class="block bg-gradient-to-br from-orange-500 to-orange-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
-        <div class="text-4xl mb-2">🏢</div>
-        <div class="text-3xl font-bold">{{ $totalDirectorates }}</div>
-        <div class="text-sm opacity-80 mt-1">المديريات</div>
-    </a>
+                <a href="{{ route('directorates.index') }}" class="block bg-gradient-to-br from-orange-500 to-orange-700 rounded-2xl p-5 text-white shadow-lg hover:scale-105 transition-transform duration-200">
+                    <div class="text-4xl mb-2">🏢</div>
+                    <div class="text-3xl font-bold">{{ $totalDirectorates }}</div>
+                    <div class="text-sm opacity-80 mt-1">المديريات</div>
+                </a>
 
-</div>
+            </div>
 
             {{-- Grades Summary --}}
             <div class="grid grid-cols-3 gap-4 mb-8">
@@ -88,9 +88,25 @@
                     <tbody>
                         @forelse($recentTeachers as $teacher)
                         <tr class="border-b border-gray-100 hover:bg-gray-50">
-                            <td class="p-3 font-medium text-gray-800">{{ $teacher->Teacher_Name }}</td>
+                            <td class="p-3 font-medium">
+                                {{-- Clickable name → teacher details page --}}
+                                <a href="{{ route('teachers.show', $teacher->Teacher_id) }}"
+                                    class="text-gray-800 hover:text-blue-600 hover:underline">
+                                    {{ $teacher->Teacher_Name }}
+                                </a>
+                            </td>
                             <td class="p-3 text-gray-600">{{ $teacher->school->SchoolName ?? '-' }}</td>
-                            <td class="p-3 text-gray-600">{{ $teacher->supervisor->SuperVisor_Name ?? '-' }}</td>
+                            <td class="p-3 text-gray-600">
+                                {{-- Clickable supervisor → supervisor details page --}}
+                                @if ($teacher->supervisor)
+                                    <a href="{{ route('supervisors.show', $teacher->supervisor->SuperVisor_id) }}"
+                                        class="hover:text-purple-600 hover:underline">
+                                        {{ $teacher->supervisor->SuperVisor_Name }}
+                                    </a>
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td class="p-3 text-gray-600">{{ $teacher->teacher_major }}</td>
                             <td class="p-3 text-gray-600">{{ $teacher->date }}</td>
                         </tr>

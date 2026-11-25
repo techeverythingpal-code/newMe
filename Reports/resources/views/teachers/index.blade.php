@@ -130,11 +130,15 @@
             let lastPage    = 1;
             let searchTimer = null;
 
-            const editUrlTemplate    = "{{ route('teachers.edit', ['teacher' => '__ID__']) }}";
-            const showUrlTemplate    = "{{ route('teachers.show', ['teacher' => '__ID__']) }}";
-            const destroyUrlTemplate = "{{ route('teachers.destroy', ['teacher' => '__ID__']) }}";
-            const dataUrl            = "{{ route('dashboard.teachers-data') }}";
-            const csrfToken          = document.querySelector('meta[name="csrf-token"]').content;
+            // Only the admin may open supervisor pages — supervisors see plain text.
+            const isAdmin = @json(auth()->guard('admin')->check());
+
+            const editUrlTemplate       = "{{ route('teachers.edit', ['teacher' => '__ID__']) }}";
+            const showUrlTemplate       = "{{ route('teachers.show', ['teacher' => '__ID__']) }}";
+            const destroyUrlTemplate    = "{{ route('teachers.destroy', ['teacher' => '__ID__']) }}";
+            const supervisorUrlTemplate = "{{ route('supervisors.show', ['supervisor' => '__ID__']) }}";
+            const dataUrl               = "{{ route('dashboard.teachers-data') }}";
+            const csrfToken             = document.querySelector('meta[name="csrf-token"]').content;
 
             // Turn any value into safe text before putting it inside HTML.
             // Without this, a name like <img onerror=...> would run as code.
@@ -145,6 +149,11 @@
                     .replace(/>/g, '&gt;')
                     .replace(/"/g, '&quot;')
                     .replace(/'/g, '&#039;');
+            }
+
+            // Build a safe URL from a template like ".../teachers/__ID__"
+            function urlFor(template, id) {
+                return esc(template.replace('__ID__', encodeURIComponent(id)));
             }
 
             function assessmentBadge(assessment) {
@@ -158,6 +167,15 @@
                 };
                 const cls = colors[assessment?.color] || colors.gray;
                 return `<span class="${cls} px-3 py-1 rounded-full text-xs font-bold">${esc(assessment?.label ?? '—')}</span>`;
+            }
+
+            // Supervisor cell: a link for the admin, plain text for everyone else
+            function supervisorCell(t) {
+                if (isAdmin && t.supervisor_id) {
+                    return `<a href="${urlFor(supervisorUrlTemplate, t.supervisor_id)}"
+                                class="hover:text-purple-600 hover:underline">${esc(t.supervisor)}</a>`;
+                }
+                return esc(t.supervisor);
             }
 
             function renderRows(teachers, offset) {
@@ -180,20 +198,23 @@
                     <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
                         <td class="px-6 py-4 text-gray-400">${offset + i + 1}</td>
                         <td class="px-6 py-4 font-bold text-blue-600">${esc(t.id)}</td>
-                        <td class="px-6 py-4 font-medium text-gray-800">${esc(t.name)}</td>
+                        <td class="px-6 py-4 font-medium">
+                            <a href="${urlFor(showUrlTemplate, t.id)}"
+                                class="text-gray-800 hover:text-blue-600 hover:underline">${esc(t.name)}</a>
+                        </td>
                         <td class="px-6 py-4 text-gray-600">${esc(t.school)}</td>
-                        <td class="px-6 py-4 text-gray-600">${esc(t.supervisor)}</td>
+                        <td class="px-6 py-4 text-gray-600">${supervisorCell(t)}</td>
                         <td class="px-6 py-4 text-gray-600">${esc(t.major)}</td>
                         <td class="px-6 py-4 text-gray-600">${esc(t.qualify)}</td>
                         <td class="px-6 py-4 text-gray-600">${esc(t.date)}</td>
                         <td class="px-6 py-4">${assessmentBadge(t.assessment)}</td>
                         <td class="px-6 py-4">
                             <div class="flex gap-2 justify-end">
-                                <a href="${esc(showUrlTemplate.replace('__ID__', encodeURIComponent(t.id)))}"
+                                <a href="${urlFor(showUrlTemplate, t.id)}"
                                     class="bg-green-100 hover:bg-green-200 text-green-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                                     👁️ عرض
                                 </a>
-                                <a href="${esc(editUrlTemplate.replace('__ID__', encodeURIComponent(t.id)))}"
+                                <a href="${urlFor(editUrlTemplate, t.id)}"
                                     class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-3 rounded-lg text-xs transition">
                                     ✏️ تعديل
                                 </a>

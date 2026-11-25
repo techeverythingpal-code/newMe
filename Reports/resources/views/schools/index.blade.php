@@ -60,16 +60,16 @@
                     ❌ {{ session('error') }}
                 </div>
             @endif
-            @if ($errors->any())
-    <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-        <ul class="list-disc list-inside">
-            @foreach ($errors->all() as $err)
-                <li>{{ $err }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
 
+            @if ($errors->any())
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl">
                 <table class="w-full table-fixed text-right text-sm" id="schoolsTable">
@@ -91,7 +91,18 @@
                                 <td class="px-4 py-3 align-middle font-medium text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap" title="{{ $school->SchoolName }}">
                                     {{ $school->SchoolName }}
                                 </td>
-                                <td class="px-4 py-3 align-middle text-gray-600 overflow-hidden text-ellipsis whitespace-nowrap">{{ $school->directorate->Directorate_Name ?? '-' }}</td>
+                                <td class="px-4 py-3 align-middle text-gray-600 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    {{-- Clickable directorate → directorate details page --}}
+                                    @if ($school->directorate)
+                                        <a href="{{ route('directorates.show', $school->directorate->Directorate_id) }}"
+                                            class="hover:text-orange-600 hover:underline"
+                                            title="{{ $school->directorate->Directorate_Name }}">
+                                            {{ $school->directorate->Directorate_Name }}
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 align-middle">
                                     <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
                                         {{ $school->teachers_count }} معلم

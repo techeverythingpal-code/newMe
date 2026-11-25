@@ -20,12 +20,13 @@
             </div>
         </div>
     </x-slot>
+
     <!-- Import Modal -->
     <div id="supervisors-import-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50" dir="rtl">
         <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h3 class="font-bold text-lg mb-3">⬆️ استيراد المشرفين من Excel</h3>
             <p class="text-sm text-gray-500 mb-4">
-              الأعمدة المطلوبة: <span class="font-mono">SuperVisor_id, SuperVisor_Name, SuperVisor_Major, directorate_id</span><br>
+                الأعمدة المطلوبة: <span class="font-mono">SuperVisor_id, SuperVisor_Name, SuperVisor_Major, directorate_id</span><br>
                 <span class="text-amber-600">⚠️ سيتم تعيين كلمة مرور مؤقتة لكل مشرف جديد، يجب تحديثها بعد الاستيراد.</span>
             </p>
             <form action="{{ route('supervisors.import') }}" method="POST" enctype="multipart/form-data">
@@ -60,15 +61,16 @@
                     ❌ {{ session('error') }}
                 </div>
             @endif
+
             @if ($errors->any())
-    <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-        <ul class="list-disc list-inside">
-            @foreach ($errors->all() as $err)
-                <li>{{ $err }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl">
                 <table class="w-full text-right text-sm">
@@ -86,15 +88,27 @@
                         @forelse($supervisors as $supervisor)
                             <tr class="border-b border-gray-100 hover:bg-purple-50 transition">
                                 <td class="px-6 py-4 text-gray-400">{{ $loop->iteration }}</td>
-                                <td class="px-6 py-4 font-medium text-gray-800">
-                                    {{ $supervisor->SuperVisor_Name }}
+                                <td class="px-6 py-4 font-medium">
+                                    {{-- Clickable name → supervisor details page --}}
+                                    <a href="{{ route('supervisors.show', $supervisor->SuperVisor_id) }}"
+                                        class="text-gray-800 hover:text-purple-600 hover:underline">
+                                        {{ $supervisor->SuperVisor_Name }}
+                                    </a>
                                     @if($supervisor->SuperVisor_id === auth()->id())
                                         <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full mr-1">أنت</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-gray-600">{{ $supervisor->SuperVisor_Major }}</td>
                                 <td class="px-6 py-4 text-gray-600">
-                                    {{ $supervisor->directorate->Directorate_Name ?? '—' }}
+                                    {{-- Clickable directorate → directorate details page --}}
+                                    @if ($supervisor->directorate)
+                                        <a href="{{ route('directorates.show', $supervisor->directorate->Directorate_id) }}"
+                                            class="hover:text-orange-600 hover:underline">
+                                            {{ $supervisor->directorate->Directorate_Name }}
+                                        </a>
+                                    @else
+                                        —
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">
@@ -103,14 +117,14 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex gap-2 justify-end">
-                                    <a href="{{ route('supervisors.show', $supervisor->SuperVisor_id) }}"
-                                        class="bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-1 px-4 rounded-lg text-xs transition">
-                                        📊 الرسوم البيانية
-                                    </a>
-                                    <a href="{{ route('supervisors.edit', $supervisor->SuperVisor_id) }}"
-                                        class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-4 rounded-lg text-xs transition">
-                                        ✏️ تعديل
-                                    </a>
+                                        <a href="{{ route('supervisors.show', $supervisor->SuperVisor_id) }}"
+                                            class="bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-1 px-4 rounded-lg text-xs transition">
+                                            📊 الرسوم البيانية
+                                        </a>
+                                        <a href="{{ route('supervisors.edit', $supervisor->SuperVisor_id) }}"
+                                            class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-4 rounded-lg text-xs transition">
+                                            ✏️ تعديل
+                                        </a>
                                         @if($supervisor->SuperVisor_id !== auth()->id())
                                             <form action="{{ route('supervisors.destroy', $supervisor->SuperVisor_id) }}"
                                                 method="POST"
@@ -132,9 +146,9 @@
                                     <div class="text-5xl mb-3">👤</div>
                                     <div>لا يوجد مشرفون بعد</div>
                                     <a href="{{ route('supervisors.create') }}"
-    class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-5 rounded-lg transition shadow">
-    + إضافة مشرف
-</a>
+                                        class="mt-3 inline-block bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-5 rounded-lg transition shadow">
+                                        + إضافة مشرف
+                                    </a>
                                 </td>
                             </tr>
                         @endforelse

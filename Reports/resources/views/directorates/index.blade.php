@@ -21,11 +21,11 @@
                 </div>
             @endif
             {{-- Error Message --}}
-@if (session('error'))
-    <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-        ❌ {{ session('error') }}
-    </div>
-@endif
+            @if (session('error'))
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    ❌ {{ session('error') }}
+                </div>
+            @endif
 
             {{-- Table --}}
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl">
@@ -44,7 +44,13 @@
                             <tr class="border-b border-gray-100 hover:bg-orange-50 transition">
                                 <td class="px-6 py-4 text-gray-400">{{ $loop->iteration }}</td>
                                 <td class="px-6 py-4 font-bold text-orange-600">{{ $directorate->Directorate_id }}</td>
-                                <td class="px-6 py-4 font-medium text-gray-800">{{ $directorate->Directorate_Name }}</td>
+                                <td class="px-6 py-4 font-medium">
+                                    {{-- Clickable name → directorate details page --}}
+                                    <a href="{{ route('directorates.show', $directorate->Directorate_id) }}"
+                                        class="text-gray-800 hover:text-orange-600 hover:underline">
+                                        {{ $directorate->Directorate_Name }}
+                                    </a>
+                                </td>
                                 <td class="px-6 py-4">
                                     <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">
                                         {{ $directorate->schools_count }} مدرسة

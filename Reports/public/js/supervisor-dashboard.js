@@ -538,10 +538,13 @@ function renderCards(pageItems, start) {
         const tone = cardTones[(start + index) % cardTones.length];
         const card = document.createElement('div');
         card.className = 'relative rounded-2xl p-4 hover:shadow-md transition ' + tone;
+        // CHANGE 1 of 2: the teacher name on each card is now a link
         card.innerHTML = `
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
-                    <div class="font-bold text-gray-800 text-base">${escapeHtml(t.name)}${t.total >= 85 ? ' ⭐' : ''}</div>
+                    <div class="font-bold text-gray-800 text-base">
+                        <a href="${routes.show(t.id)}" class="hover:text-brand-600 hover:underline">${escapeHtml(t.name)}</a>${t.total >= 85 ? ' ⭐' : ''}
+                    </div>
                     <div class="text-sm text-gray-500 mt-1">🏫 ${escapeHtml(t.school)}</div>
                     <div class="text-xs text-gray-400 mt-1">🎓 ${escapeHtml(t.major)} · #${start + index + 1}</div>
                 </div>
@@ -662,10 +665,13 @@ function renderRows(pageItems, start) {
     pageItems.forEach((t, index) => {
         const row = document.createElement('tr');
         row.className = 'border-b border-gray-100 hover:bg-brand-50 transition' + (t.total >= 85 ? ' bg-brand-50/40' : '');
+        // CHANGE 2 of 2: the teacher name in each table row is now a link
         row.innerHTML = `
             <td class="px-4 py-3 text-gray-400">${start + index + 1}</td>
             <td class="px-4 py-3 font-bold text-brand-600">${escapeHtml(String(t.id))}</td>
-            <td class="px-4 py-3 font-medium text-gray-800">${escapeHtml(t.name)}</td>
+            <td class="px-4 py-3 font-medium text-gray-800">
+                <a href="${routes.show(t.id)}" class="hover:text-brand-600 hover:underline">${escapeHtml(t.name)}</a>
+            </td>
             <td class="px-4 py-3 text-gray-600">${escapeHtml(t.school)}</td>
             <td class="px-4 py-3 text-gray-600">${escapeHtml(t.major)}</td>
             <td class="px-4 py-3 text-gray-600">${escapeHtml(t.qualify)}</td>
