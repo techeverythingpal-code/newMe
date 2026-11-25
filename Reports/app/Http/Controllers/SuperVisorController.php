@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\SuperVisor;
 use App\Models\TeacherInfo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -31,15 +30,6 @@ class SuperVisorController extends Controller
         $lowestScore   = $totalTeachers > 0
             ? $teachers->min(fn($t) => $t->grades->total ?? 0)
             : 0;
-
-        // --- Radar chart: average % per evaluation criterion ---
-        $scoreMax = [
-            'score1' => 5, 'score2' => 7, 'score3' => 7, 'score4' => 7, 'score5' => 7,
-            'score6' => 5, 'score7' => 4, 'score8' => 4, 'score9' => 6, 'score10' => 6,
-            'score11' => 4, 'score12' => 6, 'score13' => 6, 'score14' => 3, 'score15' => 3,
-            'score16' => 4, 'score17' => 3, 'score18' => 3, 'score19' => 4, 'score20' => 2,
-            'score21' => 2, 'score22' => 2,
-        ];
 
         return view('supervisors.show', compact(
             'supervisor',
@@ -106,11 +96,8 @@ class SuperVisorController extends Controller
 
     public function destroy(SuperVisor $supervisor)
     {
-        // Prevent deleting yourself
-        if ($supervisor->SuperVisor_id === Auth::id()) {
-            return redirect()->route('supervisors.index')
-                ->with('error', 'لا يمكنك حذف حسابك الخاص');
-        }
+        // Only the admin (users table) reaches this page, so the admin can
+        // never be one of these supervisors — no "can't delete yourself" check.
 
         if ($supervisor->teachers()->count() > 0) {
             return redirect()->route('supervisors.index')
