@@ -142,7 +142,13 @@
                                 <tr class="border-b border-gray-100 hover:bg-orange-50 transition">
                                     <td class="p-3 text-gray-400">{{ $loop->iteration }}</td>
                                     <td class="p-3 text-orange-600 font-bold">{{ $school->School_ID }}</td>
-                                    <td class="p-3 font-medium text-gray-800">{{ $school->SchoolName }}</td>
+                                    <td class="p-3 font-medium">
+                                        {{-- Clickable school name → school details page --}}
+                                        <a href="{{ route('schools.show', $school->School_ID) }}"
+                                            class="text-emerald-700 hover:underline">
+                                            {{ $school->SchoolName }}
+                                        </a>
+                                    </td>
                                     <td class="p-3">
                                         <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">
                                             {{ $school->teachers_count }}

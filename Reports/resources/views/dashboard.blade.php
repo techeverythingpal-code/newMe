@@ -95,7 +95,17 @@
                                     {{ $teacher->Teacher_Name }}
                                 </a>
                             </td>
-                            <td class="p-3 text-gray-600">{{ $teacher->school->SchoolName ?? '-' }}</td>
+                            <td class="p-3 text-gray-600">
+                                {{-- Clickable school → school details page --}}
+                                @if ($teacher->school)
+                                    <a href="{{ route('schools.show', $teacher->school->School_ID) }}"
+                                        class="hover:text-emerald-600 hover:underline">
+                                        {{ $teacher->school->SchoolName }}
+                                    </a>
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td class="p-3 text-gray-600">
                                 {{-- Clickable supervisor → supervisor details page --}}
                                 @if ($teacher->supervisor)

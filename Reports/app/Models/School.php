@@ -8,13 +8,18 @@ class School extends Model
 {
     protected $table = 'schools';
     protected $primaryKey = 'School_ID';
-    public $incrementing = false;
+    public $incrementing = false;               // the ID is set manually
     protected $keyType = 'int';
 
     protected $fillable = [
         'School_ID',
         'SchoolName',
         'directorate_id',
+        'principal_name',
+        'address',
+        'phone',
+        'email',
+        'notes',
     ];
 
     public function directorate()

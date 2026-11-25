@@ -88,8 +88,13 @@
                             <tr class="odd:bg-white even:bg-gray-50/60 hover:bg-emerald-50 transition-colors">
                                 <td class="px-4 py-3 align-middle text-gray-400">{{ $loop->iteration }}</td>
                                 <td class="px-4 py-3 align-middle font-bold text-emerald-600 whitespace-nowrap">{{ $school->School_ID }}</td>
-                                <td class="px-4 py-3 align-middle font-medium text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap" title="{{ $school->SchoolName }}">
-                                    {{ $school->SchoolName }}
+                                <td class="px-4 py-3 align-middle font-medium text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap">
+                                    {{-- Clickable school name → school details page --}}
+                                    <a href="{{ route('schools.show', $school->School_ID) }}"
+                                        class="hover:text-emerald-700 hover:underline"
+                                        title="{{ $school->SchoolName }}">
+                                        {{ $school->SchoolName }}
+                                    </a>
                                 </td>
                                 <td class="px-4 py-3 align-middle text-gray-600 overflow-hidden text-ellipsis whitespace-nowrap">
                                     {{-- Clickable directorate → directorate details page --}}

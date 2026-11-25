@@ -12,10 +12,11 @@
     </x-slot>
 
     @php
-        // Only the admin may open supervisor / directorate pages.
+        // Only the admin may open school / supervisor / directorate pages.
         $isAdmin     = auth()->guard('admin')->check();
+        $school      = $teacher->school;
         $supervisor  = $teacher->supervisor;
-        $directorate = $teacher->school->directorate ?? null;
+        $directorate = $school->directorate ?? null;
     @endphp
 
     <div class="py-8" dir="rtl">
@@ -35,7 +36,14 @@
                     </div>
                     <div>
                         <span class="text-gray-500">المدرسة:</span>
-                        <span class="font-bold text-gray-800 mr-2">{{ $teacher->school->SchoolName ?? '-' }}</span>
+                        @if ($school && $isAdmin)
+                            <a href="{{ route('schools.show', $school->School_ID) }}"
+                                class="font-bold text-emerald-600 hover:underline mr-2">
+                                {{ $school->SchoolName }}
+                            </a>
+                        @else
+                            <span class="font-bold text-gray-800 mr-2">{{ $school->SchoolName ?? '-' }}</span>
+                        @endif
                     </div>
                     <div>
                         <span class="text-gray-500">المديرية:</span>
