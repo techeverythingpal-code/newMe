@@ -84,6 +84,7 @@
                             <th class="px-6 py-4">رقم المعلم</th>
                             <th class="px-6 py-4">اسم المعلم</th>
                             <th class="px-6 py-4">المدرسة</th>
+                            <th class="px-6 py-4">المديرية</th>
                             <th class="px-6 py-4">المشرف</th>
                             <th class="px-6 py-4">التخصص</th>
                             <th class="px-6 py-4">المؤهل</th>
@@ -94,7 +95,7 @@
                     </thead>
                     <tbody id="teachers-tbody">
                         <tr>
-                            <td colspan="10" class="px-6 py-10 text-center text-gray-400">جارِ التحميل...</td>
+                            <td colspan="11" class="px-6 py-10 text-center text-gray-400">جارِ التحميل...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -126,19 +127,22 @@
             const nextBtn    = document.getElementById('next-page');
             const pageInfo   = document.getElementById('page-info');
 
+            const COLS = 11; // number of table columns (used for full-width rows)
+
             let currentPage = 1;
             let lastPage    = 1;
             let searchTimer = null;
 
-            // Only the admin may open supervisor pages — supervisors see plain text.
+            // Only the admin may open supervisor / directorate pages — supervisors see plain text.
             const isAdmin = @json(auth()->guard('admin')->check());
 
-            const editUrlTemplate       = "{{ route('teachers.edit', ['teacher' => '__ID__']) }}";
-            const showUrlTemplate       = "{{ route('teachers.show', ['teacher' => '__ID__']) }}";
-            const destroyUrlTemplate    = "{{ route('teachers.destroy', ['teacher' => '__ID__']) }}";
-            const supervisorUrlTemplate = "{{ route('supervisors.show', ['supervisor' => '__ID__']) }}";
-            const dataUrl               = "{{ route('dashboard.teachers-data') }}";
-            const csrfToken             = document.querySelector('meta[name="csrf-token"]').content;
+            const editUrlTemplate        = "{{ route('teachers.edit', ['teacher' => '__ID__']) }}";
+            const showUrlTemplate        = "{{ route('teachers.show', ['teacher' => '__ID__']) }}";
+            const destroyUrlTemplate     = "{{ route('teachers.destroy', ['teacher' => '__ID__']) }}";
+            const supervisorUrlTemplate  = "{{ route('supervisors.show', ['supervisor' => '__ID__']) }}";
+            const directorateUrlTemplate = "{{ route('directorates.show', ['directorate' => '__ID__']) }}";
+            const dataUrl                = "{{ route('dashboard.teachers-data') }}";
+            const csrfToken              = document.querySelector('meta[name="csrf-token"]').content;
 
             // Turn any value into safe text before putting it inside HTML.
             // Without this, a name like <img onerror=...> would run as code.
@@ -178,11 +182,21 @@
                 return esc(t.supervisor);
             }
 
+            // Directorate cell: a link for the admin, plain text for everyone else
+            function directorateCell(t) {
+                if (!t.directorate) return '-';
+                if (isAdmin && t.directorate_id) {
+                    return `<a href="${urlFor(directorateUrlTemplate, t.directorate_id)}"
+                                class="hover:text-orange-600 hover:underline">${esc(t.directorate)}</a>`;
+                }
+                return esc(t.directorate);
+            }
+
             function renderRows(teachers, offset) {
                 if (!teachers.length) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="10" class="px-6 py-10 text-center text-gray-400">
+                            <td colspan="${COLS}" class="px-6 py-10 text-center text-gray-400">
                                 <div class="text-5xl mb-3">👨‍🏫</div>
                                 <div>لا يوجد معلمون بعد</div>
                                 <a href="{{ route('teachers.create') }}"
@@ -203,6 +217,7 @@
                                 class="text-gray-800 hover:text-blue-600 hover:underline">${esc(t.name)}</a>
                         </td>
                         <td class="px-6 py-4 text-gray-600">${esc(t.school)}</td>
+                        <td class="px-6 py-4 text-gray-600">${directorateCell(t)}</td>
                         <td class="px-6 py-4 text-gray-600">${supervisorCell(t)}</td>
                         <td class="px-6 py-4 text-gray-600">${esc(t.major)}</td>
                         <td class="px-6 py-4 text-gray-600">${esc(t.qualify)}</td>
@@ -246,7 +261,7 @@
             }
 
             function load() {
-                tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-10 text-center text-gray-400">جارِ التحميل...</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${COLS}" class="px-6 py-10 text-center text-gray-400">جارِ التحميل...</td></tr>`;
 
                 const params = new URLSearchParams({
                     page: currentPage,
